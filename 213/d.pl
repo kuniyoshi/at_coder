@@ -9,59 +9,41 @@ use Data::Dumper;
 chomp( my $n = <> );
 chomp( my @edges = <> );
 
-my %city_of = ( );
+my @links = map { [ ] } 1 .. $n;
 
 for my $edge ( @edges ) {
     my( $a, $b ) = split m{\s}, $edge;
-    my $a_index = $a - 1;
-    my $b_index = $b - 1;
-
-    my( $min, $max ) = minmax( $a_index, $b_index );
-
-    $city_of{ $min } = { }
-        if !exists $city_of{ $min };
-
-    my $ref = $city_of{ $min };
-    $ref->{ $max }++;
+    push @{ $links[ $a ] }, $b;
+    push @{ $links[ $b ] }, $a;
 }
 
-#die Dumper \%city_of;
-
-my $current_city = 0;
-my @passed_cities = ( $current_city );
-my @stack = ( $current_city );
-
-while ( 1 ) {
-    my $edges_ref = $city_of{ $current_city } // { };
-
-    last
-        if $current_city == 0 && !%{ $edges_ref };
-
-    if ( !%{ $edges_ref } ) {
-        pop @stack
-            if $stack[-1] == $current_city;
-
-        $current_city = @stack ? pop @stack : 0;
-        push @passed_cities, $current_city;
-
-        next;
-    }
-
-    my @candidates = sort { $a <=> $b } keys %{ $edges_ref };
-    $current_city = $candidates[0];
-    delete $edges_ref->{ $current_city };
-    push @passed_cities, $current_city;
-    push @stack, $current_city;
+for my $i ( 0 .. $#links ) {
+    my $link_ref = $links[ $i ];
+    $links[ $i ] = [ sort { $b <=> $a } @{ $link_ref } ];
 }
 
-say join q{ }, map { $_ + 1 } @passed_cities;
+my @passed_cities = ( );
+my %visited = ( );
 
+dfs( 1 );
+
+say join q{ }, @passed_cities;
 
 exit;
 
-sub minmax {
-    my( $a, $b ) = @_;
-    return ( $a, $b )
-        if $a < $b;
-    return ( $b, $a );
+sub dfs {
+    my $city = shift;
+
+    push @passed_cities, $city;
+    $visited{ $city }++;
+
+    while ( @{ $links[ $city ] } ) {
+        my $other = pop @{ $links[ $city ] };
+
+        next
+            if $visited{ $other };
+
+        dfs( $other );
+        push @passed_cities, $city;
+    }
 }

@@ -15,3 +15,6 @@ c:
 d:
 	cat d.data.1 | ./d.pl
 	cat d.data.2 | ./d.pl
+
+e:
+	cat e.data.1 | ./e.pl

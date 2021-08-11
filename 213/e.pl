@@ -8,7 +8,7 @@ use Data::Dumper;
 use Readonly;
 
 # TIME PASSED
-# 🍅🍅🍅
+# 🍅🍅🍅🍅
 #
 
 Readonly my @NEIGHBORS => (
@@ -51,18 +51,18 @@ while ( @deque ) {
 
         if ( $is_wall ) {
             push @deque, [ $neighbor, $current ];
-            set_cost( $neighbor, cost_of( $parent ) + 1 );
+            set_cost( $neighbor, cost_of( $current ) + 1 );
         }
 
         if ( !$is_wall ) {
             unshift @deque, [ $neighbor, $current ];
-            set_cost( $neighbor, cost_of( $parent ) );
+            set_cost( $neighbor, cost_of( $current ) );
         }
     }
 }
 
 #warn Dumper \%visited;
-#warn Dumper \%cost;
+warn Dumper \%cost;
 say $cost{ $w - 1 }{ $h - 1 };
 
 exit;

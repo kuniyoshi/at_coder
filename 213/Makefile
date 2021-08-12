@@ -20,3 +20,4 @@ e:
 	cat e.data.1 | ./e.pl
 	cat e.data.2 | ./e.pl
 	cat e.data.3 | ./e.pl
+	cat e.data.4 | ./e.pl

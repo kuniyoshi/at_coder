@@ -8,17 +8,24 @@ use Data::Dumper;
 use Time::HiRes qw( tv_interval gettimeofday );
 
 # TIME PASSED
-# 🍅🍅🍅🍅🍅🍅🍅
+# 🍅🍅🍅🍅🍅🍅🍅🍅🍅
 #
 
-my @NEIGHBORS = (
+my $started = [ gettimeofday ];
+
+my( $h, $w ) = split m{\s}, <>;
+chomp( my @lines = <> );
+my @coords = map { split m{}, $_ } @lines;
+my $max_coord_exclusive = $h * $w;
+
+my @NEIGHBORS = map { $_->[0] + $_->[1] * $w } (
     [ 1, 0 ],
     [ 0, 1 ],
     [ -1, 0 ],
     [ 0, -1 ],
 );
 
-my @PUNCH_NEIGHBORS = (
+my @PUNCH_NEIGHBORS = map { $_->[0] + $_->[1] * $w } (
     [ -1, -2 ],
     [ 0, -2 ],
     [ 1, -2 ],
@@ -41,12 +48,6 @@ my @PUNCH_NEIGHBORS = (
     [ 1, 2 ],
 );
 
-my $started = [ gettimeofday ];
-
-my( $h, $w ) = split m{\s}, <>;
-chomp( my @lines = <> );
-my @coords = map { [ split m{}, $_ ] } @lines;
-
 my $max_cost = 100_000_000;
 
 my @deque = ( );
@@ -54,13 +55,16 @@ my %cost = ( );
 my %visited = ( );
 
 initialize_cost( $_, $max_cost )
-    for map { my $x = $_; map { [ $x, $_ ] } 0 .. $h - 1 } 0 .. $w - 1;
-set_cost( [ 0, 0 ], 0 );
+    for map { my $x = $_; map { $x + $w * $_ } 0 .. $h - 1 } 0 .. $w - 1;
+set_cost( 0, 0 );
 
-unshift @deque, [ 0, 0 ];
+unshift @deque, 0;
 
 while ( @deque ) {
     my $current = shift @deque;
+
+    next
+        if $current < 0;
 
     next
         if is_visited( $current );
@@ -77,6 +81,9 @@ while ( @deque ) {
 
         next
             unless is_in_range( $neighbor );
+
+        next
+            if $neighbor < 0;
 
         my $is_wall = is_wall_at( $neighbor );
 
@@ -100,12 +107,15 @@ while ( @deque ) {
         next
             unless is_in_range( $neighbor );
 
+        next
+            if $neighbor < 0;
+
         set_cost( $neighbor, $current_cost + 1 );
         push @deque, $neighbor;
     }
 }
 
-say $cost{ $w - 1 }{ $h - 1 };
+say $cost{ ( $w - 1 ) + ( $h - 1 ) * $w };
 
 warn "total elapsed: ", tv_interval( $started );
 
@@ -115,8 +125,7 @@ exit;
 sub initialize_cost {
     my $coord = shift;
     my $cost = shift;
-    my( $x, $y ) = @{ $coord };
-    $cost{ $x }{ $y } = $cost;
+    $cost{ $coord } = $cost;
 }
 
 sub set_cost {
@@ -126,49 +135,37 @@ sub set_cost {
     return
         if $cost > cost_of( $coord );
 
-    my( $x, $y ) = @{ $coord };
-
-    $cost{ $x }{ $y } = $cost;
+    $cost{ $coord } = $cost;
 }
 
 sub is_visited {
-    my( $x, $y ) = @{ shift( ) };
-    return $visited{ $x }{ $y };
+    my $coord = shift;
+
+    return $visited{ $coord };
 }
 
 sub mark_visit {
-    my( $x, $y ) = @{ shift( ) };
-    $visited{ $x }{ $y }++;
-}
-
-sub add_cost {
     my $coord = shift;
-    my $cost = cost_of( $coord );
-    my( $x, $y ) = @{ $coord };
-    $cost{ $x }{ $y } = $cost + 1;
+
+    $visited{ $coord }++;
 }
 
 sub is_wall_at {
-    my( $x, $y ) = @{ shift ( ) };
-    return $coords[ $y ][ $x ] eq q{#};
+    my $coord = shift;
+
+    return $coords[ $coord ] eq q{#};
 }
 
 sub cost_of {
-    my $coord = shift
-        or return 0;
-    my( $x, $y ) = @{ $coord };
-    $cost{ $x } = { }
-            unless exists $cost{ $x };
-    return $cost{ $x }{ $y } // 0;
+    return $cost{ shift( ) };
 }
 
 sub is_in_range {
-    my( $x, $y ) = @{ shift( ) };
-    return $x >= 0 && $x < $w
-        && $y >= 0 && $y < $h;
+    my $coord = shift;
+    return $coord >= 0 && $coord < $max_coord_exclusive;
 }
 
 sub add_coord {
     my( $a, $b ) = @_;
-    return [ $a->[0] + $b->[0], $a->[1] + $b->[1] ];
+    return $a + $b;
 }

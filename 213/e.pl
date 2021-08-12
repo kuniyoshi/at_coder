@@ -67,18 +67,20 @@ while ( @deque ) {
 
     mark_visit( $current );
 
+    my $current_cost = cost_of( $current );
+
     for my $candidate ( @NEIGHBORS ) {
         my $neighbor = add_coord( $current, $candidate );
 
         next
-            unless is_in_range( $neighbor );
+            if is_visited( $neighbor );
 
         next
-            if is_visited( $neighbor );
+            unless is_in_range( $neighbor );
 
         my $is_wall = is_wall_at( $neighbor );
 
-        set_cost( $neighbor, cost_of( $current ) + $is_wall );
+        set_cost( $neighbor, $current_cost + $is_wall );
 
         if ( $is_wall ) {
             push @deque, $neighbor;
@@ -93,12 +95,12 @@ while ( @deque ) {
         my $neighbor = add_coord( $current, $candidate );
 
         next
-            unless is_in_range( $neighbor );
-
-        next
             if is_visited( $neighbor );
 
-        set_cost( $neighbor, cost_of( $current ) + 1 );
+        next
+            unless is_in_range( $neighbor );
+
+        set_cost( $neighbor, $current_cost + 1 );
         push @deque, $neighbor;
     }
 }

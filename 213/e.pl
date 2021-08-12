@@ -75,42 +75,43 @@ while ( @deque ) {
 
         my $neighbor = $nx + $ny * $w;
 
+        #        next
+        #            if $visited[ $neighbor ];
+
         next
-            if $visited[ $neighbor ];
+            if $walls[ $neighbor ];
 
-        my $is_wall = $walls[ $neighbor ];
-        my $cost_candidate = $cost[ $current ] + $is_wall;
-        $cost[ $neighbor ] = $cost_candidate < $cost[ $neighbor ]
-            ? $cost_candidate
-            : $cost[ $neighbor ];
+        next
+            if $cost[ $neighbor ] <= $cost[ $current ];
 
-        if ( $is_wall ) {
-            push @deque, $neighbor;
-        }
+        $cost[ $neighbor ] = $cost[ $current ];
 
-        if ( !$is_wall ) {
-            unshift @deque, $neighbor;
-        }
+        unshift @deque, $neighbor;
     }
 
-    for my $candidate ( @PUNCH_NEIGHBORS ) {
-        my $nx = $x + $candidate->[0];
-        my $ny = $y + $candidate->[1];
+    for my $cx ( -2 .. 2 ) {
+        for my $cy ( -2 .. 2 ) {
+            next
+                if ( abs( $cx ) + abs( $cy ) ) > 3;
 
-        next
-            unless $nx >= 0 && $nx < $w && $ny >= 0 && $ny < $h;
+            my $nx = $x + $cx;
+            my $ny = $y + $cy;
 
-        my $neighbor = $nx + $ny * $w;
+            next
+                unless $nx >= 0 && $nx < $w && $ny >= 0 && $ny < $h;
 
-        next
-            if $visited[ $neighbor ];
+            my $neighbor = $nx + $ny * $w;
 
-        my $cost_candidate = $cost[ $current ] + 1;
-        $cost[ $neighbor ] = $cost_candidate < $cost[ $neighbor ]
-            ? $cost_candidate
-            : $cost[ $neighbor ];
+            #            next
+            #                if $visited[ $neighbor ];
 
-        push @deque, $neighbor;
+            next
+                if $cost[ $neighbor ] <= $cost[ $current ];
+
+            $cost[ $neighbor ] = $cost[ $current ] + 1;
+
+            push @deque, $neighbor;
+        }
     }
 }
 

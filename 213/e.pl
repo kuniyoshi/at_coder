@@ -11,8 +11,6 @@ use Time::HiRes qw( tv_interval gettimeofday );
 # 🍅🍅🍅🍅🍅🍅🍅🍅🍅
 #
 
-my $started = [ gettimeofday ];
-
 my( $h, $w ) = split m{\s}, <>;
 chomp( my @lines = <> );
 my @coords = map { split m{}, $_ } @lines;
@@ -54,9 +52,9 @@ my @deque = ( );
 my %cost = ( );
 my %visited = ( );
 
-initialize_cost( $_, $max_cost )
+$cost{ $_ } = $max_cost
     for map { my $x = $_; map { $x + $w * $_ } 0 .. $h - 1 } 0 .. $w - 1;
-set_cost( 0, 0 );
+$cost{ 0 } = 0;
 
 unshift @deque, 0;
 
@@ -67,27 +65,29 @@ while ( @deque ) {
         if $current < 0;
 
     next
-        if is_visited( $current );
+        if $visited{ $current };
 
-    mark_visit( $current );
+    $visited{ $current }++;
 
-    my $current_cost = cost_of( $current );
+    my $current_cost = $cost{ $current };
 
     for my $candidate ( @NEIGHBORS ) {
-        my $neighbor = add_coord( $current, $candidate );
+        my $neighbor = $current + $candidate;
 
         next
-            if is_visited( $neighbor );
+            if $visited{ $neighbor };
 
         next
-            unless is_in_range( $neighbor );
+            unless $neighbor >= 0 && $neighbor < $max_coord_exclusive;
 
         next
             if $neighbor < 0;
 
-        my $is_wall = is_wall_at( $neighbor );
+        my $is_wall = $coords[ $neighbor ] eq q{#};
 
-        set_cost( $neighbor, $current_cost + $is_wall );
+        if ( $current_cost + $is_wall < $cost{ $neighbor } ) {
+            $cost{ $neighbor } = $current_cost + $is_wall;
+        }
 
         if ( $is_wall ) {
             push @deque, $neighbor;
@@ -99,73 +99,25 @@ while ( @deque ) {
     }
 
     for my $candidate ( @PUNCH_NEIGHBORS ) {
-        my $neighbor = add_coord( $current, $candidate );
+        my $neighbor = $current + $candidate;
 
         next
-            if is_visited( $neighbor );
+            if $visited{ $neighbor };
 
         next
-            unless is_in_range( $neighbor );
+            unless $neighbor >= 0 && $neighbor < $max_coord_exclusive;
 
         next
             if $neighbor < 0;
 
-        set_cost( $neighbor, $current_cost + 1 );
+        if ( $current_cost + 1 < $cost{ $neighbor } ) {
+            $cost{ $neighbor } = $current_cost + 1;
+        }
+
         push @deque, $neighbor;
     }
 }
 
 say $cost{ ( $w - 1 ) + ( $h - 1 ) * $w };
 
-warn "total elapsed: ", tv_interval( $started );
-
-
 exit;
-
-sub initialize_cost {
-    my $coord = shift;
-    my $cost = shift;
-    $cost{ $coord } = $cost;
-}
-
-sub set_cost {
-    my $coord = shift;
-    my $cost = shift;
-
-    return
-        if $cost > cost_of( $coord );
-
-    $cost{ $coord } = $cost;
-}
-
-sub is_visited {
-    my $coord = shift;
-
-    return $visited{ $coord };
-}
-
-sub mark_visit {
-    my $coord = shift;
-
-    $visited{ $coord }++;
-}
-
-sub is_wall_at {
-    my $coord = shift;
-
-    return $coords[ $coord ] eq q{#};
-}
-
-sub cost_of {
-    return $cost{ shift( ) };
-}
-
-sub is_in_range {
-    my $coord = shift;
-    return $coord >= 0 && $coord < $max_coord_exclusive;
-}
-
-sub add_coord {
-    my( $a, $b ) = @_;
-    return $a + $b;
-}

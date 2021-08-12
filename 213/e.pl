@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use Time::HiRes qw( tv_interval gettimeofday );
 
 # TIME PASSED
 # 🍅🍅🍅🍅🍅🍅🍅🍅🍅
@@ -13,7 +12,8 @@ use Time::HiRes qw( tv_interval gettimeofday );
 
 my( $h, $w ) = split m{\s}, <>;
 chomp( my @lines = <> );
-my @coords = map { split m{}, $_ } @lines;
+
+my @walls = map { 0 + ( $_ eq q{#} ) } map { split m{}, $_ } @lines;
 my $max_coord_exclusive = $h * $w;
 
 my @NEIGHBORS = map { $_->[0] + $_->[1] * $w } (
@@ -49,12 +49,10 @@ my @PUNCH_NEIGHBORS = map { $_->[0] + $_->[1] * $w } (
 my $max_cost = 100_000_000;
 
 my @deque = ( );
-my %cost = ( );
-my %visited = ( );
+my @cost = ( $max_cost ) x $max_coord_exclusive;
+my @visited = ( 0 ) x $max_coord_exclusive;
 
-$cost{ $_ } = $max_cost
-    for map { my $x = $_; map { $x + $w * $_ } 0 .. $h - 1 } 0 .. $w - 1;
-$cost{ 0 } = 0;
+$cost[ 0 ] = 0;
 
 unshift @deque, 0;
 
@@ -62,32 +60,24 @@ while ( @deque ) {
     my $current = shift @deque;
 
     next
-        if $current < 0;
+        if $visited[ $current ];
 
-    next
-        if $visited{ $current };
-
-    $visited{ $current }++;
-
-    my $current_cost = $cost{ $current };
+    $visited[ $current ]++;
 
     for my $candidate ( @NEIGHBORS ) {
         my $neighbor = $current + $candidate;
 
         next
-            if $visited{ $neighbor };
-
-        next
             unless $neighbor >= 0 && $neighbor < $max_coord_exclusive;
 
         next
-            if $neighbor < 0;
+            if $visited[ $neighbor ];
 
-        my $is_wall = $coords[ $neighbor ] eq q{#};
-
-        if ( $current_cost + $is_wall < $cost{ $neighbor } ) {
-            $cost{ $neighbor } = $current_cost + $is_wall;
-        }
+        my $is_wall = $walls[ $neighbor ];
+        my $cost_candidate = $cost[ $current ] + $is_wall;
+        $cost[ $neighbor ] = $cost_candidate < $cost[ $neighbor ]
+            ? $cost_candidate
+            : $cost[ $neighbor ];
 
         if ( $is_wall ) {
             push @deque, $neighbor;
@@ -102,22 +92,20 @@ while ( @deque ) {
         my $neighbor = $current + $candidate;
 
         next
-            if $visited{ $neighbor };
-
-        next
             unless $neighbor >= 0 && $neighbor < $max_coord_exclusive;
 
         next
-            if $neighbor < 0;
+            if $visited[ $neighbor ];
 
-        if ( $current_cost + 1 < $cost{ $neighbor } ) {
-            $cost{ $neighbor } = $current_cost + 1;
-        }
+        my $cost_candidate = $cost[ $current ] + 1;
+        $cost[ $neighbor ] = $cost_candidate < $cost[ $neighbor ]
+            ? $cost_candidate
+            : $cost[ $neighbor ];
 
         push @deque, $neighbor;
     }
 }
 
-say $cost{ ( $w - 1 ) + ( $h - 1 ) * $w };
+say $cost[ $max_coord_exclusive - 1 ];
 
 exit;

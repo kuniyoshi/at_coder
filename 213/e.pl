@@ -16,14 +16,14 @@ chomp( my @lines = <> );
 my @walls = map { 0 + ( $_ eq q{#} ) } map { split m{}, $_ } @lines;
 my $max_coord_exclusive = $h * $w;
 
-my @NEIGHBORS = map { $_->[0] + $_->[1] * $w } (
+my @NEIGHBORS = (
     [ 1, 0 ],
     [ 0, 1 ],
     [ -1, 0 ],
     [ 0, -1 ],
 );
 
-my @PUNCH_NEIGHBORS = map { $_->[0] + $_->[1] * $w } (
+my @PUNCH_NEIGHBORS = (
     [ -1, -2 ],
     [ 0, -2 ],
     [ 1, -2 ],
@@ -58,6 +58,8 @@ unshift @deque, 0;
 
 while ( @deque ) {
     my $current = shift @deque;
+    my $x = $current % $w;
+    my $y = int( $current / $w );
 
     next
         if $visited[ $current ];
@@ -65,10 +67,13 @@ while ( @deque ) {
     $visited[ $current ]++;
 
     for my $candidate ( @NEIGHBORS ) {
-        my $neighbor = $current + $candidate;
+        my $nx = $x + $candidate->[0];
+        my $ny = $y + $candidate->[1];
 
         next
-            unless $neighbor >= 0 && $neighbor < $max_coord_exclusive;
+            unless $nx >= 0 && $nx < $w && $ny >= 0 && $ny < $h;
+
+        my $neighbor = $nx + $ny * $w;
 
         next
             if $visited[ $neighbor ];
@@ -89,10 +94,13 @@ while ( @deque ) {
     }
 
     for my $candidate ( @PUNCH_NEIGHBORS ) {
-        my $neighbor = $current + $candidate;
+        my $nx = $x + $candidate->[0];
+        my $ny = $y + $candidate->[1];
 
         next
-            unless $neighbor >= 0 && $neighbor < $max_coord_exclusive;
+            unless $nx >= 0 && $nx < $w && $ny >= 0 && $ny < $h;
+
+        my $neighbor = $nx + $ny * $w;
 
         next
             if $visited[ $neighbor ];

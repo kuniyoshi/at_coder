@@ -1,9 +1,15 @@
+# USAGE
+
+```
+% make
+```
+
 # ON CONTEST
 
 Copy template to contest directory.
 
 ```
-% make
+% make start
 ```
 
 Now, `current` directory is set up.

@@ -49,15 +49,17 @@ my @PUNCH_NEIGHBORS = (
 my $max_cost = 100_000_000;
 
 my @deque = ( );
+my @h_stack = ( );
+my @l_stack = ( );
 my @cost = ( $max_cost ) x $max_coord_exclusive;
 my @visited = ( 0 ) x $max_coord_exclusive;
 
 $cost[ 0 ] = 0;
 
-unshift @deque, 0;
+push @h_stack, 0;
 
-while ( @deque ) {
-    my $current = shift @deque;
+while ( defined( my $current = pop @h_stack // pop @l_stack ) ) {
+        #    my $current = pop @h_stack // pop @l_stack;
     my $x = $current % $w;
     my $y = int( $current / $w );
 
@@ -86,7 +88,7 @@ while ( @deque ) {
 
         $cost[ $neighbor ] = $cost[ $current ];
 
-        unshift @deque, $neighbor;
+        push @h_stack, $neighbor;
     }
 
     for my $cx ( -2 .. 2 ) {
@@ -110,7 +112,7 @@ while ( @deque ) {
 
             $cost[ $neighbor ] = $cost[ $current ] + 1;
 
-            push @deque, $neighbor;
+            push @l_stack, $neighbor;
         }
     }
 }

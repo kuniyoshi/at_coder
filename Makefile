@@ -11,3 +11,4 @@ start:
 
 end:
 	mv "${WORKING_DIR}" "${CONTEST}"
+	echo "[${CONTEST}](${CONTEST}/README.md)" >>README.md

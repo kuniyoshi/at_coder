@@ -9,57 +9,54 @@ use Data::Dumper;
 chomp( my $n = <> );
 chomp( my @edge_strings = <> );
 
-my %edge = ( );
+my %tree_of = ( 1 => get_first( @edge_strings ) );
 
-for my $line ( @edge_strings ) {
-    my( $u, $v, $w ) = split m{\s}, $line;
-    $edge{ $u }{ $v } = $w;
-    $edge{ $v }{ $u } = $w;
+my $total_cost = 0;
+
+while ( %tres_of ) {
+    my( $key, $u, $v ) = get_max_edge( @trees );
+    my $tree = $tree_of{ $key };
+    my $cost = $tree{ $u }{ $v };
+    delete $tree{ $u }{ $v };
+    delete
 }
 
-my $total = 0;
-
-for my $i ( 1 .. $n - 1 ) {
-    for my $j ( $i + 1 .. $n ) {
-        my $cost = f( $i, $j, $i, );
-        warn "\$cost: $cost ($i, $j)";
-        $total += $cost;
-    }
-}
-
-say $total;
+say $total_cost;
 
 exit;
 
-sub f {
-    my( $u, $v, $parent ) = @_;
+sub get_first {
+    my @lines = @_;
+    my %vertex = ( );
+    my %edge = ( );
 
-    return $edge{ $u }{ $v }
-        if $edge{ $u }{ $v };
-
-    my $max = -1;
-    warn Dumper \%edge
-        if $u == 4 && $v == 5;
-
-    for my $p ( keys %{ $edge{ $u } } ) {
-        next
-            if $p == $parent;
-
-        my $value = max( $edge{ $u }{ $p }, f( $p, $v, $u ) );
-        $edge{ $u }{ $p } = $value;
-        $max = $value
-            if $value > $max;
+    for my $line ( @lines ) {
+        my( $u, $v, $cost ) = split m{\s}, $line;
+        $edge{ $u }{ $v } = $cost;
+        $edge{ $v }{ $u } = $cost;
     }
 
-    $edge{ $u }{ $v } = $max;
-    $edge{ $v }{ $u } = $max;
+    my $cursor;
 
-    return $max;
+    for my $u ( keys %edge ) {
+        next
+            if scalar( keys $edge{ $u } ) > 2;
+        $cursor = $u;
+        last;
+    }
+
+    die "No cursor found"
+        unless defined $cursor;
+
+    while ( $cursor ) {
+        my $ref = delete $edge{ $cursor }
+            or die "No edge";
+
+    }
+
+
+    return \@vertex;
 }
 
-sub max {
-    my( $a, $b ) = @_;
-    return $a
-        if $a > $b;
-    return $b;
-}
+__END__
+[ u, p, { v => cost } ]

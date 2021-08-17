@@ -9,54 +9,63 @@ use Data::Dumper;
 chomp( my $n = <> );
 chomp( my @edge_strings = <> );
 
-my %tree_of = ( 1 => get_first( @edge_strings ) );
+my @edges = sort { $a->[2] <=> $b->[2] }
+            map { [ split m{\s}, $_ ] }
+            @edge_strings;
 
-my $total_cost = 0;
+my $tree = UnionFindTree->new( 0 .. $n - 1 );
 
-while ( %tres_of ) {
-    my( $key, $u, $v ) = get_max_edge( @trees );
-    my $tree = $tree_of{ $key };
-    my $cost = $tree{ $u }{ $v };
-    delete $tree{ $u }{ $v };
-    delete
+my $result = 0;
+
+for my $edge_ref ( @edges ) {
+    my( $n1, $n2, $cost ) = @{ $edge_ref };
+    my( $u, $v ) = ( $n1 - 1, $n2 - 1 );
+
+    $result = $result + $cost * $tree->size( $u ) * $tree->size( $v );
+
+    $tree->unite( $u, $v );
 }
 
-say $total_cost;
+say $result;
 
 exit;
 
-sub get_first {
-    my @lines = @_;
-    my %vertex = ( );
-    my %edge = ( );
+package UnionFindTree;
 
-    for my $line ( @lines ) {
-        my( $u, $v, $cost ) = split m{\s}, $line;
-        $edge{ $u }{ $v } = $cost;
-        $edge{ $v }{ $u } = $cost;
-    }
-
-    my $cursor;
-
-    for my $u ( keys %edge ) {
-        next
-            if scalar( keys $edge{ $u } ) > 2;
-        $cursor = $u;
-        last;
-    }
-
-    die "No cursor found"
-        unless defined $cursor;
-
-    while ( $cursor ) {
-        my $ref = delete $edge{ $cursor }
-            or die "No edge";
-
-    }
-
-
-    return \@vertex;
+sub size {
+    my $self = shift;
+    my $u = shift;
+    return $self->{sizes}[ $self->root( $u ) ];
 }
 
-__END__
-[ u, p, { v => cost } ]
+sub unite {
+    my $self = shift;
+    my( $u, $v ) = @_;
+    my( $root_u, $root_v ) = ( $self->root( $u ), $self->root( $v ) );
+
+    return
+        if $root_u == $root_v;
+
+    my( $size_u, $size_v ) = @{ $self->{sizes} }[ $root_u, $root_v ];
+    $self->{sizes}[ $root_v ] = $size_u + $size_v;
+    $self->{sizes}[ $root_u ] = $size_u + $size_v;
+    $self->{parents}[ $root_u ] = $root_v;
+}
+
+sub root {
+    my $self = shift;
+    my $v = shift;
+    my $parent = $self->{parents}[ $v ];
+
+    return $v
+        if $parent == $v;
+
+    return $self->{parents}[ $v ] = $self->root( $parent );
+}
+
+sub new {
+    my $class = shift;
+    my @vertexes = @_;
+    my @sizes = ( 1 ) x @vertexes;
+    return bless { parents => \@vertexes, sizes => \@sizes }, $class;
+}

@@ -44,11 +44,15 @@ sub push {
 
 sub pop {
     my $self = shift;
+
+    die "Could not pop while buffer is empty"
+        unless @{ $self->{items} };
+
     return Heap::pop_from( $self->{items} );
 }
 
 sub peek {
-    return shift->{ items }[0];
+    return shift->{items}[0];
 }
 
 sub size {
@@ -74,21 +78,25 @@ sub push_to {
 
 sub pop_from {
     my $buffer_ref = shift;
-    my $n = $#{ $buffer_ref };
-    my $root = $buffer_ref->[0];
-    $buffer_ref->[0] = $buffer_ref->[ $n ];
+
+    my $last_root = $buffer_ref->[0];
+    $buffer_ref->[0] = $buffer_ref->[-1];
     $#{ $buffer_ref }--;
 
-    my $i = 0;
+    my $cursor = 0;
 
-    while ( ( my $j = 2 * $i + 1 ) < $n ) {
-        # greater child
-        $j++
-            if ( $j != $n - 1 ) && $buffer_ref->[ $j ] < $buffer_ref->[ $j + 1 ];
-        @{ $buffer_ref }[ $j, $i ] = @{ $buffer_ref }[ $i, $j ]
-            if $buffer_ref->[ $i ] < $buffer_ref->[ $j ];
-        $i = $j;
+    while ( ( my $left = 2 * $cursor + 1 ) < @{ $buffer_ref } ) {
+        my $right = $left + 1;
+
+        my $child = $right < @{ $buffer_ref } && $buffer_ref->[ $left ] < $buffer_ref->[ $right ]
+            ? $right
+            : $left;
+
+        @{ $buffer_ref }[ $cursor, $child ] = @{ $buffer_ref }[ $child, $cursor ]
+            if $buffer_ref->[ $cursor ] < $buffer_ref->[ $child ];
+
+        $cursor = $child;
     }
 
-    return $root;
+    return $last_root;
 }

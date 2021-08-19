@@ -8,19 +8,32 @@ use Data::Dumper;
 
 chomp( my $t = <> );
 
-PROBLEM:
+TEST_CASE:
 while ( $t-- ) {
     chomp( my $n = <> );
     chomp( my @lines = ( map { scalar <> } 1 .. $n ) );
-    my @ranges = sort { $b->[0] <=> $a->[0] }
+    my @ranges = sort { $a->[0] <=> $b->[0] }
                  map  { [ split m{\s}, $_ ] }
                  @lines;
 
-    my $queue = PriorityQueue::PriorSmall->new;
-    my $cursor = 0;
+    my $queue = PriorityQueue::PriorSmall->new( [ 1_000_000_001 ] );
+    my $cursor = 1;
 
     for my $range_ref ( @ranges ) {
         my( $l, $r ) = @{ $range_ref };
+
+        while ( $cursor < $l && $queue->size ) {
+            if ( $cursor > $queue->peek ) {
+                say "no";
+                next TEST_CASE;
+            }
+
+            $queue->pop;
+            $cursor++;
+        }
+
+        $cursor = $l;
+        $queue->push( $r );
     }
 
     say "yes";

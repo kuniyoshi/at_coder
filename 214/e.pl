@@ -15,8 +15,9 @@ while ( $t-- ) {
     my @ranges = sort { $a->[0] <=> $b->[0] }
                  map  { [ split m{\s}, $_ ] }
                  @lines;
+    push @ranges, [ 1_000_000_001, 1_000_000_001 ];
 
-    my $queue = PriorityQueue::PriorSmall->new( [ 1_000_000_001 ] );
+    my $queue = PriorityQueue::PriorSmall->new;
     my $cursor = 1;
 
     for my $range_ref ( @ranges ) {
@@ -46,8 +47,7 @@ package PriorityQueue::PriorSmall;
 
 sub new {
     my $class = shift;
-    my $items_ref = shift // [ ];
-    return bless { items => $items_ref }, $class;
+    return bless { items => [ ] }, $class;
 }
 
 sub push {
@@ -77,8 +77,7 @@ package PriorityQueue::PriorLarge;
 
 sub new {
     my $class = shift;
-    my $items_ref = shift // [ ];
-    return bless { items => $items_ref }, $class;
+    return bless { items => [ ] }, $class;
 }
 
 sub push {

@@ -5,9 +5,12 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use bigint;
 
 chomp( my $n = <> );
-my $l = log( $n ) / log( 2 );
-say int( $l );
 
-exit;
+my $k = 0;
+$k++
+    while ( 2 ** $k ) <= $n;
+
+say $k - 1;

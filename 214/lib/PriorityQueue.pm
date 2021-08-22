@@ -1,48 +1,3 @@
-#!/usr/bin/env perl
-use 5.10.0;
-use utf8;
-use strict;
-use warnings;
-use open qw( :utf8 :std );
-use Data::Dumper;
-
-chomp( my $t = <> );
-
-TEST_CASE:
-while ( $t-- ) {
-    chomp( my $n = <> );
-    chomp( my @lines = ( map { scalar <> } 1 .. $n ) );
-    my @ranges = sort { $a->[0] <=> $b->[0] }
-                 map  { [ split m{\s}, $_ ] }
-                 @lines;
-    push @ranges, [ 1_000_000_001, 1_000_000_001 ];
-
-    my $queue = PriorityQueue::PriorSmall->new;
-    my $cursor = 1;
-
-    for my $range_ref ( @ranges ) {
-        my( $l, $r ) = @{ $range_ref };
-
-        while ( $cursor < $l && $queue->size ) {
-            if ( $cursor > $queue->peek ) {
-                say "no";
-                next TEST_CASE;
-            }
-
-            $queue->pop;
-            $cursor++;
-        }
-
-        $cursor = $l;
-        $queue->push( $r );
-    }
-
-    say "yes";
-}
-
-
-exit;
-
 package PriorityQueue::PriorSmall;
 
 sub new {
@@ -106,43 +61,46 @@ sub size {
 package Heap;
 
 sub push_to {
-    my( $buffer_ref, $item ) = @_;
+    my( $array, $item ) = @_;
 
-    push @{ $buffer_ref }, $item;
+    push @{ $array }, $item;
 
-    my $cursor = $#{ $buffer_ref };
+    my $parent_sub = sub {
+        my $value = shift;
+        return int( $value / 2 - 1 );
+    };
 
-    while ( $cursor != 0 ) {
-        my $parent = int( ( $cursor - 1 ) / 2 );
-        @{ $buffer_ref }[ $parent, $cursor ] = @{ $buffer_ref }[ $cursor, $parent ]
-            if $buffer_ref->[ $parent ] < $buffer_ref->[ $cursor ];
-        $cursor = $parent;
+    my $index = $#{ $array };
+
+    while ( $parent_sub->( $index ) >= 0 && $array->[ $parent_sub->( $index ) ] > $array->[ $index ] ) {
+        @{ $array }[ $parent_sub->( $index ), $index ] = @{ $array }[ $index, $parent_sub->( $index ) ];
+        $index = $parent_sub->( $index );
     }
 }
 
 sub pop_from {
-    my $buffer_ref = shift;
+    my $array = shift;
+    my $n = @{ $array } - 1;
+    $array->[0] = $array->[ $n ];
+    $#{ $array }--;
 
-    my $last_root = $buffer_ref->[0];
-    $buffer_ref->[0] = $buffer_ref->[-1];
-    $#{ $buffer_ref }--;
+    my $left = sub { my $index = shift; return 2 * $index + 1; };
+    my $right = sub { my $index = shift; return 2 * $index + 2; };
+    my $top = sub {
+        my $index = shift;
+        return $right->( $index ) < @{ $array }
+            && $array->[ $left->( $index ) ] > $array->[ $right->( $index ) ]
+            ? $right->( $index )
+            : $left->( $index );
+    };
 
-    my $cursor = 0;
+    my $curr = 0;
 
-    while ( ( my $left = 2 * $cursor + 1 ) < @{ $buffer_ref } ) {
-        my $right = $left + 1;
-
-        my $child = $right < @{ $buffer_ref } && $buffer_ref->[ $left ] < $buffer_ref->[ $right ]
-            ? $right
-            : $left;
-
-        @{ $buffer_ref }[ $cursor, $child ] = @{ $buffer_ref }[ $child, $cursor ]
-            if $buffer_ref->[ $cursor ] < $buffer_ref->[ $child ];
-
-        $cursor = $child;
+    while ( $left->( $curr ) < @{ $array } && $array->[ $curr ] > $top->( $curr ) ) {
+        my $next = $top->( $curr );
+        @{ $array }[ $next, $curr ] = @{ $array }[ $curr, $next ];
+        $curr = $next;
     }
-
-    return $last_root;
 }
 
 sub reverse_push_to {
@@ -184,3 +142,5 @@ sub reverse_pop_from {
 
     return $last_root;
 }
+
+1;

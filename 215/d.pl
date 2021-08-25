@@ -7,40 +7,107 @@ use open qw( :utf8 :std );
 use Data::Dumper;
 use Memoize;
 
+my @PRIMES = ( );
+my $MAX_PRIME = 0;
+
 chomp( my $head_line = <> );
 chomp( my $body_line = <> );
 my( $n, $m ) = split m{\s}, $head_line;
 my @a = split m{\s}, $body_line;
 
-memoize( "gcd" );
+my @result = ( 1 ) x $m;
+$result[0] = 0;
 
-my @results = grep { are_all_gcd( \@a, $_ ) }
-              ( 1 .. $m );
+for my $a ( @a ) {
+    my @prime_factors = get_prime_factors( $a );
 
-say scalar @results;
+    for my $prime_factor ( @prime_factors ) {
+        for ( my $i = $prime_factor; $i < @result; $i += $prime_factor ) {
+            $result[ $i ] = 0
+        }
+    }
+}
+
+say scalar grep { $_ } @result;
 say
-    for @results;
+    for grep { $result[ $_ ] }
+        ( 1 .. $#result );
 
 exit;
 
-sub are_all_gcd {
-    my( $a_ref, $k ) = @_;
+sub get_prime_factors {
+    my $value = shift;
 
-    for my $value ( @{ $a_ref } ) {
-        my( $smaller, $larger ) = sort { $a <=> $b } ( $value, $k );
-        return
-            if gcd( $larger, $smaller ) != 1;
+    return ( )
+        if $value < 2;
+
+    my $n = $value;
+    my @results = ( );
+
+    my @primes = get_primes( int( sqrt $value ) );
+
+    for my $prime ( @primes ) {
+        last
+            if $prime * $prime > $value;
+
+        until ( $n % $prime ) {
+            push @results, $prime;
+            $n = int( $n / $prime );
+        }
     }
 
-    return 1;
+    push @results, $n
+        if $n > 1;
+
+    return @results;
 }
 
-sub gcd {
-    my( $a, $b ) = @_;
-    my $r = $a % $b;
+sub get_primes {
+    my $number = shift;
 
-    return $b
-        if $r == 0;
+    if ( $number <= $MAX_PRIME ) {
+        my @results = ( );
 
-    return gcd( $b, $r );
+        for my $prime ( @PRIMES ) {
+            push @results, $prime;
+            last
+                if $prime > $number;
+        }
+
+        return @results;
+    }
+
+    cache_prime( $number );
+
+    my @results = ( );
+
+    for my $prime ( @PRIMES ) {
+        push @results, $prime;
+        last
+            if $prime > $number;
+    }
+
+    return @results;
+}
+
+sub cache_prime {
+    my $number = shift;
+
+    if ( $number < 2 ) {
+        $PRIMES[0] = 2;
+        $MAX_PRIME = $number;
+        return;
+    }
+
+    my @primes = ( 1 ) x ( $number + 1 );
+
+    for ( my $i = 2; $i < $number; ++$i ) {
+        for ( my $j = 2 * $i; $j < $number; $j += $i ) {
+            $primes[ $j ] = 0;
+        }
+    }
+
+    my $max = $PRIMES[-1] // 1;
+    push @PRIMES, grep { $_ > $max && $primes[ $_ ] } ( 0 .. $#primes );
+    $MAX_PRIME = $number;
 }

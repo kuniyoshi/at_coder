@@ -22,6 +22,9 @@ for my $a ( @a ) {
     my @prime_factors = get_prime_factors( $a );
 
     for my $prime_factor ( @prime_factors ) {
+        next
+            unless $result[ $prime_factor ];
+
         for ( my $i = $prime_factor; $i <= @result; $i += $prime_factor ) {
             $result[ $i ] = 0
         }

@@ -7,6 +7,8 @@ use open qw( :utf8 :std );
 use Data::Dumper;
 use Memoize;
 
+memoize( "get_primes" );
+
 my @PRIMES = ( );
 my $MAX_PRIME = 0;
 

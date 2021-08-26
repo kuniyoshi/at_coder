@@ -15,14 +15,14 @@ chomp( my $body_line = <> );
 my( $n, $m ) = split m{\s}, $head_line;
 my @a = split m{\s}, $body_line;
 
-my @result = ( 1 ) x $m;
+my @result = ( 1 ) x ( $m + 1 );
 $result[0] = 0;
 
 for my $a ( @a ) {
     my @prime_factors = get_prime_factors( $a );
 
     for my $prime_factor ( @prime_factors ) {
-        for ( my $i = $prime_factor; $i < @result; $i += $prime_factor ) {
+        for ( my $i = $prime_factor; $i <= @result; $i += $prime_factor ) {
             $result[ $i ] = 0
         }
     }
@@ -31,7 +31,7 @@ for my $a ( @a ) {
 say scalar grep { $_ } @result;
 say
     for grep { $result[ $_ ] }
-        ( 1 .. $#result );
+        ( 1 .. scalar @result );
 
 exit;
 

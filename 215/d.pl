@@ -36,7 +36,7 @@ for my $a ( @a ) {
 say scalar grep { $_ } @result;
 say
     for grep { $result[ $_ ] }
-        ( 1 .. scalar @result );
+        ( 1 .. $#result );
 
 exit;
 
@@ -48,6 +48,18 @@ sub get_prime_factors {
 
     my $n = $value;
     my @results = ( );
+
+    for ( my $i = 2; $i * $i <= $value; ++$i ) {
+        until ( $n % $i ) {
+            push @results, $i;
+            $n = int( $n / $i );
+        }
+    }
+
+    push @results, $n
+        unless $n == 1;
+
+    return @results;
 
     my @primes = get_primes( int( sqrt $value ) );
 

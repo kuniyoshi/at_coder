@@ -24,6 +24,6 @@ Move contest directory to `contest number`.
 
 # RETROSPECTIVE
 
-[214](214/README.md)
-[215](215/README.md)
-[216](216/README.md)
+- [214](214/README.md)
+- [215](215/README.md)
+- [216](216/README.md)

@@ -9,31 +9,16 @@ use bigint;
 
 chomp( my $n = <> );
 
-my @answer_operations = bfs( );
+my @operations = ( );
 
-die "Could not find answer"
-    if @answer_operations > 120;
+while ( $n ) {
+    push @operations, 0
+        if $n % 2;
+    push @operations, 1
+        if $n > 1;
+    $n >>= 1;
+}
 
-say join q{}, map { chr( ord( "A" ) + $_ ) } @answer_operations;
+say join q{}, map { chr( $_ + ord( "A" ) ) } reverse @operations;
 
 exit;
-
-sub bfs {
-    my %generated;
-    my @operations = ( 0, 1 );
-    my $value = 0;
-    $generated{ $value }++;
-    my @histories = ( );
-
-
-    while ( @operations ) {
-        my $op = shift @operations;
-        my $next = $op ? 2 * $value : 1 + $value;
-        next
-            if $generated{ $next }++;
-
-        bfs( [ @{ $op_histories_ref }, $op ], $op_ref, $next );
-    }
-
-    return @histories;
-}

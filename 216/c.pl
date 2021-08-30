@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use bigint;
 
 chomp( my $n = <> );
 

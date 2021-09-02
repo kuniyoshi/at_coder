@@ -28,13 +28,14 @@ while ( %colorsOf ) {
     last
         unless @shiftables;
 
+    my @removes = map { @{ $colorsOf{ $_ } } } @shiftables;
+
     shift @{ $k[ $_ ] }
-        for map { @{ $colorsOf{ $_ } } }
-            @shiftables;
+        for @removes;
 
-    %colorsOf = ( );
+    delete @colorsOf{ @shiftables };
 
-    for ( my $i = 0; $i < @k; ++$i ) {
+    for my $i ( @removes ) {
         next
             unless @{ $k[ $i ] };
         push @{ $colorsOf{ $k[ $i ][0] } }, $i;

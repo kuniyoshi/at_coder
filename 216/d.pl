@@ -16,23 +16,28 @@ for my $i ( 1 .. $m ) {
     push @k, [ split m{\s}, $numbers ];
 }
 
+MAIN:
 while ( @k ) {
-    my @sorted = sort { @{ $b } <=> @{ $a } } @k;
-    my $number = $sorted[0][0];
     my $pair;
-    for ( my $i = 1; $i < @sorted; ++$i ) {
-        next
-            unless $sorted[ $i ][0] == $number;
-        $pair = $i;
-        last;
+
+    LOOP:
+    for ( my $i = 0; $i < @k; ++$i ) {
+        for ( my $j = $i + 1; $j < @k; ++$j ) {
+            next
+                unless $k[ $j ][0] == $k[ $i ][0];
+
+            $pair = [ $i, $j ];
+            last LOOP;
+        }
     }
-    last
-        unless defined $pair;
-    shift @{ $sorted[0] };
-    shift @{ $sorted[ $pair ] };
-    my $both_contains = @{ $sorted[0] } && @{ $sorted[ $pair ] };
-    @k = grep { @{ $_ } } @k
-        unless $both_contains;
+
+    last MAIN
+        unless $pair;
+
+    shift @{ $k[ $_ ] }
+        for @{ $pair };
+
+    @k = grep { @{ $_ } } @k;
 }
 
 say @k ? "No" : "Yes";

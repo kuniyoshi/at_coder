@@ -16,30 +16,31 @@ for my $i ( 1 .. $m ) {
     push @k, [ split m{\s}, $numbers ];
 }
 
-MAIN:
-while ( @k ) {
-    my $pair;
+my %colorsOf = ( );
 
-    LOOP:
-    for ( my $i = 0; $i < @k; ++$i ) {
-        for ( my $j = $i + 1; $j < @k; ++$j ) {
-            next
-                unless $k[ $j ][0] == $k[ $i ][0];
-
-            $pair = [ $i, $j ];
-            last LOOP;
-        }
-    }
-
-    last MAIN
-        unless $pair;
-
-    shift @{ $k[ $_ ] }
-        for @{ $pair };
-
-    @k = grep { @{ $_ } } @k;
+for ( my $i = 0; $i < @k; ++$i ) {
+    push @{ $colorsOf{ $k[ $i ][0] } }, $i;
 }
 
-say @k ? "No" : "Yes";
+while ( %colorsOf ) {
+    my @shiftables = grep { @{ $colorsOf{ $_ } } > 1 } keys %colorsOf;
+
+    last
+        unless @shiftables;
+
+    shift @{ $k[ $_ ] }
+        for map { @{ $colorsOf{ $_ } } }
+            @shiftables;
+
+    %colorsOf = ( );
+
+    for ( my $i = 0; $i < @k; ++$i ) {
+        next
+            unless @{ $k[ $i ] };
+        push @{ $colorsOf{ $k[ $i ][0] } }, $i;
+    }
+}
+
+say %colorsOf ? "No" : "Yes";
 
 exit;

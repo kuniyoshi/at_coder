@@ -22,23 +22,23 @@ for ( my $i = 0; $i < @k; ++$i ) {
     push @{ $colorsOf{ $k[ $i ][0] } }, $i;
 }
 
-while ( %colorsOf ) {
-    my @shiftables = grep { @{ $colorsOf{ $_ } } > 1 } keys %colorsOf;
+my @queue = grep { @{ $colorsOf{ $_ } } == 2 } keys %colorsOf;
 
-    last
-        unless @shiftables;
-
-    my @removes = map { @{ $colorsOf{ $_ } } } @shiftables;
+while ( @queue ) {
+    my $color = shift @queue;
+    my $poles_ref = delete $colorsOf{ $color };
 
     shift @{ $k[ $_ ] }
-        for @removes;
+        for @{ $poles_ref };
 
-    delete @colorsOf{ @shiftables };
-
-    for my $i ( @removes ) {
+    for my $pole ( @{ $poles_ref } ) {
         next
-            unless @{ $k[ $i ] };
-        push @{ $colorsOf{ $k[ $i ][0] } }, $i;
+            unless @{ $k[ $pole ] };
+
+        push @{ $colorsOf{ $k[ $pole ][0] } }, $pole;
+
+        push @queue, $k[ $pole ][0]
+            if @{ $colorsOf{ $k[ $pole ][0] } } == 2;
     }
 }
 

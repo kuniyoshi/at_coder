@@ -5,28 +5,35 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use DDP;
+use Test::More;
+use List::Util qw( shuffle );
 
-my $tree = BTree::Tree->new( 2 );
-$tree->insert( 10 );
-$tree->insert( 20 );
-$tree->insert( 5 );
-$tree->insert( 6 );
-$tree->insert( 12 );
-$tree->insert( 30 );
-$tree->insert( 7 );
-$tree->insert( 17 );
-$tree->insert( 8 );
-warn Dumper \$tree;
+#my $tree = BTree::Tree->new( 2 );
+#$tree->insert( 10 );
+#$tree->insert( 20 );
+#$tree->insert( 5 );
+#$tree->insert( 6 );
+#$tree->insert( 12 );
+#$tree->insert( 30 );
+#$tree->insert( 7 );
+#$tree->insert( 17 );
+#$tree->insert( 8 );
+#warn Dumper \$tree;
+
+my @values = shuffle @{ [ -100_000 .. 100_000 ] };
+my $t = BTree::Tree->new( 60 );
+$t->insert( $_ )
+    for @values;
+
+plan tests => scalar @values;
+
+for my $value ( @values ) {
+    my $node = $t->search( $value );
+    ok( defined $node, "search $value" );
+}
 
 
 exit;
-
-package Foo;
-
-sub new {
-    return bless { }, shift;
-}
 
 package BTree::Tree;
 
@@ -53,7 +60,7 @@ sub search {
 sub insert {
     my $self = shift;
     my $value = shift;
-warn "[insert] \$value: $value";
+    #warn "[insert] \$value: $value";
 
     if ( !$self->{root} ) {
         my $root = BTree::Node->new( $self->{t}, 1 );
@@ -105,13 +112,14 @@ sub is_full {
 sub search {
     my $self = shift;
     my $value = shift;
+    my $key_size = $self->{key_size};
 
     my $index = 0;
     $index++
-        while $index < $self->{key_size} && $value > $self->{keys}[ $index ];
+        while $index < $key_size && $value > $self->{keys}[ $index ];
 
     return $self
-        if $self->{keys}[ $index ] == $value;
+        if $index < $key_size && $self->{keys}[ $index ] == $value;
 
     return
         if $self->{is_leaf};
@@ -128,7 +136,7 @@ sub insert {
         while $index < $self->{key_size} && $value > $self->{keys}[ $index ];
 
     if ( $self->{is_leaf} ) {
-        #        warn "\$index: $index";
+        #        warn "\$index: $index, \$value: $value";
         for ( my $i = $self->{key_size}; $i > $index; --$i ) {
             $self->{keys}[ $i ] = $self->{keys}[ $i - 1 ];
         }
@@ -138,12 +146,14 @@ sub insert {
         return;
     }
 
-    warn "[insert] \$index: $index";
+    #    warn "[insert] \$index: $index";
 
     if ( $self->{children}[ $index ]->is_full ) {
-        warn "[insert] $index is full";
+        #warn "[insert] $index is full";
         $self->split( $index, $self->{children}[ $index ] );
-        my $child_index = $self->{keys}[ $index ] < $value
+        #warn "[insert] split";
+        #warn "[insert] $self->{keys}[ $index ] > $value";
+        my $child_index = $self->{keys}[ $index ] > $value
             ? $index
             : $index + 1;
 
@@ -161,21 +171,21 @@ sub split {
 
     my $t = $self->{t};
     my $new_child = BTree::Node->new( $t, $child->{is_leaf} );
+    $new_child->{key_size} = $t - 1;
 
     for ( my $i = 0; $i < $t - 1; ++$i ) {
-        $new_child->{keys}[ $i ] = $child->{keys}[ $i + $t ];
-        $new_child->{key_size}++;
+        $new_child->{keys}[ $i ] = $child->{keys}[ $t + $i ];
     }
 
     if ( !$child->{is_leaf} ) {
         for ( my $i = 0; $i < $t; ++$i ) {
-            $new_child->{children}[ $i ] = $child->{children}[ $i + $t ];
+            $new_child->{children}[ $i ] = $child->{children}[ $t + $i ];
         }
     }
 
     $child->{key_size} = $t - 1;
 
-    for ( my $i = $self->{key_size}; $i >= $index; --$i ) {
+    for ( my $i = $self->{key_size}; $i >= $index + 1; --$i ) {
         $self->{children}[ $i + 1 ] = $self->{children}[ $i ];
     }
 

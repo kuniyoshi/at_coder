@@ -32,38 +32,25 @@ for my $row ( 1 .. $n ) {
     push @t_vertexes, @vertexes;
 }
 
-my @s1 = transform_x( @s_vertexes );
-my @t1 = transform_x( @t_vertexes );
-my @s2 = transform_y( @s_vertexes );
-my @t2 = transform_y( @t_vertexes );
+my @t = transform( @t_vertexes );
+my @s = transform( @s_vertexes );
 
-my $result = is_same( \@t1, \@s1, \@s2 );
+my $result = is_same( \@t, \@s );
 
-if ( $result ) {
-    say "Yes";
-    exit;
-}
-
-my $result2 = is_same( \@t2, \@s1, \@s2 );
-
-if ( $result2 ) {
-    say "Yes";
-    exit;
-}
-
-say "No";
+say $result ? "Yes" : "No";
 
 exit;
 
 sub is_same {
-    my( $t_ref, $s1_ref, $s2_ref ) = @_;
+    my( $t_ref, $s_ref ) = @_;
+    my @vertexes = @{ $s_ref };
 
     for my $tries ( 1 .. 4 ) {
         my %exists = ( );
         $exists{ $_->[0] }{ $_->[1] }++
             for @{ $t_ref };
 
-        for my $vertex_ref ( @{ $s1_ref } ) {
+        for my $vertex_ref ( @vertexes ) {
             delete $exists{ $vertex_ref->[0] }{ $vertex_ref->[1] };
             delete $exists{ $vertex_ref->[0] }
                 if !%{ $exists{ $vertex_ref->[0] } };
@@ -73,25 +60,8 @@ sub is_same {
             return 1;
         }
 
-        rotate( $s1_ref );
-    }
-
-    for my $tries ( 1 .. 4 ) {
-        my %exists = ( );
-        $exists{ $_->[0] }{ $_->[1] }++
-            for @{ $t_ref };
-
-        for my $vertex_ref ( @{ $s2_ref } ) {
-            delete $exists{ $vertex_ref->[0] }{ $vertex_ref->[1] };
-            delete $exists{ $vertex_ref->[0] }
-                if !%{ $exists{ $vertex_ref->[0] } };
-        }
-
-        if ( !%exists ) {
-            return 1;
-        }
-
-        rotate( $s2_ref );
+        rotate( \@vertexes );
+        @vertexes = transform( @vertexes );
     }
 
     return;
@@ -109,27 +79,18 @@ sub rotate {
     }
 }
 
-sub transform_y {
+sub transform {
     my @vertexes = @_;
 
-    my( $min ) = sort { $a->[1] <=> $b->[1] }
-                 sort { $a->[0] <=> $b->[0] }
-                 @vertexes;
+    my %min = ( );
+    ( $min{x} ) = sort { $a <=> $b }
+                  map { $_->[0] }
+                  @vertexes;
+    ( $min{y} ) = sort { $a <=> $b }
+                  map { $_->[1] }
+                  @vertexes;
 
-    my @result = map { [ $_->[0] - $min->[0], $_->[1] - $min->[1] ] }
-                 @vertexes;
-
-    return @result;
-}
-
-sub transform_x {
-    my @vertexes = @_;
-
-    my( $min ) = sort { $a->[0] <=> $b->[0] }
-                 sort { $a->[1] <=> $b->[1] }
-                 @vertexes;
-
-    my @result = map { [ $_->[0] - $min->[0], $_->[1] - $min->[1] ] }
+    my @result = map { [ $_->[0] - $min{x}, $_->[1] - $min{y} ] }
                  @vertexes;
 
     return @result;

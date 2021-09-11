@@ -60,7 +60,7 @@ sub is_same {
             return 1;
         }
 
-        rotate( \@vertexes );
+        @vertexes = rotate( @vertexes );
         @vertexes = transform( @vertexes );
     }
 
@@ -68,15 +68,14 @@ sub is_same {
 }
 
 sub rotate {
-    my $vertexes_ref = shift;
+    my @vertexes = @_;
 
-    for my $vertex_ref ( @{ $vertexes_ref } ) {
-        my( $x, $y ) = @{ $vertex_ref };
+    return map {
+        my( $x, $y ) = @{ $_ };
         my $after_x = -$y;
         my $after_y = $x;
-        $vertex_ref->[0] = $after_x;
-        $vertex_ref->[1] = $after_y;
-    }
+        [ $after_x, $after_y ];
+    } @vertexes;
 }
 
 sub transform {

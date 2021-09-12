@@ -43,6 +43,10 @@ exit;
 
 sub is_same {
     my( $t_ref, $s_ref ) = @_;
+
+    return
+        if @{ $t_ref } != @{ $s_ref };
+
     my @vertexes = @{ $s_ref };
 
     for my $tries ( 1 .. 4 ) {
@@ -70,26 +74,18 @@ sub is_same {
 sub rotate {
     my @vertexes = @_;
 
-    return map {
-        my( $x, $y ) = @{ $_ };
-        my $after_x = -$y;
-        my $after_y = $x;
-        [ $after_x, $after_y ];
-    } @vertexes;
+    return map { [ -$_->[1], $_->[0] ] }
+           @vertexes;
 }
 
 sub transform {
     my @vertexes = @_;
 
-    my %min = ( );
-    ( $min{x} ) = sort { $a <=> $b }
-                  map { $_->[0] }
-                  @vertexes;
-    ( $min{y} ) = sort { $a <=> $b }
-                  map { $_->[1] }
-                  @vertexes;
+    my( $min ) = sort { $a->[0] <=> $b->[0] }
+                 sort { $a->[1] <=> $b->[1] }
+                 @vertexes;
 
-    my @result = map { [ $_->[0] - $min{x}, $_->[1] - $min{y} ] }
+    my @result = map { [ $_->[0] - $min->[0], $_->[1] - $min->[1] ] }
                  @vertexes;
 
     return @result;

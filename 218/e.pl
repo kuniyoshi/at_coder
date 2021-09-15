@@ -13,18 +13,59 @@ my @edges = map { chomp( my $line = <> ); [ split m{\s}, $line ] }
             ( 1 .. $m );
 
 my %cost = ( );
+my $total_cost = 0;
 
 for my $edge_ref ( @edges ) {
-    $cost{ $edge_ref->[0] }{ $edge_ref->[1] } = $edge_ref->[2];
-    $cost{ $edge_ref->[1] }{ $edge_ref->[0] } = $edge_ref->[2];
+    my( $from, $to, $cost ) = @{ $edge_ref };
+
+    if ( $from == $to ) {
+        $total_cost = $total_cost + $cost;
+        next;
+    }
+
+    if ( !exists $cost{ $from }{ $to } ) {
+        $cost{ $from }{ $to } = $cost;
+        $cost{ $to }{ $from } = $cost;
+        $total_cost = $total_cost + $cost;
+        next;
+    }
+
+    next
+        unless $cost;
+
+    my $previous = $cost{ $from }{ $to };
+    $total_cost = $total_cost - $previous;
+
+    if ( $cost > 0 && $previous > 0 ) {
+        my( $min, $max ) = min_max( $cost, $previous );
+
+        $total_cost = $total_cost + $min + $max;
+        $cost{ $from }{ $to } = $min;
+        $cost{ $to }{ $from } = $min;
+        next;
+    }
+
+    if ( $cost < 0 && $previous < 0 ) {
+        my( $min, $max ) = min_max( $cost, $previous );
+
+        $total_cost = $total_cost + $max;
+        $cost{ $from }{ $to } = $max;
+        $cost{ $to }{ $from } = $max;
+        next;
+    }
+
+    my( $negative, $positive ) = min_max( $cost, $previous );
+    $total_cost = $total_cost + $positive + $negative;
+    $cost{ $from }{ $to } = $negative;
+    $cost{ $to }{ $from } = $negative;
 }
 
+@edges = ( );
 my %is_in_tree = ( );
 
-my $total_cost = sum map { $_->[2] } @edges;
-
 my $queue = PriorityQueue::PriorSmall->new;
-$queue->push( [ $edges[0][1], 0 ] );
+$queue->push( [ 0, 0 ] );
+$cost{0}{1} = 0;
 
 while ( $queue->size ) {
     my $ref = $queue->pop;
@@ -32,8 +73,7 @@ while ( $queue->size ) {
     next
         if $is_in_tree{ $ref->[0] }++;
 
-    $total_cost = $total_cost + $ref->[1]
-        if $ref->[1] < 0;
+    $total_cost = $total_cost - $ref->[1];
 
     my $neighbors_ref = delete $cost{ $ref->[0] };
 
@@ -45,6 +85,10 @@ while ( $queue->size ) {
 say $total_cost;
 
 exit;
+
+sub min_max {
+    return sort { $a <=> $b } @_;
+}
 
 package PriorityQueue::PriorSmall;
 

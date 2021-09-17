@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use List::Util qw( sum );
 
 chomp( my $head = <> );
 my( $n, $m ) = split m{\s}, $head;
@@ -18,77 +17,49 @@ my $total_cost = 0;
 for my $edge_ref ( @edges ) {
     my( $from, $to, $cost ) = @{ $edge_ref };
 
-    if ( $from == $to ) {
-        $total_cost = $total_cost + $cost;
-        next;
+    unless ( exists $cost{ $from }{ $to } ) {
+        $cost{ $from }{ $to } = [ ];
+        $cost{ $to }{ $from } = [ ];
     }
 
-    if ( !exists $cost{ $from }{ $to } ) {
-        $cost{ $from }{ $to } = $cost;
-        $cost{ $to }{ $from } = $cost;
-        $total_cost = $total_cost + $cost;
-        next;
-    }
+    push @{ $cost{ $from }{ $to } }, $cost;
+    push @{ $cost{ $to }{ $from } }, $cost;
 
-    next
-        unless $cost;
-
-    my $previous = $cost{ $from }{ $to };
-    $total_cost = $total_cost - $previous;
-
-    if ( $cost > 0 && $previous > 0 ) {
-        my( $min, $max ) = min_max( $cost, $previous );
-
-        $total_cost = $total_cost + $min + $max;
-        $cost{ $from }{ $to } = $min;
-        $cost{ $to }{ $from } = $min;
-        next;
-    }
-
-    if ( $cost < 0 && $previous < 0 ) {
-        my( $min, $max ) = min_max( $cost, $previous );
-
-        $total_cost = $total_cost + $max;
-        $cost{ $from }{ $to } = $max;
-        $cost{ $to }{ $from } = $max;
-        next;
-    }
-
-    my( $negative, $positive ) = min_max( $cost, $previous );
-    $total_cost = $total_cost + $positive + $negative;
-    $cost{ $from }{ $to } = $negative;
-    $cost{ $to }{ $from } = $negative;
+    $total_cost = $total_cost + $cost
+        if $cost > 0;
 }
+#warn Dumper \%cost;
 
 @edges = ( );
 my %is_in_tree = ( );
 
 my $queue = PriorityQueue::PriorSmall->new;
 $queue->push( [ 0, 0 ] );
-$cost{0}{1} = 0;
+$cost{0}{1} = [ 0 ];
 
 while ( $queue->size ) {
     my $ref = $queue->pop;
+    #    warn "($ref->[0], $ref->[1])";
 
     next
         if $is_in_tree{ $ref->[0] }++;
 
-    $total_cost = $total_cost - $ref->[1];
+    $total_cost = $total_cost - $ref->[1]
+        if $ref->[1] > 0;
 
     my $neighbors_ref = delete $cost{ $ref->[0] };
+    #    warn Dumper $neighbors_ref;
 
-    while ( my( $key, $value ) = each %{ $neighbors_ref } ) {
-        $queue->push( [ $key, $value ] );
+    while ( my( $key, $costs_ref ) = each %{ $neighbors_ref } ) {
+        my( $cost ) = sort { $a <=> $b } @{ $costs_ref };
+        $queue->push( [ $key, $cost ] )
+            unless $is_in_tree{ $key };
     }
 }
 
 say $total_cost;
 
 exit;
-
-sub min_max {
-    return sort { $a <=> $b } @_;
-}
 
 package PriorityQueue::PriorSmall;
 
@@ -161,5 +132,3 @@ sub reverse_pop_from {
 
     return $last_root;
 }
-
-1;

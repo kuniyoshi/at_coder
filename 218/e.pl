@@ -51,9 +51,10 @@ while ( $queue->size ) {
     #    warn Dumper $neighbors_ref;
 
     while ( my( $key, $costs_ref ) = each %{ $neighbors_ref } ) {
-        my( $cost ) = sort { $a <=> $b } @{ $costs_ref };
-        $queue->push( [ $key, $cost ] )
-            unless $is_in_tree{ $key };
+        for my $cost ( @{ $costs_ref } ) {
+            $queue->push( [ $key, $cost ] )
+                unless $is_in_tree{ $key };
+        }
     }
 }
 

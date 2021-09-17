@@ -20,8 +20,8 @@ d:
 #	cat data/d.2 | ./d.pl
 
 e:
-#	cat data/e.1 | ./e.pl
-#	cat data/e.2 | ./e.pl
-	cat data/e.3 | ./e.pl
-#	cat data/e.4 | ./e.pl
-#	cat data/e.5 | ./e.pl
+	cat data/e.1 | time ./e.pl
+	cat data/e.2 | time ./e.pl
+	cat data/e.3 | time ./e.pl
+	cat data/e.4 | time ./e.pl
+	cat data/e.5 | time ./e.pl

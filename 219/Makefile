@@ -12,13 +12,14 @@ b:
 	cat data/b.3 | ./b.pl
 
 c:
-#	cat data/c.1 | ./c3.pl
-#	cat data/c.2 | ./c3.pl
+	cat data/c.1 | ./c3.pl
+	cat data/c.2 | ./c3.pl
 	cat data/c.3 | ./c3.pl
 
 d:
 	cat data/d.1 | ./d.pl
 	cat data/d.2 | ./d.pl
+	cat data/d.3 | time ./d.pl
 
 e:
 	cat data/e.1 | ./e.pl

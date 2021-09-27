@@ -5,23 +5,38 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use List::Util qw( sum );
+use integer;
 
 chomp( my $n = <> );
 chomp( my $line = <> );
 my @a = split m{\s}, $line;
 chomp( my $x = <> );
 
-my $seriese_sum = sum @a;
+my $seriese_sum = sum( @a );
 my $seriese_count = int( $x / $seriese_sum );
+
+my $h = 0;
 my $sum = $seriese_count * $seriese_sum;
 
-while ( $sum < $x ) {
-    die "xx"
-        unless @a;
-    $sum = $sum + shift @a;
+for my $a ( @a ) {
+    $sum = $sum + $a;
+    $h++;
+
+    last
+        if $sum > $x;
 }
 
-say $seriese_count * $n + $n - @a;
+say $seriese_count * @a + $h;
 
 exit;
+
+sub sum {
+    my @numbers = @_;
+    my $result = 0;
+
+    for my $number ( @numbers ) {
+        $result = $result + $number;
+    }
+
+    return $result;
+}

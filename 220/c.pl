@@ -5,38 +5,21 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use integer;
+use List::Util qw( sum );
+use POSIX qw( floor );
 
 chomp( my $n = <> );
 chomp( my $line = <> );
 my @a = split m{\s}, $line;
 chomp( my $x = <> );
 
-my $seriese_sum = sum( @a );
-my $seriese_count = int( $x / $seriese_sum );
-
-my $h = 0;
+my $seriese_sum = sum @a;
+my $seriese_count = floor( $x / $seriese_sum );
 my $sum = $seriese_count * $seriese_sum;
 
-for my $a ( @a ) {
-    $sum = $sum + $a;
-    $h++;
+$sum = $sum + shift @a
+    while $sum <= $x;
 
-    last
-        if $sum > $x;
-}
-
-say $seriese_count * @a + $h;
+say $seriese_count * $n + $n - @a;
 
 exit;
-
-sub sum {
-    my @numbers = @_;
-    my $result = 0;
-
-    for my $number ( @numbers ) {
-        $result = $result + $number;
-    }
-
-    return $result;
-}

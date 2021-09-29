@@ -17,6 +17,8 @@ c:
 d:
 	cat data/d.1 | ./d.pl
 	cat data/d.2 | ./d.pl
+	cat data/d.3 | ./d.pl | perl -lne 'print $$. - 1, ":", $$_'
+	cat data/d.4 | ./d.pl | perl -lne 'print $$. - 1, ":", $$_'
 
 e:
 	cat data/e.1 | ./e.pl

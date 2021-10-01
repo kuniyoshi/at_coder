@@ -16,7 +16,7 @@ my $home = File::HomeDir->my_home;
 plan tests => scalar @filenames;
 
 for my $filename ( @filenames ) {
-    open2( my $OUT, my $IN, "./run.sh" )
+    open2( my $OUT, my $IN, "./run.o2n.sh" )
         or die $!;
 
     print { $IN } file( $filename )->slurp;

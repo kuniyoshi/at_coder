@@ -10,12 +10,12 @@ b:
 	cat data/b.3 | ./b.pl
 
 c:
-	cat data/c.1 | ./c2.pl
-	cat data/c.2 | ./c2.pl
-	cat data/c.3 | ./c2.pl
-	cat data/c.4 | ./c2.pl
-	cat data/c.5 | ./c2.pl
-	cat data/c.5 | ./c2.pl
+	cat data/c.1 | ./c3.pl
+	cat data/c.2 | ./c3.pl
+	cat data/c.3 | ./c3.pl
+	cat data/c.4 | ./c3.pl
+	cat data/c.5 | ./c3.pl
+	cat data/c.5 | ./c3.pl
 
 d:
 	cat data/d.1 | ./d.pl

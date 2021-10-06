@@ -12,23 +12,23 @@ my @spans = sort { $a->[0] <=> $b->[0] }
 
 my $queue = PriorityQueue::PriorSmall->new;
 my @logins = ( 0 ) x $n;
-my $cursor = 0;
+my $cursor = 1;
 
 for my $span_ref ( @spans ) {
     my( $start, $span ) = @{ $span_ref };
     warn sprintf "%d -> %d [%d]", $start, $start + $span - 1, $span;
 
     while ( $queue->size && $queue->peek <= $start ) {
-        warn sprintf "add %d to %d, [%d]", $queue->size - 1, $queue->peek - $cursor, $queue->peek;
+        warn sprintf "add %d to %d, (cursor: %d, peek: %d)", $queue->peek - $cursor, $queue->size - 1, $cursor, $queue->peek;
         $logins[ $queue->size - 1 ] += $queue->peek - $cursor;
         $cursor = $queue->pop;
     }
 
-    $cursor = $start;
     $queue->push( $start + $span - 1 );
 }
 
 while ( $queue->size ) {
+    warn sprintf "add %d to %d, (cursor: %d, peek: %d)", $queue->peek - $cursor, $queue->size - 1, $cursor, $queue->peek;
     $logins[ $queue->size - 1 ] += $queue->peek - $cursor;
     $cursor = $queue->pop;
 }

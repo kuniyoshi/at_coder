@@ -16,8 +16,10 @@ my $counter = 0;
 
 for ( my $i = 0; $i < @events - 1; ++$i ) {
     my( $day, $type ) = @{ $events[ $i ] };
-    $counter = $counter + $type;
-    $logins[ $counter - 1 ] = $logins[ $counter - 1 ] + $events[ $i + 1 ][0] - $day;
+    $counter += $type;
+    next
+        unless $counter;
+    $logins[ $counter - 1 ] += $events[ $i + 1 ][0] - $day;
 }
 
 say join q{ }, @logins;

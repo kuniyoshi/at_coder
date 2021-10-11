@@ -17,7 +17,7 @@ c:
 d:
 	cat data/d.1 | ./d.pl
 	cat data/d.2 | ./d.pl
-#	cat data/d.3 | ./d.pl
+	cat data/d.3 | ./d.pl
 	cat data/d.4 | ./d.pl
 
 e:

@@ -11,7 +11,7 @@ b:
 
 c:
 	cat data/c.1 | ./c.pl
-#	cat data/c.2 | ./c.pl
+	cat data/c.2 | ./c.pl
 
 d:
 	cat data/d.1 | ./d.pl

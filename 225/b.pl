@@ -5,23 +5,25 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use List::Util qw( max );
 
-chomp( my $m = <> );
+chomp( my $n = <> );
 my @edges = map { chomp; [ split m{\s} ] }
             map { scalar <> }
-            1 .. $m;
-my @p = do { chomp( my $l = <> ); split m{\s}, $l };
+            1 .. $n - 1;
 
-my %links;
+my %link;
 
 for my $edge_ref ( @edges ) {
     my( $from, $to ) = @{ $edge_ref };
-    $links{ $from }{ $to }++;
-    $links{ $to }{ $from }++;
+    $link{ $from }{ $to }++;
+    $link{ $to }{ $from }++;
 }
 
+my $max = max map { scalar keys %{ $link{ $_ } } }
+              keys %link;
+
+say $max == ( $n - 1 ) ? "Yes" : "No";
 
 
 exit;
-
-

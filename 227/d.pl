@@ -12,40 +12,33 @@ my @a = do { chomp( my $l = <> ); split m{\s}, $l };
 
 use integer;
 
-my $left = 1;
-my $right = ( sum @a ) / $k;
-my $center = 1;
-my $answer = 1;
+my $left = 0;
+my $right = 1 + ( sum @a ) / $k;
+my $center;
 
-while ( $left < $right ) {
+while ( $right - $left > 1 ) {
     $center = $left + ( $right - $left ) / 2;
-    warn "### ($left, $center, $right)";
-    warn "--- is_true: ", is_true( $center );
 
     if ( is_true( $center ) ) {
-        $right = $center;
-        $answer = $center;
+        $left = $center;
     }
     else {
-        $left = $center + 1;
+        $right = $center;
     }
 }
 
-say $answer;
+say $left;
 
 exit;
 
 sub is_true {
     my $x = shift;
 
-    my $max = $x * $k;
     my $sum = 0;
 
     for my $a ( @a ) {
-        $sum = $sum + ( $a > $k ? $k : $a );
-        return 1
-            if $sum >= $max;
+        $sum = $sum + ( $a > $x ? $x : $a );
     }
 
-    return;
+    return $sum >= ( $x * $k );
 }

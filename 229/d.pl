@@ -12,8 +12,6 @@ chomp( my $k = <> );
 my @s = split m{}, $s;
 my $n = scalar @s;
 
-push @s, ( ( q{.} ) x $k );
-
 my @dot_counts;
 my $acc = 0;
 
@@ -28,15 +26,41 @@ push @dot_counts, $acc;
 my $max = 0;
 
 for ( my $i = 0; $i < $n; ++$i ) {
-    my $l = $i;
-    my $r = $#s;
-
-    while ( $l < $r ) {
-        my $c = int( ( $l + $r ) / 2 );
-        my $dots = $dot_counts[ $c + 1 ] - $dot_counts[ $i ];
-        if ( $dots 
+    if ( ( $dot_counts[ $n - 1 + 1 ] - $dot_counts[ $i ] ) <= $k ) {
+        my $continuous = $n - $i;
+        if ( $continuous > $max ) {
+            warn "\$max goes: $continuous from $max";
+        }
+        $max = $continuous > $max ? $continuous : $max;
+        next;
     }
-    my $max = 
+
+    my $l = $i;
+    my $r = $n - 1;
+
+    my $count;
+
+    while ( $r - $l > 1 ) {
+        die
+            if $count++ > 10;
+        my $c = int( ( $l + $r ) / 2 );
+        warn "$i - (l, r, c): ($l, $r, $c)";
+        my $dots = $dot_counts[ $c + 1 ] - $dot_counts[ $i ];
+
+        if ( $dots <= $k ) {
+            $l = $c;
+        }
+        else {
+            $r = $c;
+        }
+    }
+
+    my $continuous = $l - $i + 1;
+
+    if ( $continuous > $max ) {
+        warn "\$max goes: $continuous from $max";
+    }
+    $max = $continuous > $max ? $continuous : $max;
 }
 
 say $max;

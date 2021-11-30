@@ -28,38 +28,26 @@ my $max = 0;
 for ( my $i = 0; $i < $n; ++$i ) {
     if ( ( $dot_counts[ $n - 1 + 1 ] - $dot_counts[ $i ] ) <= $k ) {
         my $continuous = $n - $i;
-        if ( $continuous > $max ) {
-            warn "\$max goes: $continuous from $max";
-        }
         $max = $continuous > $max ? $continuous : $max;
-        next;
+        last;
     }
 
-    my $l = $i;
-    my $r = $n - 1;
+    my $ac = $i;
+    my $wa = $n - 1;
 
-    my $count;
-
-    while ( $r - $l > 1 ) {
-        die
-            if $count++ > 10;
-        my $c = int( ( $l + $r ) / 2 );
-        warn "$i - (l, r, c): ($l, $r, $c)";
-        my $dots = $dot_counts[ $c + 1 ] - $dot_counts[ $i ];
+    while ( $wa - $ac > 1 ) {
+        my $wj = int( ( $ac + $wa ) / 2 );
+        my $dots = $dot_counts[ $wj + 1 ] - $dot_counts[ $i ];
 
         if ( $dots <= $k ) {
-            $l = $c;
+            $ac = $wj;
         }
         else {
-            $r = $c;
+            $wa = $wj;
         }
     }
 
-    my $continuous = $l - $i + 1;
-
-    if ( $continuous > $max ) {
-        warn "\$max goes: $continuous from $max";
-    }
+    my $continuous = $ac - $i + 1;
     $max = $continuous > $max ? $continuous : $max;
 }
 

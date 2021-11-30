@@ -16,17 +16,17 @@ my @dot_counts;
 my $acc = 0;
 
 for my $s ( @s ) {
-    push @dot_counts, $acc;
     $acc++
         if $s eq q{.};
+    push @dot_counts, $acc;
 }
 
-push @dot_counts, $acc;
+push @dot_counts, 0;
 
 my $max = 0;
 
 for ( my $i = 0; $i < $n; ++$i ) {
-    if ( ( $dot_counts[ $n - 1 + 1 ] - $dot_counts[ $i ] ) <= $k ) {
+    if ( ( $dot_counts[ $n - 1 ] - $dot_counts[ $i - 1 ] ) <= $k ) {
         my $continuous = $n - $i;
         $max = $continuous > $max ? $continuous : $max;
         last;
@@ -37,7 +37,7 @@ for ( my $i = 0; $i < $n; ++$i ) {
 
     while ( $wa - $ac > 1 ) {
         my $wj = int( ( $ac + $wa ) / 2 );
-        my $dots = $dot_counts[ $wj + 1 ] - $dot_counts[ $i ];
+        my $dots = $dot_counts[ $wj ] - $dot_counts[ $i - 1 ];
 
         if ( $dots <= $k ) {
             $ac = $wj;

@@ -9,46 +9,21 @@ use Data::Dumper;
 chomp( my $s = <> );
 chomp( my $k = <> );
 
-my @s = split m{}, $s;
-my $n = scalar @s;
+my @s = map { $_ eq q{.} } split m{}, $s;
+my $n = @s;
 
-my @dot_counts;
-my $acc = 0;
-
-for my $s ( @s ) {
-    $acc++
-        if $s eq q{.};
-    push @dot_counts, $acc;
-}
-
-push @dot_counts, 0;
-
+my $r = 0;
+my $dots = 0;
 my $max = 0;
 
-for ( my $i = 0; $i < $n; ++$i ) {
-    if ( ( $dot_counts[ $n - 1 ] - $dot_counts[ $i - 1 ] ) <= $k ) {
-        my $continuous = $n - $i;
-        $max = $continuous > $max ? $continuous : $max;
-        last;
+for ( my $l = 0; $l < $n; ++$l ) {
+    while ( $r < $n && $dots + $s[ $r ] <= $k ) {
+        $dots = $dots + $s[ $r ];
+        $r++;
     }
-
-    my $ac = $i;
-    my $wa = $n - 1;
-
-    while ( $wa - $ac > 1 ) {
-        my $wj = int( ( $ac + $wa ) / 2 );
-        my $dots = $dot_counts[ $wj ] - $dot_counts[ $i - 1 ];
-
-        if ( $dots <= $k ) {
-            $ac = $wj;
-        }
-        else {
-            $wa = $wj;
-        }
-    }
-
-    my $continuous = $ac - $i + 1;
+    my $continuous = $r - $l;
     $max = $continuous > $max ? $continuous : $max;
+    $dots = $dots - $s[ $l ];
 }
 
 say $max;

@@ -28,7 +28,7 @@ sub peek {
 }
 
 sub size {
-    return @{ shift->{items} };
+    return scalar @{ shift->{items} };
 }
 
 package PriorityQueue::PriorLarge;

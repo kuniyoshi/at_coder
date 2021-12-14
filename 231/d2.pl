@@ -1,3 +1,50 @@
+#!/usr/bin/env perl
+use 5.10.0;
+use utf8;
+use strict;
+use warnings;
+use open qw( :utf8 :std );
+use Data::Dumper;
+use List::Util qw( max );
+
+my( $n, $m ) = do { chomp( my $l = <> ); split m{\s}, $l };
+my @ab = map { chomp; [ split m{\s} ] }
+         map { scalar <> }
+         1 .. $m;
+
+my %count;
+
+for my $ref ( @ab ) {
+    $count{ $ref->[0] }++;
+    $count{ $ref->[1] }++;
+}
+
+my $max = max values %count;
+
+if ( $max > 2 ) {
+    say "No";
+    exit;
+}
+
+my $uf = UnionFindTree->new( $n );
+
+for my $ref ( @ab ) {
+    my( $a, $b ) = @{ $ref };
+    $a--;
+    $b--;
+
+    if ( $uf->root( $a ) == $uf->root( $b ) ) {
+        say "No";
+        exit;
+    }
+
+    $uf->unite( $a, $b );
+}
+
+say "Yes";
+
+exit;
+
 package UnionFindTree;
 use 5.10.0;
 use utf8;
@@ -41,5 +88,3 @@ sub new {
     my @sizes = ( 1 ) x $n;
     return bless { parents => [ 0 .. ( $n - 1 ) ], sizes => \@sizes }, $class;
 }
-
-1;

@@ -14,46 +14,20 @@ my @cd = map { chomp; [ split m{\s} ] }
          map { scalar <> }
          1 .. $m;
 
-my %ab_edges;
-$ab_edges{ $_ } = [ ]
-    for 1 .. $n;
+my %ab_edges = make_edges( @ab );
+my %cd_edges = make_edges( @cd );
 
-for my $ref ( @ab ) {
-    my( $a, $b ) = @{ $ref };
-    push @{ $ab_edges{ $a } }, $b;
-    push @{ $ab_edges{ $b } }, $a;
-}
-
-my %cd_edges;
-$cd_edges{ $_ } = [ ]
-    for 1 .. $n;
-
-for my $ref ( @cd ) {
-    my( $c, $d ) = @{ $ref };
-    push @{ $cd_edges{ $c } }, $d;
-    push @{ $cd_edges{ $d } }, $c;
-}
-
-my @all = ( );
+my @all;
 list_patterns( [ ], [ 1 .. $n ], \@all );
 
 PATTERN_LOOP:
 for my $pattern_ref ( @all ) {
     my @v = @{ $pattern_ref };
 
-    #    for ( my $i = 0; $i < @v; ++$i ) {
-    #        my $v = $v[ $i ];
-    #        my $w = $i + 1;
-    #        my $x = join q{:}, sort { $a <=> $b } @{ $ab_edges{ $w } };
-    #        my $y = join q{:}, sort { $a <=> $b } map { $v[ $_ - 1 ] } @{ $cd_edges{ $v } };
-    #        next PATTERN_LOOP
-    #            if $x ne $y;
-    #    }
-
-    for ( my $i = 1; $i <= $n; ++$i ) {
-        for ( my $j = 1; $j < $i; ++$j ) {
-            my $is_t = grep { $_ == $j } @{ $ab_edges{ $i } };
-            my $is_a = grep { $v[ $_ - 1 ] == $j } @{ $cd_edges{ $v[ $i - 1 ] } };
+    for ( my $i = 0; $i < $n; ++$i ) {
+        for ( my $j = 0; $j < $n; ++$j ) {
+            my $is_t = grep { $_ == ( $j + 1 ) } @{ $ab_edges{ $i + 1 } };
+            my $is_a = grep { $_ == $v[ $j ] } @{ $cd_edges{ $v[ $i ] } };
             next PATTERN_LOOP
                 if $is_t != $is_a;
         }
@@ -66,6 +40,21 @@ for my $pattern_ref ( @all ) {
 say "No";
 
 exit;
+
+sub make_edges {
+    my @edges = @_;
+
+    my %edge;
+    $edge{ $_ } = [ ]
+        for 1 .. $n;
+    for my $ref ( @edges ) {
+        my( $from, $to ) = @{ $ref };
+        push @{ $edge{ $from } }, $to;
+        push @{ $edge{ $to } }, $from;
+    }
+
+    return %edge;
+}
 
 sub list_patterns {
     my $buffer_ref = shift;

@@ -6,10 +6,10 @@ a:
 	cat data/a.3 | ./a.pl
 
 b:
-	cat data/b.1 | ./b.pl
-	cat data/b.2 | ./b.pl
-	cat data/b.3 | ./b.pl
-	cat data/b.4 | ./b.pl
+	cat data/b.1 | ./b2.pl
+	cat data/b.2 | ./b2.pl
+	cat data/b.3 | ./b2.pl
+	cat data/b.4 | ./b2.pl
 
 c:
 	cat data/c.1 | ./c.pl

@@ -17,8 +17,17 @@ c:
 	cat data/c.3 | ./c.pl
 
 d:
-	cat data/d.1 | ./d.pl
-	cat data/d.2 | ./d.pl
+	cat data/d.1  | time ./d.pl
+	cat data/d.2  | time ./d.pl
+	cat data/d.3  | time ./d.pl
+	cat data/d.4  | time ./d.pl
+	cat data/d.5  | time ./d.pl
+	cat data/d.6  | time ./d.pl
+	cat data/d.7  | time ./d.pl
+	cat data/d.8  | time ./d.pl
+	cat data/d.9  | time ./d.pl
+	cat data/d.10 | time ./d.pl
+	cat data/d.11 | time ./d.pl
 
 e:
 	cat data/e.1 | ./e.pl

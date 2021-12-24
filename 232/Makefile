@@ -17,10 +17,10 @@ c:
 	cat data/c.3 | ./c.pl
 
 d:
-	cat data/d.1  | ./d3.pl
-	cat data/d.2  | ./d3.pl
-	cat data/d.3  | ./d3.pl
-	cat data/d.4  | ./d3.pl
+	cat data/d.1  | ./d4.pl
+	cat data/d.2  | ./d4.pl
+	cat data/d.3  | ./d4.pl
+	cat data/d.4  | ./d4.pl
 #	cat data/d.5  | ./d.pl
 #	cat data/d.6  | ./d.pl
 #	cat data/d.7  | ./d.pl

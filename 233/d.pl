@@ -7,36 +7,22 @@ use open qw( :utf8 :std );
 use Data::Dumper;
 
 my( $n, $k ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @a = map { $_ + 1e9 }
-        do { chomp( my $l = <> ); split m{\s}, $l };
-$k = $k + 1e9;
+my @a = do { chomp( my $l = <> ); split m{\s}, $l };
 
 my $acc = 0;
 my @acc = ( 0 );
 
-for ( my $i = 0; $i < @a; ++$i ) {
-    $acc = $acc + $a[ $i ];
+for my $a ( @a ) {
+    $acc = $acc + $a;
     push @acc, $acc;
 }
 
-push @acc, 1e17;
-
 my $total = 0;
 
-for ( my $i = 0; $i < @a; ++$i ) {
-    if ( ( $acc[ $i + 1 ] - $acc[ $i ] ) == $k ) {
-        $total++;
-        next;
-    }
-
-    my $ac = $i;
-    my $wa = $#acc;
-    my $wj = int( ( $ac + $wa ) / 2 );
-
-    if ( $acc[ $wj ] - $acc[ $ac ] 
-
-        next
-            if 
+for ( my $r = 0; $r < @a; ++$r ) {
+    for ( my $l = 0; $l <= $r; ++$l ) {
+        my $sum = $acc[ $r + 1 ] - $acc[ $l ];
+        $total = $total + ( $sum == $k );
     }
 }
 

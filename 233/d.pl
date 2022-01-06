@@ -18,12 +18,14 @@ for my $a ( @a ) {
 }
 
 my $total = 0;
+my %count;
 
 for ( my $r = 0; $r < @a; ++$r ) {
-    for ( my $l = 0; $l <= $r; ++$l ) {
-        my $sum = $acc[ $r + 1 ] - $acc[ $l ];
-        $total = $total + ( $sum == $k );
-    }
+    my $l = $r;
+
+    $count{ $k + $acc[ $l ] }++;
+
+    $total = $total + ( $count{ $acc[ $r + 1 ] } // 0 );
 }
 
 say $total;

@@ -29,6 +29,9 @@ for ( my $i = 0; $i < @bits; ++$i ) {
     $rise = int( $total / 10 );
 }
 
+push @answers, split m{}, $rise
+    if $rise;
+
 say join q{}, reverse @answers;
 
 exit;

@@ -112,7 +112,7 @@ sub reverse_push_to {
     while ( $cursor != 0 ) {
         my $parent = int( ( $cursor - 1 ) / 2 );
         @{ $buffer_ref }[ $parent, $cursor ] = @{ $buffer_ref }[ $cursor, $parent ]
-            if $buffer_ref->[ $parent ] >= $buffer_ref->[ $cursor ];
+            if $buffer_ref->[ $parent ] > $buffer_ref->[ $cursor ];
         $cursor = $parent;
     }
 }

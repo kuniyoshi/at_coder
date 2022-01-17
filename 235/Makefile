@@ -14,10 +14,10 @@ c:
 	cat data/c.2 | ./c.pl
 
 d:
-	cat data/d.1 | ./d3.pl
-	cat data/d.2 | ./d3.pl
-	cat data/d.3 | ./d3.pl
-	cat data/d.4 | ./d3.pl
+	cat data/d.1 | ./d4.pl
+	cat data/d.2 | ./d4.pl
+	cat data/d.3 | ./d4.pl
+	cat data/d.4 | ./d4.pl
 
 e:
 	cat data/e.1 | ./e.pl

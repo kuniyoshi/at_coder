@@ -15,7 +15,7 @@ my @queries = map { chomp; [ split m{\s} ] }
               map { scalar <> }
               1 .. $q;
 
-use sort "stable";
+              #use sort "stable";
 my @indexes = sort { $queries[ $a ][2] <=> $queries[ $b ][2] }
               0 .. ( $q - 1 );
 my @answers;
@@ -37,8 +37,8 @@ for my $edge_ref ( @edges ) {
             : "Yes";
     }
 
-    last
-        unless @indexes;
+    #    last
+    #        unless @indexes;
 
     next
         if $union_find_tree->root( $u ) == $union_find_tree->root( $v );

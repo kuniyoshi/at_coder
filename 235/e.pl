@@ -32,10 +32,13 @@ for my $edge_ref ( @edges ) {
         my( $x, $y, undef ) = @{ $queries[ $index ] };
         $x--;
         $y--;
-        push @answers, $union_find_tree->root( $x ) == $union_find_tree->root( $y )
+        $answers[ $index ] = $union_find_tree->root( $x ) == $union_find_tree->root( $y )
             ? "No"
             : "Yes";
     }
+
+    last
+        unless @indexes;
 
     next
         if $union_find_tree->root( $u ) == $union_find_tree->root( $v );
@@ -47,7 +50,7 @@ for my $index ( @indexes ) {
     my( $u, $v, undef ) = @{ $queries[ $index ] };
     $u--;
     $v--;
-    push @answers, $union_find_tree->root( $u ) == $union_find_tree->root( $v )
+    $answers[ $index ] = $union_find_tree->root( $u ) == $union_find_tree->root( $v )
         ? "No"
         : "Yes";
 }

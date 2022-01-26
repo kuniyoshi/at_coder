@@ -19,6 +19,7 @@ d:
 	cat data/d.2 | ./d.pl
 	cat data/d.3 | ./d.pl
 	cat data/d.4 | ./d.pl
+	cat data/d.5 | time ./d.pl
 
 e:
 	cat data/e.1 | ./e.pl

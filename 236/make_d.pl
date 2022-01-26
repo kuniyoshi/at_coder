@@ -6,7 +6,7 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 
-my $n = 6;
+my $n = 8;
 
 my $length = 2 * $n;
 

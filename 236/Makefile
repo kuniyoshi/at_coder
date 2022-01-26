@@ -15,11 +15,11 @@ c:
 	cat data/c.2 | ./c.pl
 
 d:
-	cat data/d.1 | ./d.pl
-	cat data/d.2 | ./d.pl
-	cat data/d.3 | ./d.pl
-	cat data/d.4 | ./d.pl
-	cat data/d.5 | time ./d.pl
+	cat data/d.1 | ./d2.pl
+	cat data/d.2 | ./d2.pl
+	cat data/d.3 | ./d2.pl
+	cat data/d.4 | ./d2.pl
+	cat data/d.5 | time ./d2.pl
 
 e:
 	cat data/e.1 | ./e.pl

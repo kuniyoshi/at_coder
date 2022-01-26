@@ -28,18 +28,21 @@ sub dfs {
         die "somehow"
             unless @{ $selectins_ref } == ( 2 * $n );
 
-        say sprintf "### selection: [%s]", join q{, }, @{ $selectins_ref };
+            #say sprintf "### selection: [%s]", join q{, }, @{ $selectins_ref };
 
         my $candidate = 0;
 
         for ( my $i = 0; $i < $n; ++$i ) {
-            my $l = 2 * $i;
-            my $r = 2 * $i + 1;
+            my $u = 2 * $i;
+            my $v = 2 * $i + 1;
+            #            warn "(\$u, \$v): ($u, $v)";
             die "should be ascend"
-                unless $selectins_ref->[ $l ] < $selectins_ref->[ $r ];
-            die "out of range ($l, $r)"
-                if $l >= @a || ( $r - $l - 1 ) >= @{ $a[ $l ] };
-            $candidate = $candidate ^ $a[ $l ][ $r - $l - 1 ];
+                unless $selectins_ref->[ $u ] < $selectins_ref->[ $v ];
+            my( $w, $x ) = @{ $selectins_ref }[ $u, $v ];
+            die "out of range ($w, $x)"
+                if $w >= @a || ( $x - $w - 1 ) >= @{ $a[ $w ] };
+                #warn "value: $a[ $w ][ $x - $w - 1 ]";
+            $candidate = $candidate ^ $a[ $w ][ $x - $w - 1 ];
         }
 
         return $candidate > $max ? $candidate : $max;

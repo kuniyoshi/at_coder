@@ -10,7 +10,7 @@ my( $n, $m ) = do { chomp( my $l = <> ); split m{\s}, $l };
 my @h = do { chomp( my $l = <> ); split m{\s}, $l };
 my @edges = map { chomp; [ map { $_ - 1 } split m{\s} ] }
             map { scalar <> }
-            1 .. $n;
+            1 .. $m;
 
 my @destinations;
 
@@ -23,18 +23,20 @@ for my $edge_ref ( @edges ) {
 my $priority_queue = PriorityQueue::PriorSmall->new;
 $priority_queue->push( [ 0, 0 ] );
 
-my %cost;
+my %cost = ( 0 => 0 );
 
 while ( $priority_queue->size ) {
     my( $d, $c ) = @{ $priority_queue->pop };
+    #    warn "($d, $c)";
 
     next
-        if $d == $cost{ $c };
+        if defined $cost{ $c } && $d != $cost{ $c };
 
     for my $neighbor ( @{ $destinations[ $c ] } ) {
-        my $new_cost = $h[ $neighbor ] > $h[ $c ] ? $h[ $neighbor ] - $h[ $c ] : 0;
+        my $addition = $h[ $neighbor ] > $h[ $c ] ? $h[ $neighbor ] - $h[ $c ] : 0;
+        my $new_cost = $d + $addition;
         next
-            if $new_cost >= $cost{ $neighbor };
+            if defined $cost{ $neighbor } && $new_cost >= $cost{ $neighbor };
         $cost{ $neighbor } = $new_cost;
         $priority_queue->push( [ $new_cost, $neighbor ] );
     }
@@ -43,7 +45,10 @@ while ( $priority_queue->size ) {
 my $max = 0;
 
 for my $v ( 0 .. ( $n - 1 ) ) {
-    my $cost = $h[0] - $h[ $v ] + $cost{ $v };
+    next
+        unless defined $cost{ $v };
+    my $cost = $h[0] - $h[ $v ] - $cost{ $v };
+    #    warn "$v: $h[0] - $h[ $v ] - $cost{ $v } = $cost";
     $max = $cost > $max ? $cost : $max;
 }
 

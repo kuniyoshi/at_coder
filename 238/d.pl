@@ -14,6 +14,7 @@ my @q = map { chomp; [ split m{\s} ] }
 for my $q_ref ( @q ) {
     my( $a, $s ) = @{ $q_ref };
     my @a = split m{}, sprintf "%b", $a;
+    my @s = split m{}, sprintf "%b", $s;
 }
 
 exit;

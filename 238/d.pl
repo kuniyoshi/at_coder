@@ -13,8 +13,19 @@ my @q = map { chomp; [ split m{\s} ] }
 
 for my $q_ref ( @q ) {
     my( $a, $s ) = @{ $q_ref };
-    my @a = split m{}, sprintf "%b", $a;
-    my @s = split m{}, sprintf "%b", $s;
+    my $has = test( $a, $s, 0 );
+    say $has ? "Yes" : "No";
 }
 
 exit;
+
+sub test {
+    my( $a, $s, $increment ) = @_;
+    return 
+    my $u = $a & 1;
+    my $v = $s & 1;
+    for my $x ( 0 .. 1 ) {
+        for my $y ( 0 .. 1 ) {
+        }
+    }
+}

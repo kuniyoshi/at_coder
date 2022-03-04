@@ -16,6 +16,7 @@ my @queries = map { chomp; [ split m{\s} ] }
               1 .. $q;
 
 my @edges;
+
 for my $ref ( @e ) {
     my( $from, $to ) = @{ $ref };
     $from--;
@@ -24,41 +25,34 @@ for my $ref ( @e ) {
     push @{ $edges[ $to ] }, $from;
 }
 
-my @sorted = topo_sort( );
-die Dumper \@sorted;
+my @kth_maxes;
 
+dfs( 0, -1 );
 
-my @answers;
-#my @orders = 
+for my $query_ref ( @queries ) {
+    my( $v, $k ) = @{ $query_ref };
+    die "k is too large"
+        if $k > @{ $kth_maxes[ $v - 1 ] };
+    say $kth_maxes[ $v - 1 ][ $k - 1 ];
+}
 
 exit;
 
-sub topo_sort {
-    my @vertexes = 0 .. ( $n - 1 );
-    my @queue = ( 0 );
-    my @result;
+sub dfs {
+    my $node = shift;
+    my $parent = shift;
 
-    my @in_degrees;
+    my @maxes = ( $x[ $node ] );
 
-    for my $index ( 0 .. $#edges ) {
-        $in_degrees[ $index ] = $edges[ $index ] ? @{ $edges[ $index ] } : 0;
+    for my $candidate ( @{ $edges[ $node ] } ) {
+        next
+            if $candidate == $parent;
+        my $child = $candidate;
+        dfs( $child, $node );
+        @maxes = sort { $b <=> $a } ( @maxes, @{ $kth_maxes[ $child ] } );
+        $#maxes = 19
+            if @maxes > 20;
     }
 
-    while ( @queue ) {
-        warn join ", ", @queue;
-        my $v = shift @queue;
-
-        push @result, $v;
-        if ( !$edges[ $v + 1 ] ) {
-            next;
-        }
-
-        for my $neighbor ( @{ $edges[ $v + 1 ] } ) {
-            $in_degrees[ $neighbor ]--;
-            do { push @queue, $neighbor; warn "pushed: $neighbor by $v" }
-                if $in_degrees[ $neighbor ] == 0;
-        }
-    }
-
-    return @result;
+    $kth_maxes[ $node ] = \@maxes;
 }

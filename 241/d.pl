@@ -6,170 +6,114 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 
-chomp( my $q = <> );
-my @queries = map { chomp; [ split m{\s} ] }
-              map { scalar <> }
-              1 .. $q;
+#chomp( my $q = <> );
+#my @queries = map { chomp; [ split m{\s} ] }
+#              map { scalar <> }
+#              1 .. $q;
+#
+#for my $query_ref ( @queries ) {
+#}
 
-my $small = PriorityQueue::PriorSmall->new;
-my $large = PriorityQueue::PriorLarge->new;
+my $t = BinaryTrieTree->new;
 
-for my $query_ref ( @queries ) {
-    my( $code, @params ) = @{ $query_ref };
-    if ( $code == 1 ) {
-        my( $x ) = @params;
-        $small->push( $x );
-        $large->push( $x );
-    }
-    if ( $code == 2 ) {
-        my( $x, $k ) = @params;
+$t->insert( 3 );
+$t->insert( 1 );
+$t->insert( 4 );
+$t->insert( 5 );
 
-    }
-}
+say $t->dump;
+#
+#say $t->count_lte( 2 );
+#say $t->at( 2 );
+
 
 exit;
 
-package PriorityQueue::PriorSmall;
+package BinaryTrieTree;
+
+sub BIT_SIZE { 3 }
+
+sub BIT_SIZE_M1 { 2 }
 
 sub new {
-    my $class = shift;
-    return bless { items => [ ] }, $class;
+    return bless { zero => [undef], one => [undef], count => [0] }, shift;
 }
 
-sub push {
+sub dump {
+    my $self = shift;
+    my $zero = join q{, }, map { defined ? $_ : q{_} } @{ $self->{zero} };
+    my $one = join q{, }, map { defined ? $_ : q{_} } @{ $self->{one} };
+    my $count = join q{, }, map { defined ? $_ : q{_} } @{ $self->{count} };
+    return sprintf <<'END_FORMAT', $zero, $one, $count;
+zero:	[%s]
+one:	[%s]
+count:	[%s]
+END_FORMAT
+}
+
+sub get_next {
+    my $self = shift;
+    my $index = shift;
+    my $bit = shift;
+
+    my( $zero_ref, $one_ref, $count_ref ) = @{ $self }{ qw( zero one count ) };
+
+    die "no next of: [$index]"
+        if $index >= @{ $zero_ref };
+
+    if ( $bit == 0 ) {
+        if ( !defined $zero_ref->[ $index ] ) {
+            push @{ $zero_ref }, undef;
+            push @{ $one_ref }, undef;
+            push @{ $count_ref }, 0;
+            $zero_ref->[ $index ] = $#{ $zero_ref };
+            return $#{ $zero_ref };
+        }
+        return $zero_ref->[ $index ];
+    }
+
+    if ( $bit == 1 ) {
+        if ( !defined $one_ref->[ $index ] ) {
+            push @{ $zero_ref }, undef;
+            push @{ $one_ref }, undef;
+            push @{ $count_ref }, 0;
+            $one_ref->[ $index ] = $#{ $one_ref };
+            return $#{ $one_ref };
+        }
+        return $one_ref->[ $index ];
+    }
+
+    die "could not get next of: [$index], [$bit]";
+}
+
+sub insert {
     my $self = shift;
     my $value = shift;
-    Heap::reverse_push_to( $self->{items}, $value );
+warn "### insert $value";
+
+    my( $zero_ref, $one_ref, $count_ref ) = @{ $self }{ qw( zero one count ) };
+
+    $count_ref->[0]++;
+    my $index = 0;
+
+    for ( my $mask = 1 << BIT_SIZE_M1; $mask; $mask >>= 1 ) {
+        my $bit = ( $value & $mask ) ? 1 : 0;
+        printf "### mask:\t%03b\n", $mask;
+        printf "--- bit:\t%d\n", $bit;
+my $p = $index;
+        $index = $self->get_next( $index, $bit );
+        die "could not get next [$p], [$bit]\n", $self->dump
+            unless defined $index;
+        $count_ref->[ $index ]++;
+    }
 }
 
-sub pop {
-    my $self = shift;
-
-    die "Could not pop while buffer is empty"
-        unless @{ $self->{items} };
-
-    return Heap::reverse_pop_from( $self->{items} );
-}
-
-sub peek {
-    return shift->{items}[0];
-}
-
-sub size {
-    return scalar @{ shift->{items} };
-}
-
-package PriorityQueue::PriorLarge;
-
-sub new {
-    my $class = shift;
-    return bless { items => [ ] }, $class;
-}
-
-sub push {
+sub count_lte {
     my $self = shift;
     my $value = shift;
-    Heap::push_to( $self->{items}, $value );
 }
 
-sub pop {
+sub at {
     my $self = shift;
-
-    die "Could not pop while buffer is empty"
-        unless @{ $self->{items} };
-
-    return Heap::pop_from( $self->{items} );
-}
-
-sub peek {
-    return shift->{items}[0];
-}
-
-sub size {
-    return @{ shift->{items} };
-}
-
-package Heap;
-
-sub push_to {
-    my( $array, $item ) = @_;
-
-    push @{ $array }, $item;
-
-    my $parent_sub = sub {
-        my $value = shift;
-        return int( $value / 2 - 1 );
-    };
-
-    my $index = $#{ $array };
-
-    while ( $parent_sub->( $index ) >= 0 && $array->[ $parent_sub->( $index ) ] > $array->[ $index ] ) {
-        @{ $array }[ $parent_sub->( $index ), $index ] = @{ $array }[ $index, $parent_sub->( $index ) ];
-        $index = $parent_sub->( $index );
-    }
-}
-
-sub pop_from {
-    my $array = shift;
-    my $n = @{ $array } - 1;
-    $array->[0] = $array->[ $n ];
-    $#{ $array }--;
-
-    my $left = sub { my $index = shift; return 2 * $index + 1; };
-    my $right = sub { my $index = shift; return 2 * $index + 2; };
-    my $top = sub {
-        my $index = shift;
-        return $right->( $index ) < @{ $array }
-            && $array->[ $left->( $index ) ] > $array->[ $right->( $index ) ]
-            ? $right->( $index )
-            : $left->( $index );
-    };
-
-    my $curr = 0;
-
-    while ( $left->( $curr ) < @{ $array } && $array->[ $curr ] > $top->( $curr ) ) {
-        my $next = $top->( $curr );
-        @{ $array }[ $next, $curr ] = @{ $array }[ $curr, $next ];
-        $curr = $next;
-    }
-}
-
-sub reverse_push_to {
-    my( $buffer_ref, $item ) = @_;
-
-    push @{ $buffer_ref }, $item;
-
-    my $cursor = $#{ $buffer_ref };
-
-    while ( $cursor != 0 ) {
-        my $parent = int( ( $cursor - 1 ) / 2 );
-        @{ $buffer_ref }[ $parent, $cursor ] = @{ $buffer_ref }[ $cursor, $parent ]
-            if $buffer_ref->[ $parent ] >= $buffer_ref->[ $cursor ];
-        $cursor = $parent;
-    }
-}
-
-sub reverse_pop_from {
-    my $buffer_ref = shift;
-
-    my $last_root = $buffer_ref->[0];
-    $buffer_ref->[0] = $buffer_ref->[-1];
-    $#{ $buffer_ref }--;
-
-    my $cursor = 0;
-
-    while ( ( my $left = 2 * $cursor + 1 ) < @{ $buffer_ref } ) {
-        my $right = $left + 1;
-
-        my $child = $right < @{ $buffer_ref } && $buffer_ref->[ $left ] >= $buffer_ref->[ $right ]
-            ? $right
-            : $left;
-
-        @{ $buffer_ref }[ $cursor, $child ] = @{ $buffer_ref }[ $child, $cursor ]
-            if $buffer_ref->[ $cursor ] >= $buffer_ref->[ $child ];
-
-        $cursor = $child;
-    }
-
-    return $last_root;
+    my $kth = shift;
 }

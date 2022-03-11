@@ -18,7 +18,7 @@ c:
 
 d:
 	cat data/d.1 | ./d.pl
-	cat data/d.2 | time ./d.pl
+#	cat data/d.2 | time ./d.pl
 
 e:
 	cat data/e.1 | ./e.pl

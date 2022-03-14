@@ -5,6 +5,9 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use Memoize;
+
+memoize( "dfs" );
 
 my $MOD = 998244353;
 

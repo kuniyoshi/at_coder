@@ -35,16 +35,17 @@ my $node = $x;
 
 for my $s ( @s ) {
     if ( $s eq q{U} ) {
-        $node = $node / 2;
+        $node >>= 1;
     }
     elsif ( $s eq q{L} ) {
-        $node = 2 * $node;
+        $node <<= 1;
     }
     else {
-        $node = 2 * $node + 1;
+        $node <<= 1;
+        $node++;
     }
 }
 
-say $node;
+say sprintf "%d", 0 + $node;
 
 exit;

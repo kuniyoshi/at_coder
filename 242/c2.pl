@@ -5,15 +5,30 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use List::Util qw( sum );
 
 my $MOD = 998244353;
 
 chomp( my $n = <> );
 
-my @dp = ( 9 );
+my @dp;
+$dp[0][ $_ ] = 1
+    for 0 .. 8;
 
 for my $i ( 1 .. ( $n - 1 ) ) {
-    $dp[ $i ] = ( $dp[ $i - 1 ] * 3 - 2 ) % $MOD;
+    for my $j ( 1 .. 9 ) {
+        if ( $j == 1 ) {
+            $dp[ $i ][ $j - 1 ] = sum( @{ $dp[ $i - 1 ] }[0, 1] ) % $MOD;
+        }
+        elsif ( $j == 9 ) {
+            $dp[ $i ][ $j - 1 ] = sum( @{ $dp[ $i - 1 ] }[7, 8] ) % $MOD;
+        }
+        else {
+            $dp[ $i ][ $j - 1 ] = sum( @{ $dp[ $i - 1 ] }[ $j - 2, $j - 1, $j ] ) % $MOD;
+        }
+    }
 }
 
-say $dp[ $n - 1 ];
+say sum( @{ $dp[ $n - 1 ] } ) % $MOD;
+
+exit;

@@ -10,9 +10,9 @@ b:
 	cat data/b.2 | ./b.pl
 
 c:
-	cat data/c.1 | ./c.pl
-	cat data/c.2 | ./c.pl
-	cat data/c.3 | ./c.pl
+	cat data/c.1 | time ./c2.pl
+	cat data/c.2 | time ./c2.pl
+	cat data/c.3 | time ./c2.pl
 
 d:
 	cat data/d.1 | ./d.pl

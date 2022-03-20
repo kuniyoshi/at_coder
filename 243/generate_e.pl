@@ -23,7 +23,7 @@ for my $i ( 0 .. $n - 1 ) {
         next
             if $j == $i;
 
-        say "$i $j 1";
+        say sprintf "%d %d 1", $i + 1, $j + 1;
     }
 }
 

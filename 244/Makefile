@@ -19,3 +19,4 @@ d:
 e:
 	cat data/e.1 | ./e.pl
 	cat data/e.2 | ./e.pl
+	cat data/e.3 | ./e.pl

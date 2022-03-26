@@ -42,7 +42,7 @@ for my $ki ( 1 .. $k ) {
                 my $invert = $eo ^ 1;
 
                 for my $neighbor ( @{ $edges{ $v } } ) {
-                    $dp[ $ki ][ $v ][ $eo ] += $dp[ $ki - 1 ][ $neighbor ][ $invert ];
+                    $dp[ $ki ][ $v ][ $eo ] += $dp[ $ki - 1 ][ $neighbor ][ $invert ] // 0;
                     $dp[ $ki ][ $v ][ $eo ] %= $MOD;
                 }
             }
@@ -50,7 +50,7 @@ for my $ki ( 1 .. $k ) {
         else {
             for my $eo ( 0 .. 1 ) {
                 for my $neighbor ( @{ $edges{ $v } } ) {
-                    $dp[ $ki ][ $v ][ $eo ] += $dp[ $ki - 1 ][ $neighbor ][ $eo ];
+                    $dp[ $ki ][ $v ][ $eo ] += $dp[ $ki - 1 ][ $neighbor ][ $eo ] // 0;
                     $dp[ $ki ][ $v ][ $eo ] %= $MOD;
                 }
             }
@@ -60,7 +60,7 @@ for my $ki ( 1 .. $k ) {
 }
 
 
-say $dp[ $k ][ $t ][0];
+say $dp[ $k ][ $t ][0] // 0;
 
 
 exit;

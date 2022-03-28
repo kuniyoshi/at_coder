@@ -10,13 +10,14 @@ my( $n, $m ) = do { chomp( my $l = <> ); split m{\s}, $l };
 my @a = do { chomp( my $l = <> ); split m{\s}, $l };
 my @c = do { chomp( my $l = <> ); split m{\s}, $l };
 
-my @dp;
-$dp[ $n - 1 + $m - 1 ] = $c[-1] / $a[-1];
+my @b;
+$b[ $m ] = $c[ $n + $m ] / $a[ $n ];
 
 for my $i ( reverse( 0 .. $n + $m - 1 ) ) {
-
+    $c[ $i ] = 
+    $b[ $i ] = ( $c[ $n + $i ] + $a[ $n + $m - $i - 1 ] * $b[ $i + 1 ] ) / $a[ $n + $m - $i ];
 }
 
-say join q{ }, @dp;
+say join q{ }, @b;
 
 exit;

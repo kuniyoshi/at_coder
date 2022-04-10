@@ -57,3 +57,4 @@ Move contest directory to `contest number`.
 - [244](244/README.md)
 - [245](245/README.md)
 - [246](246/README.md)
+- [247](247/README.md)

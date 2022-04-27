@@ -5,25 +5,41 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use List::Util qw( max );
 
 my( $n, $k ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @s = map { chomp; [ split m{} ] } //
+my @s = map { chomp; [ split m{} ] }
         map { scalar <> }
         1 .. $n;
 
-my @dp;
+my $max = 0;
 
-for my $i ( 1 .. $n - 1 ) {
-    for my $j ( 0 .. $k - 1 ) {
-        $dp[ $i ][ $j ] = max( $dp[ $i - 1 ][ $j ], $dp[ $i ][ $j ] );
-        $dp[ $i ][ $j ] = max( $dp[ $i ][ $j ], $dp[ $i - 1 ][ $j - 1 ] )
-            if $j > 0;
+for my $selection ( 0 .. ( 2 ** $n - 1 ) ) {
+    DEBUG: {
+        my $width = 1 + int( log( $n ) / log( 2 ) + 0.5 );
+        #        warn sprintf "%0${n}b", $selection;
     }
+
+    my $current = $selection;
+    my $nth = 0;
+    my @counts;
+
+    while ( $current ) {
+        if ( $current & 1 ) {
+            #            warn "select $nth";
+            for my $letter ( @{ $s[ $nth ] } ) {
+                $counts[ ord( $letter ) - ord( "a" ) ]++;
+            }
+        }
+
+        $nth++;
+        $current >>= 1;
+    }
+
+    $max = max( $max, scalar grep { defined && $_ == $k } @counts )
+        if @counts;
 }
 
-say scalar grep { $_ > 0 } @{ $dp[ $n - 1 ][ $k - 1 ] };
+say $max;
 
 exit;
-
-sub max {
-}

@@ -7,10 +7,15 @@ use open qw( :utf8 :std );
 use Data::Dumper;
 
 chomp( my $n = <> );
-my( $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @s = do { chomp( my $l = <> ); split m{\s}, $l };
-my @l = map { chomp; [ split m{\s} ] }
-        map { scalar <> }
-        1 .. $n;
+my @a = do { chomp( my $l = <> ); split m{\s}, $l };
+my @b = do { chomp( my $l = <> ); split m{\s}, $l };
+chomp( my $q = <> );
+my @queries = map { chomp; [ split m{\s} ] }
+              map { scalar <> }
+              1 .. $q;
+
+my %set;
+
+
 
 exit;

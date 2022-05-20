@@ -12,27 +12,23 @@ my @a = do { chomp( my $l = <> ); split m{\s}, $l };
 
 my @dp;
 $dp[0][0][0] = 0;
-$dp[0][0][1] = $a[-1];
-$dp[0][1][0] = $a[0];
-$dp[0][1][1] = $a[-1] + $a[0];
+$dp[0][0][1] = undef;
+$dp[0][1][0] = undef;
+$dp[0][1][1] = 0;
 
 for my $i ( 1 .. $n ) {
     for my $j ( 0, 1 ) {
         for my $k ( 0, 1 ) {
             if ( $j ) {
-                $dp[ $i ][ $j ][ $k ] = min(
-                    $dp[ $i - 1 ][0][ $k ] + $a[ $i - 1 ],
-                    $dp[ $i - 1 ][1][ $k ] + $a[ $i - 1 ],
-                );
+                $dp[ $i ][ $j ][ $k ] = min( grep { defined } ( $dp[ $i - 1 ][0][ $k ], $dp[ $i - 1 ][1][ $k ] ) ) + $a[ $i - 1 ];
             }
             else {
-                $dp[ $i ][ $j ][ $k ] = $dp[ $i - 1][1][ $k ];
+                $dp[ $i ][ $j ][ $k ] = $dp[ $i - 1 ][1][ $k ];
             }
         }
     }
 }
 
 say min( $dp[ $n ][0][0], $dp[ $n ][1][1] );
-die Dumper \@dp;
 
 exit;

@@ -6,25 +6,53 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 
-my $c = 0;
+chomp( my $n = <> );
+my @a = do { chomp( my $l = <> ); split m{\s}, $l };
 
-for my $i ( 0 .. 1000 ) {
-    for my $j ( 0 .. $i - 1 ) {
-        for my $k ( 0 .. $j - 1 ) {
-            $c++;
-        }
+my %count;
+my $duplicated = 0;
+
+for my $a ( @a ) {
+    $duplicated++
+        if $count{ $a }++;
+}
+
+warn "\$duplicated: $duplicated";
+warn Dumper \%count;
+
+my $total = 0;
+
+for my $i ( 0 .. $#a - 2 ) {
+    warn "### \$i: $i";
+    die "invalid count of $a[ $i ]"
+        unless $count{ $a[ $i ] };
+
+    my $combination_count = combination2( scalar( @a ) - ( $i + 1 ) - ( $count{ $a[ $i ] } - 1 ) );
+    warn "--- \$combination_count: $combination_count";
+    warn "--- before \$total: $total";
+    my $delta = $combination_count - ( $duplicated - ( $count{ $a[ $i ] } - 1 ) );
+    warn "--- \$delta: $delta";
+
+    if ( $delta > 0 ) {
+        $total += $delta;
+        warn "--- after \$total: $total";
+    }
+
+    if ( $count{ $a[ $i ] } > 1 ) {
+        $duplicated--;
+        $count{ $a[ $i ] }--;
+        warn "--- after \$duplicated: $duplicated";
     }
 }
 
-say $c;
-
-__END__
-
-chomp( my $n = <> );
-my( $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @s = do { chomp( my $l = <> ); split m{\s}, $l };
-my @l = map { chomp; [ split m{\s} ] }
-        map { scalar <> }
-        1 .. $n;
+say $total;
 
 exit;
+
+sub combination2 {
+    my $n = shift;
+    return 0
+        if $n <= 0;
+
+    return $n * ( $n - 1 ) / 2;
+}

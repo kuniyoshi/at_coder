@@ -8,6 +8,11 @@ sub new {
     return bless { items => [ ] }, $class;
 }
 
+sub dump {
+    my $self = shift;
+    return join q{, }, @{ $self->{items} };
+}
+
 sub push {
     my $self = shift;
     my $value = shift;
@@ -38,6 +43,11 @@ sub new {
     return bless { items => [ ] }, $class;
 }
 
+sub dump {
+    my $self = shift;
+    return join q{, }, @{ $self->{items} };
+}
+
 sub push {
     my $self = shift;
     my $value = shift;
@@ -64,46 +74,43 @@ sub size {
 package Heap;
 
 sub push_to {
-    my( $array, $item ) = @_;
+    my( $buffer_ref, $item ) = @_;
 
-    push @{ $array }, $item;
+    push @{ $buffer_ref }, $item;
 
-    my $parent_sub = sub {
-        my $value = shift;
-        return int( $value / 2 - 1 );
-    };
+    my $cursor = $#{ $buffer_ref };
 
-    my $index = $#{ $array };
-
-    while ( $parent_sub->( $index ) >= 0 && $array->[ $parent_sub->( $index ) ] > $array->[ $index ] ) {
-        @{ $array }[ $parent_sub->( $index ), $index ] = @{ $array }[ $index, $parent_sub->( $index ) ];
-        $index = $parent_sub->( $index );
+    while ( $cursor != 0 ) {
+        my $parent = int( ( $cursor - 1 ) / 2 );
+        @{ $buffer_ref }[ $parent, $cursor ] = @{ $buffer_ref }[ $cursor, $parent ]
+            if $buffer_ref->[ $parent ] <= $buffer_ref->[ $cursor ];
+        $cursor = $parent;
     }
 }
 
 sub pop_from {
-    my $array = shift;
-    my $n = @{ $array } - 1;
-    $array->[0] = $array->[ $n ];
-    $#{ $array }--;
+    my $buffer_ref = shift;
 
-    my $left = sub { my $index = shift; return 2 * $index + 1; };
-    my $right = sub { my $index = shift; return 2 * $index + 2; };
-    my $top = sub {
-        my $index = shift;
-        return $right->( $index ) < @{ $array }
-            && $array->[ $left->( $index ) ] > $array->[ $right->( $index ) ]
-            ? $right->( $index )
-            : $left->( $index );
-    };
+    my $last_root = $buffer_ref->[0];
+    $buffer_ref->[0] = $buffer_ref->[-1];
+    $#{ $buffer_ref }--;
 
-    my $curr = 0;
+    my $cursor = 0;
 
-    while ( $left->( $curr ) < @{ $array } && $array->[ $curr ] > $top->( $curr ) ) {
-        my $next = $top->( $curr );
-        @{ $array }[ $next, $curr ] = @{ $array }[ $curr, $next ];
-        $curr = $next;
+    while ( ( my $left = 2 * $cursor + 1 ) < @{ $buffer_ref } ) {
+        my $right = $left + 1;
+
+        my $child = $right < @{ $buffer_ref } && $buffer_ref->[ $left ] <= $buffer_ref->[ $right ]
+            ? $right
+            : $left;
+
+        @{ $buffer_ref }[ $cursor, $child ] = @{ $buffer_ref }[ $child, $cursor ]
+            if $buffer_ref->[ $cursor ] <= $buffer_ref->[ $child ];
+
+        $cursor = $child;
     }
+
+    return $last_root;
 }
 
 sub reverse_push_to {

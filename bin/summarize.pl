@@ -40,7 +40,7 @@ for my $contest ( $start .. $end ) {
         for @acs;
 }
 
-warn Dumper \%summary;
+warn Data::Dumper->new( [ \%summary ] )->Sortkeys( 1 )->Terse( 1 )->Dump;
 
 exit;
 
@@ -74,3 +74,8 @@ sub parse {
     return @acs;
 }
 
+sub usage {
+    return <<END_USAGE;
+usage: $0 [-debug] -start=<start> -end=<end>
+END_USAGE
+}

@@ -10,6 +10,19 @@ use List::Util qw( sum );
 chomp( my $n = <> );
 my @a = do { chomp( my $l = <> ); split m{\s}, $l };
 
+my @batters;
+
+for my $a ( @a ) {
+    push @batters, 0;
+    for my $i ( 0 .. $#batters ) {
+        $batters[ $i ] += $a;
+    }
+}
+
+say scalar grep { $_ > 3 } @batters;
+
+__END__
+
 my $p = 0;
 my @cells = ( 0 ) x 4;
 

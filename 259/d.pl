@@ -15,36 +15,41 @@ my @circles = map { chomp; [ split m{\s} ] }
 
 my @graph;
 
-for my $i ( 0 .. $#circles ) {
-    for my $j ( 0 .. $i - 1 ) {
-        next
-            if $j == $i;
-
+for ( my $i = 0; $i < @circles; ++$i ) {
+    for ( my $j = 0; $j < $i; ++$j ) {
+        my $ri = $circles[ $i ][2];
+        my $rj = $circles[ $j ][2];
         my $dx = $circles[ $i ][0] - $circles[ $j ][0];
         my $dy = $circles[ $i ][1] - $circles[ $j ][1];
-        my $distance = sqrt( $dx * $dx + $dy * $dy );
+        my $distance2 = $dx * $dx + $dy * $dy;
 
         next
-            if $distance > ( $circles[ $i ][2] + $circles[ $j ][2] );
+            if $distance2 > ( ( $ri + $rj ) * ( $ri + $rj ) );
 
-        my $is_i_small = $circles[ $i ][2] < $circles[ $j ][2] ? 1 : 0;
-
-        if ( $is_i_small ) {
-            next
-                if $circles[ $j ][2] > $distance + $circles[ $i ][2];
-        }
-        else {
-            next
-                if $circles[ $i ][2] > $distance + $circles[ $j ][2];
-        }
+        next
+            if ( ( ( $ri - $rj ) * ( $ri - $rj ) ) > $distance2 );
 
         push @{ $graph[ $i ] }, $j;
         push @{ $graph[ $j ] }, $i;
     }
 }
 
-my $from = first { is_match( $circles[ $_ ], $sx, $sy ) } 0 .. $#circles;
-my $to = first { is_match( $circles[ $_ ], $tx, $ty ) } 0 .. $#circles;
+my( $from, $to );
+
+for ( my $i = 0; $i < @circles; ++$i ) {
+    my( $x, $y, $r ) = @{ $circles[ $i ] };
+
+    if ( !defined $from && ( ( ( $sx - $x ) * ( $sx - $x ) + ( $sy - $y ) * ( $sy - $y ) ) == $r * $r ) ) {
+        $from = $i;
+    }
+
+    if ( !defined $to && ( ( ( $tx - $x ) * ( $tx - $x ) + ( $ty - $y ) * ( $ty - $y ) ) == $r * $r ) ) {
+        $to = $i;
+    }
+
+    last
+        if defined $from && defined $to;
+}
 
 die "No **from** found"
     unless defined $from;
@@ -72,20 +77,6 @@ while ( @queue ) {
 say YesNo::get( $found );
 
 exit;
-
-sub is_match {
-    my $ref = shift;
-    my $sx = shift;
-    my $sy = shift;
-    my $x = $ref->[0];
-    my $y = $ref->[1];
-    my $r = $ref->[2];
-
-    return ( ( $x + $r ) == $sx && $y == $sy )
-        || ( ( $x - $r ) == $sx && $y == $sy )
-        || ( $x == $sx && ( $y + $r ) == $sy )
-        || ( $x == $sx && ( $y - $r ) == $sy );
-}
 
 use utf8;
 use strict;

@@ -17,7 +17,7 @@ my @numbers = sort { $b <=> $a } @a;
 my @odds = grep { $_ % 2 } @numbers;
 #warn "### odds";
 #warn Dumper \@odds;
-my @evens = grep { $_ } grep { !( $_ % 2 ) } @numbers;
+my @evens = grep { !( $_ % 2 ) } @numbers;
 #warn "### evens";
 #warn Dumper \@evens;
 

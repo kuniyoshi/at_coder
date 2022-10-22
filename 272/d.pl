@@ -8,81 +8,47 @@ use Data::Dumper;
 
 my( $n, $m ) = do { chomp( my $l = <> ); split m{\s}, $l };
 
-my $m2 = $m * $m;
+my @moves = get_moves( $n, $m );
 
-my @candidates = map { [ $_ * $_, $_ ] } 0 .. $m;
-my @pairs;
-
-for my $i ( 0 .. $#candidates ) {
-    for my $j ( 0 .. $i ) {
-        my $a2 = $candidates[ $i ][0];
-        my $a = $candidates[ $i ][1];
-        my $b2 = $candidates[ $j ][0];
-        my $b = $candidates[ $j ][1];
-        push @pairs, [ $a, $b ]
-            if $a2 + $b2 == $m2;
-    }
-}
-
-my @dp;
-
-for my $i ( 0 .. $n - 1 ) {
-    for my $j ( 0 .. $n - 1 ) {
-        $dp[ $i ][ $j ] = -1;
-    }
-}
-$dp[0][0] = 0;
-
-#die "too many candidates"
-#    if @pairs > 1;
-
-#if ( @pairs != 1 ) {
-#    output( );
-#    exit;
-#}
-
-my( $di, $dj ) = @{ $pairs[0] };
-my @queue;
-push @queue, [ [ $di, $dj ], 0 ]
-    if $di < $n && $dj < $n;
-push @queue, [ [ $dj, $di ], 0 ]
-    if $di < $n && $dj < $n;
+my @queue = ( [ 0, 0 ] );
+my @distances = ( [ 0 ] );
 
 while ( @queue ) {
-    my $ref = shift @queue;
-    my( $next, $cost ) = @{ $ref };
-    my( $ni, $nj ) = @{ $next };
-    next
-        if $dp[ $ni ][ $nj ] != -1;
-    $dp[ $ni ][ $nj ] = $cost + 1;
+    my $cursor = shift @queue;
+    my( $row, $col ) = @{ $cursor };
 
-    conditional_push( \@queue, $ni + $di, $nj + $dj, $cost + 1 );
-    conditional_push( \@queue, $ni - $di, $nj + $dj, $cost + 1 );
-    conditional_push( \@queue, $ni + $di, $nj - $dj, $cost + 1 );
-    conditional_push( \@queue, $ni - $di, $nj - $dj, $cost + 1 );
-    conditional_push( \@queue, $ni + $dj, $nj + $di, $cost + 1 );
-    conditional_push( \@queue, $ni - $dj, $nj + $di, $cost + 1 );
-    conditional_push( \@queue, $ni + $dj, $nj - $di, $cost + 1 );
-    conditional_push( \@queue, $ni - $dj, $nj - $di, $cost + 1 );
+    for my $move ( @moves ) {
+        my( $d_row, $d_col ) = @{ $move };
+        my $n_row = $row + $d_row;
+        my $n_col = $col + $d_col;
+        next
+            if $n_row < 0 || $n_row >= $n;
+        next
+            if $n_col < 0 || $n_col >= $n;
+        next
+            if defined $distances[ $n_row ][ $n_col ];
+        $distances[ $n_row ][ $n_col ] = $distances[ $row ][ $col ] + 1;
+        push @queue, [ $n_row, $n_col ];
+    }
 }
 
-output( );
+for my $i ( 0 .. $n - 1 ) {
+    say join q{ }, map { $distances[ $i ][ $_ ] // -1 } 0 .. $n - 1;
+}
 
 exit;
 
-sub conditional_push {
-    my $ref = shift;
-    my $i = shift;
-    my $j = shift;
-    my $cost = shift;
-    return
-        if $i >= $n || $j >= $n || $i < 0 || $j < 0;
-    return
-        if $dp[ $i ][ $j ] != -1;
-    push @{ $ref }, [ [ $i, $j ], $cost ];
-}
+sub get_moves {
+    my $n = shift;
+    my $m = shift;
+    my @moves;
 
-sub output {
-    say join q{ }, @{ $_ }
-        for @dp;
+    for my $i ( -$n .. $n ) {
+        for my $j ( -$n .. $n ) {
+            push @moves, [ $i, $j ]
+                if $i ** 2 + $j ** 2 == $m;
+        }
+    }
+
+    return @moves;
 }

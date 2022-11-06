@@ -1,4 +1,4 @@
-.PHONY: a b c d
+.PHONY: a b c d e
 
 a:
 	cat data/a.1 | ./a.pl

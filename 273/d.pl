@@ -27,6 +27,7 @@ for my $ref ( @walls ) {
 for my $direction ( keys %walls ) {
     for my $value ( keys %{ $walls{ $direction } } ) {
         $walls{ $direction }{ $value } = [ sort { $a <=> $b } @{ $walls{ $direction }{ $value } } ];
+        $walls{ "reverse_$direction" }{ $value } = [ sort { $b <=> $a } @{ $walls{ $direction }{ $value } } ];
     }
 }
 
@@ -71,6 +72,10 @@ sub get_previous {
         return max( $point - $length, 1 );
     }
 
+    if ( $walls_ref && $point > $walls_ref->[-1] ) {
+        return max( $point - $length, 1, $walls_ref->[-1] );
+    }
+
     #warn "--- binary search";
 
     my $ac = $#{ $walls_ref };
@@ -103,6 +108,10 @@ sub get_next {
 
     if ( !$walls_ref || $walls_ref->[-1] < $point ) {
         return min( $point + $length, $max );
+    }
+
+    if ( $walls_ref && $point < $walls_ref->[0] ) {
+        return min( $point + $length, $walls_ref->[0], $max );
     }
 
     #warn "--- binary search";

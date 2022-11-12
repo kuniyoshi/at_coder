@@ -9,6 +9,33 @@ use Data::Dumper;
 chomp( my $n = <> );
 my @a = do { chomp( my $l = <> ); split m{\s}, $l };
 
+my %distance;
+
+$distance{1} = 0;
+
+for my $i ( 0 .. $#a ) {
+    #warn Dumper \%distance;
+    my $number = $i + 1;
+    my $l = $number * 2;
+    my $r = $number * 2 + 1;
+
+    die "No parent found: $number"
+        unless defined $distance{ $a[ $number - 1 ] };
+
+        #    warn "($l, $r) -> ", $distance{ $a[ $number - 1 ] } + 1;
+
+    $distance{ $l } = $distance{ $a[ $number - 1 ] } + 1;
+    $distance{ $r } = $distance{ $a[ $number - 1 ] } + 1;
+}
+
+for my $i ( 1 .. ( 2 * $n + 1 ) ) {
+    die "No distance found: $i"
+        unless defined $distance{ $i };
+    say $distance{ $i };
+}
+
+__END__
+
 my @amebas;
 $#amebas = 2 * $n + 1;
 

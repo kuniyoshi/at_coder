@@ -27,7 +27,8 @@ for my $ref ( @walls ) {
 for my $direction ( keys %walls ) {
     for my $value ( keys %{ $walls{ $direction } } ) {
         $walls{ $direction }{ $value } = [ sort { $a <=> $b } @{ $walls{ $direction }{ $value } } ];
-        $walls{ "reverse_$direction" }{ $value } = [ sort { $b <=> $a } @{ $walls{ $direction }{ $value } } ];
+        my $length = $direction eq "row" ? $w : $h;
+        $walls{ "reverse_$direction" }{ $value } = [ sort { $a <=> $b } map { $length - $_ + 1 } @{ $walls{ $direction }{ $value } } ];
     }
 }
 
@@ -38,19 +39,23 @@ for my $ref ( @queries ) {
     #warn "### ($d, $l)";
 
     if ( $d eq q{L} ) {
-        $current[1] = get_previous( $current[1], $walls{row}{ $current[0] }, $l );
+        my $wall_point = binary_search( r( $current[1], $w ), $walls{reverse_row}{ $current[0] } ) // $w + 1;
+        $current[1] = r( min( r( $current[1], $w ) + $l, $wall_point - 1 ), $w );
         #warn "--- $current[1]";
     }
     if ( $d eq q{R} ) {
-        $current[1] = get_next( $current[1], $walls{row}{ $current[0] }, $l, $w );
+        my $wall_point = binary_search( $current[1], $walls{row}{ $current[0] } ) // $w + 1;
+        $current[1] = min( $current[1] + $l, $wall_point - 1 );
         #warn "--- $current[1]";
     }
     if ( $d eq q{U} ) {
-        $current[0] = get_previous( $current[0], $walls{col}{ $current[1] }, $l );
+        my $wall_point = binary_search( r( $current[0], $h ), $walls{reverse_col}{ $current[1] } ) // $h + 1;
+        $current[0] = r( min( r( $current[0], $h ) + $l, $wall_point - 1 ), $h );
         #warn "--- $current[0]";
     }
     if ( $d eq q{D} ) {
-        $current[0] = get_next( $current[0], $walls{col}{ $current[1] }, $l, $h );
+        my $wall_point = binary_search( $current[0], $walls{col}{ $current[1] } ) // $h + 1;
+        $current[0] = min( $current[0] + $l, $wall_point - 1 );
         #warn "--- $current[0]";
     }
 
@@ -60,31 +65,32 @@ for my $ref ( @queries ) {
 
 exit;
 
-sub get_previous {
-    my $point = shift;
-    my $walls_ref = shift;
-    my $length = shift;
+sub r {
+    my $value = shift;
+    my $max = shift;
+    return $max - $value + 1;
+}
 
-    #warn "### get_previous";
-    #warn Dumper $walls_ref;
+sub binary_search {
+    my $value = shift;
+    my $ref = shift;
 
-    if ( !$walls_ref || $walls_ref->[0] > $point ) {
-        return max( $point - $length, 1 );
-    }
+    return
+        unless $ref;
 
-    if ( $walls_ref && $point > $walls_ref->[-1] ) {
-        return max( $point - $length, 1, $walls_ref->[-1] );
-    }
+    return $ref->[0]
+        if $ref->[0] > $value;
 
-    #warn "--- binary search";
+    return
+        if $ref->[-1] < $value;
 
-    my $ac = $#{ $walls_ref };
+    my $ac = $#{ $ref };
     my $wa = 0;
 
     while ( $ac - $wa > 1 ) {
         my $wj = int( ( $ac + $wa ) / 2 );
 
-        if ( $walls_ref->[ $wj ] > $point ) {
+        if ( $ref->[ $wj ] > $value ) {
             $ac = $wj;
         }
         else {
@@ -92,43 +98,5 @@ sub get_previous {
         }
     }
 
-    #warn "--- ac, wa: ($ac, $wa)";
-
-    return max( $point - $length, $walls_ref->[ $ac ] + 1, 1 );
-}
-
-sub get_next {
-    my $point = shift;
-    my $walls_ref = shift;
-    my $length = shift;
-    my $max = shift;
-
-    #warn "### get_next";
-    #warn Dumper $walls_ref;
-
-    if ( !$walls_ref || $walls_ref->[-1] < $point ) {
-        return min( $point + $length, $max );
-    }
-
-    if ( $walls_ref && $point < $walls_ref->[0] ) {
-        return min( $point + $length, $walls_ref->[0], $max );
-    }
-
-    #warn "--- binary search";
-
-    my $ac = 0;
-    my $wa = $#{ $walls_ref };
-
-    while ( $wa - $ac > 1 ) {
-        my $wj = int( ( $ac + $wa ) / 2 );
-
-        if ( $walls_ref->[ $wj ] < $point ) {
-            $ac = $wj;
-        }
-        else {
-            $wa = $wj;
-        }
-    }
-
-    return min( $point + $length, $walls_ref->[ $wa ] - 1, $max );
+    return $ref->[ $ac ];
 }

@@ -5,26 +5,28 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use List::Util qw( max );
+use List::Util qw( first sum );
 
 chomp( my $n = <> );
 my @times = do { chomp( my $l = <> ); split m{\s}, $l };
 
-my @ovens = ( 0, 0 );
+my $total = sum( @times );
 
-for my $require ( sort { $b <=> $a } @times ) {
-    my $index = 0;
+my @dp = ( [ 0 ] );
 
-    for my $i ( 0 .. $#ovens ) {
-        $index = $i
-            if $ovens[ $i ] < $ovens[ $index ];
+for ( my $i = 0; $i < @times; ++$i ) {
+    for ( my $j = 0; $j <= $total; ++$j ) {
+        next
+            unless defined $dp[ $i ][ $j ];
+
+        $dp[ $i + 1 ][ $j ]++;
+        $dp[ $i + 1 ][ $j + $times[ $i ] ]++;
     }
-
-    $ovens[ $index ] += $require;
 }
 
-say max @ovens;
+my $answer = first { defined $dp[-1][ $_ ] && $_ > ( $total / 2 ) } 0 .. $total;
 
+say $answer;
 
 
 exit;

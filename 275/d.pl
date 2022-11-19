@@ -5,12 +5,20 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use Memoize;
+
+memoize( "f" );
 
 chomp( my $n = <> );
-my( $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @s = do { chomp( my $l = <> ); split m{\s}, $l };
-my @l = map { chomp; [ split m{\s} ] }
-        map { scalar <> }
-        1 .. $n;
+
+say f( $n );
 
 exit;
+
+sub f {
+    my $x = shift;
+    return 1
+        if $x == 0;
+
+    return f( int( $x / 2 ) ) + f( int( $x / 3 ) );
+}

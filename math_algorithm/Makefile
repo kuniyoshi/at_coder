@@ -26,6 +26,9 @@
 97:
 	cat data/97.1 | ./97.pl
 	cat data/97.2 | ./97.pl
+	cat data/97.3 | ./97.pl
+	cat data/97.4 | ./97.pl
+	cat data/97.5 | ./97.pl
 
 98:
 	cat data/98.1 | ./98.pl

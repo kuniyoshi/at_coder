@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use List::Util qw( first sum );
+use List::Util qw( first sum min max );
 
 chomp( my $n = <> );
 my @times = do { chomp( my $l = <> ); split m{\s}, $l };
@@ -24,7 +24,7 @@ for ( my $i = 0; $i < @times; ++$i ) {
     }
 }
 
-my $answer = first { defined $dp[-1][ $_ ] && $_ > ( $total / 2 ) } 0 .. $total;
+my $answer = min( map { max( $_, $total - $_ ) } grep { defined $dp[-1][ $_ ] } 0 .. $total );
 
 say $answer;
 

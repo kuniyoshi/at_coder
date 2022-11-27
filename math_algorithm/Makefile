@@ -33,6 +33,9 @@
 98:
 	cat data/98.1 | ./98.pl
 	cat data/98.2 | ./98.pl
+	cat data/98.3 | ./98.pl
+	cat data/98.4 | ./98.pl
+	cat data/98.5 | ./98.pl
 
 99:
 	cat data/99.1 | ./99.pl

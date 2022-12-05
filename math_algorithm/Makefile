@@ -40,6 +40,8 @@
 99:
 	cat data/99.1 | ./99.pl
 	cat data/99.2 | ./99.pl
+	cat data/99.3 | ./99.pl
+	cat data/99.4 | ./99.pl
 
 100:
 	cat data/100.1 | ./100.pl

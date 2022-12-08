@@ -45,7 +45,7 @@
 
 100:
 	cat data/100.1 | ./100.pl
-	cat data/100.2 | ./100.pl
+#	cat data/100.2 | ./100.pl
 
 101:
 	cat data/101.1 | ./101.pl

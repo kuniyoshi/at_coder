@@ -7,7 +7,7 @@ use open qw( :utf8 :std );
 use Data::Dumper;
 
 my( $n, $k, $d ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @a = do { chomp( my $l = <> ); split m{\s}, $l };
+my @a = sort { $a <=> $b } do { chomp( my $l = <> ); split m{\s}, $l };
 
 my @dp;
 $dp[0][0][0] = 1;
@@ -34,10 +34,10 @@ sub answer {
     my $mod = 0;
 
     for my $t ( reverse 1 .. $n ) {
-        if ( $dp[ $remain ][ $t ][ $mod ] && $dp[ $remain - 1 ][ $t - 1 ][ ( $d + $mod - $a[ $t - 1 ] ) % $d ] ) {
+        if ( $dp[ $remain ][ $t ][ $mod ] && $dp[ $remain - 1 ][ $t - 1 ][ ( $d + $mod - ( $a[ $t - 1 ] % $d ) ) % $d ] ) {
             $total += $a[ $t - 1 ];
             $remain--;
-            $mod = ( $d + $mod - $a[ $t - 1] ) % $d;
+            $mod = ( $d + $mod - ( $a[ $t - 1] % $d ) ) % $d;
 
             if ( $remain == 0 ) {
                 return $total;

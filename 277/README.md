@@ -48,6 +48,8 @@ Union Find Tree でも良かったみたいです。BFS でやるのが
 
 ## 解説を見たあと
 
+Union Find Tree で良かったみたいです。
+
 # E
 
 ## 振り返り

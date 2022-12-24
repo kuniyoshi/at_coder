@@ -12,51 +12,53 @@ my @edges = map { chomp; [ split m{\s} ] }
             1 .. $m;
 my @s = do { chomp( my $l = <> ); split m{\s}, $l };
 
-my %id;
 my %links;
 
 for my $ref ( @edges ) {
     my( $u, $v, $s ) = @{ $ref };
-    my $id_u = ( $id{ $u }{ $s } //= [ $u, $s ] );
-    my $id_v = ( $id{ $v }{ $s } //= [ $v, $s ] );
-    push @{ $links{ $id_u } }, $id_v;
-    push @{ $links{ $id_v } }, $id_u;
+    $u--;
+    $v--;
+    if ( $s ) {
+        $u += $n;
+        $v += $n;
+    }
+    push @{ $links{ $u } }, [ $v, 1 ];
+    push @{ $links{ $v } }, [ $u, 1 ];
 }
 
 push @s, $n;
 
 for my $s ( @s ) {
-    my $id_u = ( $id{ $s }{ 0 } //= [ $s, 0 ] );
-    my $id_v = ( $id{ $s }{ 1 } //= [ $s, 1 ] );
-    push @{ $links{ $id_u } }, $id_v;
-    push @{ $links{ $id_v } }, $id_u;
+    $s--;
+    push @{ $links{ $s } }, [ $s + $n, 0 ];
+    push @{ $links{ $s + $n } }, [ $s, 0 ];
 }
 
-my @queue = ( [ 0, $id{1}{1} ] );
-my %cost = ( $id{1}{1} => 0 );
+#die Dumper \%links;
+
+my @queue = ( [ 0, $n ] );
+my %cost = ( $n => 0 );
 
 while ( @queue ) {
-    my( $cost, $id ) = @{ shift @queue };
-    #warn "$cost: $id->[0], $id->[1]";
+    my( $cost, $u ) = @{ shift @queue };
     next
-        if exists $cost{ $id } && $cost != $cost{ $id };
+        if exists $cost{ $u } && $cost != $cost{ $u };
 
-    for my $v ( @{ $links{ $id } } ) {
-        my $new = $cost + !!( $id->[0] != $v->[0] );
-        #        warn "\$new: $new";
+    for my $ref ( @{ $links{ $u } } ) {
+        my( $v, $c ) = @{ $ref };
         next
-            if exists $cost{ $v } && $new >= $cost{ $v };
-        $cost{ $v } //= $new;
-        if ( $v->[0] == $id->[0] ) {
-            unshift @queue, [ $new, $v ];
+            if exists $cost{ $v } && $cost + $c >= $cost{ $v };
+        $cost{ $v } = $cost + $c;
+        if ( $c ) {
+            push @queue, [ $cost + $c, $v ];
         }
         else {
-            push @queue, [ $new, $v ];
+            unshift @queue, [ $cost, $v ];
         }
     }
 }
 
-say $cost{ $id{ $n }{0} } // -1;
+say $cost{ 2 * $n - 1 } // -1;
 
 exit;
 

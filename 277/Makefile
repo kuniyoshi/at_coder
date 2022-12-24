@@ -22,5 +22,5 @@ d:
 	cat data/d.3 | ./d.pl
 
 e:
-	cat data/e.1 | ./e.pl
-	cat data/e.2 | ./e.pl
+	cat data/e.1 | ./e2.pl
+	cat data/e.2 | ./e2.pl

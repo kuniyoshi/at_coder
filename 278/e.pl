@@ -26,17 +26,18 @@ for my $i ( 0 .. $height - $h ) {
     }
 
     for my $j ( 0 .. $width - $w ) {
+        if ( $j ) {
+            for my $r ( @{ $deltas[0] } ) {
+                $count{ $a[ $i + $r->[0] ][ $j + $r->[1] - 1 ] }++;
+            }
+            for my $r ( @{ $deltas[1] } ) {
+                my $value = $a[ $i + $r->[0] ][ $j + $r->[1] ];
+                $count{ $value }--;
+                delete $count{ $value }
+                    unless $count{ $value };
+            }
+        }
         printf "%d ", scalar %count;
-        for my $r ( @{ $deltas[0] } ) {
-            my $value = $a[ $i + $r->[0] ][ $j + $r->[1] ];
-            $count{ $value }++;
-        }
-        for my $r ( @{ $deltas[-1] } ) {
-            my $value = $a[ $i + $r->[0] ][ $j + $r->[1] ];
-            $count{ $value }--;
-            delete $count{ $value }
-                unless $count{ $value };
-        }
     }
 
     say q{};

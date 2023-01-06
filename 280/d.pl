@@ -5,71 +5,73 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use List::Util qw( max );
 
 chomp( my $k = <> );
 
-my @factors = factors( $k );
-my $max = max( @factors );
-warn "\$max: $max";
+my %count = factors( $k );
 
-my %count;
-$count{ $_ }++
-    for @factors;
+my $n = bisect( \%count );
 
-my @f = factors( kaijo( $max ) );
-for my $f ( @f ) {
-    $count{ $f }--
-        if $count{ $f };
-    delete $count{ $f }
-        if exists $count{ $f } && $count{ $f } == 0;
-}
-
-my $cursor = $max;
-
-while ( %count ) {
-    my @f = factors( $cursor + 1 );
-    for my $f ( @f ) {
-        $count{ $f }--
-            if $count{ $f };
-        delete $count{ $f }
-            if exists $count{ $f } && $count{ $f } == 0;
-    }
-    $cursor++;
-}
-
-say $cursor;
-
+say $n;
 
 exit;
 
-sub kaijo {
-    my $x = shift;
-    return 1
-        if $x == 1;
-    return $x * kaijo( $x - 1 );
+sub f {
+    my $n = shift;
+    my $count_ref = shift;
+
+    for my $key ( keys %{ $count_ref } ) {
+        my $left = $n;
+        my $count = 0;
+
+        while ( $left > 1 ) {
+            my $c = int( $left / $key );
+            $count += $c;
+            $left = $c;
+        }
+
+        return
+            if $count < $count_ref->{ $key };
+    }
+
+    return 1;
+}
+
+sub bisect {
+    my $count_ref = shift;
+
+    my $wa = 2;
+    my $ac = $k;
+
+    while ( $ac - $wa > 1 ) {
+        my $wj = int( ( $ac + $wa ) / 2 );
+        if ( f( $wj, $count_ref ) ) {
+            $ac = $wj;
+        }
+        else {
+            $wa = $wj;
+        }
+    }
+
+    return $ac;
 }
 
 sub factors {
     my $k = shift;
-    my @factors;
     my $sqrt = sqrt $k;
+    my %count;
 
     my $acc = $k;
-    my %used;
 
     for ( my $i = 2; $i <= $sqrt; ++$i ) {
-        next
-            if $used{ $i }++;
-
         while ( ( $acc % $i ) == 0 ) {
             $acc /= $i;
-            push @factors, $i;
+            $count{ $i }++;
         }
     }
 
-    push @factors, $acc
-        if $acc;
+    $count{ $acc }++
+        if $acc > 1;
 
-    return @factors;
+    return %count;
 }

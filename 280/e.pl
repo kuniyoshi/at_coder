@@ -6,11 +6,10 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 
-chomp( my $n = <> );
-my( $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @s = do { chomp( my $l = <> ); split m{\s}, $l };
-my @l = map { chomp; [ split m{\s} ] }
-        map { scalar <> }
-        1 .. $n;
+my( $n, $p ) = do { chomp( my $l = <> ); split m{\s}, $l };
+$p/=100;
+
+my $d = 2 * $p + 1 - $p;
+say $d;
 
 exit;

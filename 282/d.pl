@@ -45,20 +45,20 @@ for my $i ( 1 .. $n ) {
 my %count;
 
 for my $i ( 1 .. $n ) {
-    if ( !defined $colors[ $i ] ) {
-        say 0;
-        exit;
-    }
-
-    $count{ $colors[ $i ] }++;
+    my $color = $colors[ $i ] // q{C};
+    $count{ $color }++;
 }
 
 my $total = 0;
 
 for my $i ( 1 .. $n ) {
+    if ( !$colors[ $i ] ) {
+        $total += $count{A} + $count{B};
+        next;
+    }
     my $other_color = $colors[ $i ] eq q{A} ? q{B} : q{A};
     my $alreadies = grep { $colors[ $_ ] eq $other_color } @{ $links{ $i } };
-    $total += $count{ $other_color } - $alreadies;
+    $total += $count{ $other_color } - $alreadies + ( $count{C} // 0 );
 }
 
 say $total / 2;

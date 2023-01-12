@@ -6,10 +6,27 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 
-my( $n, $p ) = do { chomp( my $l = <> ); split m{\s}, $l };
-$p/=100;
+my $MOD = 998244353;
 
-my $d = 2 * $p + 1 - $p;
-say $d;
+my( $n, $p ) = do { chomp( my $l = <> ); split m{\s}, $l };
+
+say f( 0, $n );
 
 exit;
+
+sub f {
+    my $count = shift;
+    my $remain = shift;
+
+    if ( $remain == 0 ) {
+        return 0;
+    }
+
+    if ( $remain == 1 ) {
+        return 1;
+    }
+
+    my $total = ( 100 - $p ) / 100 * f( $count + 1, $remain - 1 ) + $p / 100 * f( $count + 1, $remain - 2 );
+
+    return $total;
+}

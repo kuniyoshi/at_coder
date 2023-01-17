@@ -4,6 +4,15 @@ use utf8;
 use strict;
 use warnings;
 
+sub count {
+    my $self = shift;
+    my %count;
+    $count{ $_ }++
+        for map { $self->root( $_ ) }
+            0 .. $#{ $self->{sizes} };
+    return %count;
+}
+
 sub size {
     my $self = shift;
     my $u = shift;

@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use List::Util qw( sum );
 
 my( $n, $m ) = do { chomp( my $l = <> ); split m{\s}, $l };
 my @edges = map { chomp; [ split m{\s} ] }
@@ -12,75 +13,114 @@ my @edges = map { chomp; [ split m{\s} ] }
             1 .. $m;
 
 my %links;
+
 for my $ref ( @edges ) {
     my( $u, $v ) = @{ $ref };
+    $u--;
+    $v--;
     push @{ $links{ $u } }, $v;
     push @{ $links{ $v } }, $u;
 }
 
-my @colors;
-$colors[1] = q{A};
+my $tree = UnionFindTree->new( $n );
 
-#dfs( 1, \my %visited );
-
-my %visited;
-my @queue = ( [ 1, q{A} ] );
-
-while ( @queue ) {
-    my( $u, $color ) = @{ shift @queue };
-    next
-        if $visited{ $u }++;
-    $colors[ $u ] = $color;
-    my $other = $color eq q{A} ? q{B} : q{A};
-    push @queue, map { [ $_, $other ] } grep { !$visited{ $_ } } @{ $links{ $u } };
+for my $ref ( @edges ) {
+    my( $u, $v ) = @{ $ref };
+    $u--;
+    $v--;
+    $tree->unite( $u, $v );
 }
 
-for my $i ( 1 .. $n ) {
-    if ( grep { $colors[ $_ ] eq $colors[ $i ] } @{ $links{ $i } } ) {
-        say 0;
-        exit;
+my %root_count = $tree->count;
+
+my %color_count;
+
+for my $root ( keys %root_count ) {
+    my @queue = ( [ $root, 0 ] );
+    my %color;
+    my %count;
+    my %visited;
+
+    while ( @queue ) {
+        my $ref = shift @queue;
+        my( $v, $c ) = @{ $ref };
+        if ( exists $color{ $v } && $color{ $v } != $c ) {
+            say 0;
+            exit;
+        }
+        next
+            if $visited{ $v }++;
+        $count{ $c }++;
+        push @queue, map { [ $_, !$c ] } grep { !$visited{ $_ } } @{ $links{ $v } };
     }
+
+    $color_count{ $root } = $count{0};
 }
 
-my %count;
-
-for my $i ( 1 .. $n ) {
-    my $color = $colors[ $i ] // q{C};
-    $count{ $color }++;
-}
+my $grand_total = sum( values %root_count );
 
 my $total = 0;
 
-for my $i ( 1 .. $n ) {
-    if ( !$colors[ $i ] ) {
-        $total += $count{A} + $count{B};
-        next;
-    }
-    my $other_color = $colors[ $i ] eq q{A} ? q{B} : q{A};
-    my $alreadies = grep { $colors[ $_ ] eq $other_color } @{ $links{ $i } };
-    $total += $count{ $other_color } - $alreadies + ( $count{C} // 0 );
+for my $root ( keys %root_count ) {
+    $total += ( $grand_total - $root_count{ $root } ) * $root_count{ $root };
+
 }
 
-say $total / 2;
+say $total;
 
 exit;
 
-sub dfs {
-    my $current = shift;
-    my $visited_ref = shift;
+package UnionFindTree;
+use 5.10.0;
+use utf8;
+use strict;
+use warnings;
+
+sub count {
+    my $self = shift;
+    my %count;
+    $count{ $_ }++
+        for map { $self->root( $_ ) }
+            0 .. $#{ $self->{sizes} };
+    return %count;
+}
+
+sub size {
+    my $self = shift;
+    my $u = shift;
+    return $self->{sizes}[ $self->root( $u ) ];
+}
+
+sub unite {
+    my $self = shift;
+    my( $u, $v ) = @_;
+    my( $root_u, $root_v ) = ( $self->root( $u ), $self->root( $v ) );
 
     return
-        if $visited_ref->{ $current }++;
+        if $root_u == $root_v;
 
-    die "no color found at $current"
-        if !defined $colors[ $current ];
-
-    my $other = $colors[ $current ] eq q{A} ? q{B} : q{A};
-
-    for my $next ( grep { !$visited_ref->{ $_ } } @{ $links{ $current } } ) {
-        $colors[ $next ] = $other;
-        dfs( $next, $visited_ref );
-    }
-
-    return;
+    my( $size_u, $size_v ) = @{ $self->{sizes} }[ $root_u, $root_v ];
+    $self->{sizes}[ $root_v ] = $size_u + $size_v;
+    $self->{sizes}[ $root_u ] = $size_u + $size_v;
+    $self->{parents}[ $root_u ] = $root_v;
 }
+
+sub root {
+    my $self = shift;
+    my $v = shift;
+    my $parent = $self->{parents}[ $v ];
+
+    return $v
+        if $parent == $v;
+
+    return $self->{parents}[ $v ] = $self->root( $parent );
+}
+
+sub new {
+    my $class = shift;
+    my $n = shift;
+    my @sizes = ( 1 ) x $n;
+    return bless { parents => [ 0 .. ( $n - 1 ) ], sizes => \@sizes }, $class;
+}
+
+1;

@@ -22,51 +22,106 @@ for my $ref ( @edges ) {
     push @{ $links{ $v } }, $u;
 }
 
-my $tree = UnionFindTree->new( $n );
+my %color;
+my %count;
 
-for my $ref ( @edges ) {
-    my( $u, $v ) = @{ $ref };
-    $u--;
-    $v--;
-    $tree->unite( $u, $v );
+my $is = f( );
+
+if ( !$is ) {
+    say 0;
+    exit;
 }
 
-my %root_count = $tree->count;
+my $total = c( $n );
+my $remain = $total - $m;
 
-my %color_count;
+for my $root ( keys %count ) {
+    $remain -= sum( map { c( $_ ) } values %{ $count{ $root } } );
+}
 
-for my $root ( keys %root_count ) {
-    my @queue = ( [ $root, 0 ] );
-    my %color;
-    my %count;
-    my %visited;
+say $remain;
 
-    while ( @queue ) {
-        my $ref = shift @queue;
-        my( $v, $c ) = @{ $ref };
-        if ( exists $color{ $v } && $color{ $v } != $c ) {
-            say 0;
-            exit;
-        }
+exit;
+
+sub c {
+    my $value = shift;
+    return $value * ( $value - 1 ) / 2;
+}
+
+sub f {
+    for my $v ( 0 .. $n - 1 ) {
         next
-            if $visited{ $v }++;
-        $count{ $c }++;
-        push @queue, map { [ $_, !$c ] } grep { !$visited{ $_ } } @{ $links{ $v } };
+            if exists $color{ $v };
+
+        my $is = dfs( $v, 0, $v );
+        return
+            unless $is;
     }
-
-    $color_count{ $root } = $count{0};
+    return 1;
 }
 
-my $grand_total = sum( values %root_count );
-
-my $total = 0;
-
-for my $root ( keys %root_count ) {
-    $total += ( $grand_total - $root_count{ $root } ) * $root_count{ $root };
-
+sub dfs {
+    my $v = shift;
+    my $color = shift;
+    my $root = shift;
+    return
+        if exists $color{ $v } && $color != $color{ $v };
+    return 1
+        if exists $color{ $v };
+    $color{ $v } = $color;
+    $count{ $root }{ $color }++;
+    for my $u ( @{ $links{ $v } } ) {
+        return
+            unless dfs( $u, $color ? 0 : 1, $root );
+    }
+    return 1;
 }
 
-say $total;
+# my $tree = UnionFindTree->new( $n );
+# 
+# for my $ref ( @edges ) {
+#     my( $u, $v ) = @{ $ref };
+#     $u--;
+#     $v--;
+#     $tree->unite( $u, $v );
+# }
+# 
+# my %root_count = $tree->count;
+# 
+# my %color_count;
+# 
+# for my $root ( keys %root_count ) {
+#     my @queue = ( [ $root, 0 ] );
+#     my %color;
+#     my %count;
+#     my %visited;
+# 
+#     while ( @queue ) {
+#         my $ref = shift @queue;
+#         my( $v, $c ) = @{ $ref };
+#         if ( exists $color{ $v } && $color{ $v } != $c ) {
+#             say 0;
+#             exit;
+#         }
+#         next
+#             if $visited{ $v }++;
+#         $count{ $c }++;
+#         push @queue, map { [ $_, !$c ] } grep { !$visited{ $_ } } @{ $links{ $v } };
+#     }
+# 
+#     $color_count{ $root } = $count{0};
+# }
+# 
+# my $grand_total = sum( values %root_count );
+# 
+# my $total = 0;
+# 
+# for my $root ( keys %root_count ) {
+#     $total += ( $grand_total - $root_count{ $root } ) * $root_count{ $root };
+# 
+# }
+# 
+# say $total;
 
 exit;
 

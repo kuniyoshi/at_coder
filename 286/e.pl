@@ -35,16 +35,27 @@ for ( my $i = 0; $i < @s; ++$i ) {
     }
 }
 
+my %previous;
+
 for my $k ( 0 .. $n - 1 ) {
     for my $i ( 0 .. $n - 1 ) {
         for my $j ( 0 .. $n - 1 ) {
             my $curr = $d[ $i ][ $j ];
             my $new = $d[ $i ][ $k ] + $d[ $k ][ $j ];
 
+            if ( $new < $curr ) {
+                $previous{ $i }{ $j } = exists $previous{ $k }{ $j } ? [ $previous{ $k }{ $j } ] : [ ];
+            }
+            elsif ( $new == $curr ) {
+                push @{ $previous{ $i }{ $j } }, $k;
+            }
+
             $d[ $i ][ $j ] = min( $curr, $new );
         }
     }
 }
+
+die Dumper \%previous;
 
 my %links;
 
@@ -72,7 +83,7 @@ for my $ref ( @queries ) {
 
     my $total = 0;
 
-    #warn "($from, $to)";
+    warn "($from, $to)";
 
     while ( @queue ) {
         my( $v, $sum, $count ) = @{ shift @queue };
@@ -81,7 +92,7 @@ for my $ref ( @queries ) {
         $sum += $a[ $v ];
 
         if ( $v == $to ) {
-            #            warn "\$v: $v";
+            warn "\$v: $v";
             $total = max( $total, $sum );
             next;
         }
@@ -89,7 +100,7 @@ for my $ref ( @queries ) {
         next
             if $count == $cost;
 
-            #warn join q{, }, map { "$v -> $_" } grep { !$visited{ $_ } } @{ $links{ $v } };
+        warn join q{, }, map { "$v -> $_" } grep { !$visited{ $_ } } @{ $links{ $v } };
         push @queue, map { [ $_, $sum, $count + 1 ] } grep { !$visited{ $_ } } @{ $links{ $v } };
     }
 

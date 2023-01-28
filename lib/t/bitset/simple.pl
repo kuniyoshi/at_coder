@@ -11,7 +11,9 @@ use Readonly;
 Readonly my $SIZE => 7;
 
 my $a = Bitset->new( $SIZE )->one;
-say $a->is_zero;
+say $a->dump;
+$a->shift_left( 2 );
+say $a->dump;
 
 __END__
 my $a = Bitset->new( $SIZE )->one;

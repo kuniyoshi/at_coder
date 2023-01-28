@@ -8,7 +8,7 @@ use POSIX qw( ceil );
 
 use Readonly;
 
-Readonly my $BITS_PER_VARIABLE => 4;
+Readonly my $BITS_PER_VARIABLE => 64;
 
 #
 # index:      n, n - 1, ... 0
@@ -51,6 +51,19 @@ sub is_zero {
     return !grep { $_ } @{ $self->{bits} };
 }
 
+sub at {
+    my $self = shift;
+    my $at = shift;
+
+    return
+        if $at >= $self->{length};
+
+    my $chunk_position = int( $at / $BITS_PER_VARIABLE );
+    my $bit_position = 1 << ( $at % $BITS_PER_VARIABLE );
+
+    return $self->{bits}[ $chunk_position ] & $bit_position;
+}
+
 sub shift_left {
     my $self = shift;
     my $length = shift
@@ -72,9 +85,10 @@ sub shift_left {
 
     $self->{bits}[ 0 ] <<= $remain;
 
-    my $omit = $BITS_PER_VARIABLE - $self->{length} % $BITS_PER_VARIABLE;
+    my $require = $self->{length} % $BITS_PER_VARIABLE;
+    my $mask = ( 1 << ( $require + 1 ) ) - 1;
 
-    $self->{bits}[-1] &= ( 1 << ( $omit + 1 ) - 1 );
+    $self->{bits}[-1] &= $mask;
 }
 
 sub or {

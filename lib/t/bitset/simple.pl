@@ -6,14 +6,14 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 use Bitset;
-use Readonly;
+use Test::More;
 
-Readonly my $SIZE => 7;
+plan tests => 2;
 
-my $a = Bitset->new( $SIZE )->one;
-say $a->dump;
+my $a = Bitset->new( 7 )->one;
+is( $a->dump, "0000001" );
 $a->shift_left( 2 );
-say $a->dump;
+is( $a->dump, "0000100" );
 
 __END__
 my $a = Bitset->new( $SIZE )->one;

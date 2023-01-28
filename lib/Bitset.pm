@@ -6,9 +6,7 @@ package Bitset;
 use Readonly;
 use POSIX qw( ceil );
 
-use Readonly;
-
-Readonly my $BITS_PER_VARIABLE => 64;
+sub BITS_PER_VARIABLE { 64 }
 
 #
 # index:      n, n - 1, ... 0
@@ -18,8 +16,14 @@ Readonly my $BITS_PER_VARIABLE => 64;
 sub new {
     my $class = shift;
     my $length = shift;
-    my $size = ceil( $length / $BITS_PER_VARIABLE );
-    return bless { length => $length, bits => [ ( 0 ) x $size ] };
+    my $size = ceil( $length / $class->BITS_PER_VARIABLE );
+    return bless { length => $length, bits => [ ( 0 ) x $size ] }, $class;
+}
+
+sub clone {
+    my $self = shift;
+    my $class = ref $self;
+    return bless { length => $self->{length}, bits => [ @{ $self->{bits} } ] }, $class;
 }
 
 sub one {
@@ -37,8 +41,10 @@ sub dump {
     my @partitions;
 
     for ( my $i = 0; $i < @{ $self->{bits} }; ++$i ) {
-        my $width = $remain > $BITS_PER_VARIABLE ? $BITS_PER_VARIABLE : $remain;
-        $remain = $remain - $BITS_PER_VARIABLE;
+        my $width = $remain > $self->BITS_PER_VARIABLE ? $self->BITS_PER_VARIABLE : $remain;
+        warn "\$width: $width";
+        warn "length: ", length( sprintf "%0${width}b", $self->{bits}[ $i ] );
+        $remain = $remain - $self->BITS_PER_VARIABLE;
         push @partitions, sprintf "%0${width}b", $self->{bits}[ $i ];
     }
 
@@ -58,8 +64,8 @@ sub at {
     return
         if $at >= $self->{length};
 
-    my $chunk_position = int( $at / $BITS_PER_VARIABLE );
-    my $bit_position = 1 << ( $at % $BITS_PER_VARIABLE );
+    my $chunk_position = int( $at / $self->BITS_PER_VARIABLE );
+    my $bit_position = 1 << ( $at % $self->BITS_PER_VARIABLE );
 
     return $self->{bits}[ $chunk_position ] & $bit_position;
 }
@@ -69,23 +75,23 @@ sub shift_left {
     my $length = shift
         or return;
 
-    my $chunk_size = int( $length / $BITS_PER_VARIABLE );
+    my $chunk_size = int( $length / $self->BITS_PER_VARIABLE );
 
     pop @{ $self->{bits} }
         for 1 .. $chunk_size;
     unshift @{ $self->{bits} }, 0
         for 1 .. $chunk_size;
 
-    my $remain = $length - $chunk_size * $BITS_PER_VARIABLE;
+    my $remain = $length - $chunk_size * $self->BITS_PER_VARIABLE;
 
     for ( my $i = $#{ $self->{bits} }; $i > 0; --$i ) {
         $self->{bits}[ $i ] <<= $remain;
-        $self->{bits}[ $i ] |= $self->{bits}[ $i - 1 ] >> ( $BITS_PER_VARIABLE - $remain );
+        $self->{bits}[ $i ] |= $self->{bits}[ $i - 1 ] >> ( $self->BITS_PER_VARIABLE - $remain );
     }
 
     $self->{bits}[ 0 ] <<= $remain;
 
-    my $require = $self->{length} % $BITS_PER_VARIABLE;
+    my $require = $self->{length} % $self->BITS_PER_VARIABLE;
     my $mask = ( 1 << ( $require + 1 ) ) - 1;
 
     $self->{bits}[-1] &= $mask;
@@ -105,11 +111,11 @@ sub or {
     }
 
     return
-        if ( ( $self->{length} % $BITS_PER_VARIABLE ) == 0 );
+        if ( ( $self->{length} % $self->BITS_PER_VARIABLE ) == 0 );
 
-    my $omit = $BITS_PER_VARIABLE - $self->{length} % $BITS_PER_VARIABLE;
+    my $omit = $self->BITS_PER_VARIABLE - ( $self->{length} % $self->BITS_PER_VARIABLE );
 
-    $self->{bits}[-1] &= ( 1 << ( $omit + 1 ) - 1 );
+    $self->{bits}[-1] &= ( 1 << ( $omit + 1 ) ) - 1;
 }
 
 sub and {

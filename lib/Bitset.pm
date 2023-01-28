@@ -45,6 +45,12 @@ sub dump {
     return join q{_}, reverse @partitions;
 }
 
+sub is_zero {
+    my $self = shift;
+
+    return !grep { $_ } @{ $self->{bits} };
+}
+
 sub shift_left {
     my $self = shift;
     my $length = shift
@@ -59,32 +65,53 @@ sub shift_left {
 
     my $remain = $length - $chunk_size * $BITS_PER_VARIABLE;
 
-    for ( my $i = $#{ $self->{bits} }; $i >= 0; --$i ) {
-        warn "\$i: $i";
+    for ( my $i = $#{ $self->{bits} }; $i > 0; --$i ) {
+        $self->{bits}[ $i ] <<= $remain;
+        $self->{bits}[ $i ] |= $self->{bits}[ $i - 1 ] >> ( $BITS_PER_VARIABLE - $remain );
     }
+
+    $self->{bits}[ 0 ] <<= $remain;
+
+    my $omit = $BITS_PER_VARIABLE - $self->{length} % $BITS_PER_VARIABLE;
+
+    $self->{bits}[-1] &= ( 1 << ( $omit + 1 ) - 1 );
 }
 
-#sub and {
-#    my $self = shift;
-#    my $other = shift // 0;
-#
-#    if ( ref $other eq q{} ) {
-#        $this->[0] & $other;
-#        return;
-#    }
-#
-#    my( $longer, $shorter );
-#
-#    if ( @{ $self } > @{ $other } ) {
-#        ( $longer, $shorter ) = ( $self, $other );
-#    }
-#    else {
-#        ( $longer, $shorter ) = ( $other, $self );
-#    }
-#
-#    for my $i ( 0 .. $#{ $shorter } ) {
-#
-#    }
-#}
+sub or {
+    my $self = shift;
+    my $other = shift;
+
+    # test other's class
+
+    for ( my $i = 0; $i < @{ $self->{bits} }; ++$i ) {
+        last
+            if $i == @{ $other->{bits} };
+
+        $self->{bits}[ $i ] |= $other->{bits}[ $i ];
+    }
+
+    return
+        if ( ( $self->{length} % $BITS_PER_VARIABLE ) == 0 );
+
+    my $omit = $BITS_PER_VARIABLE - $self->{length} % $BITS_PER_VARIABLE;
+
+    $self->{bits}[-1] &= ( 1 << ( $omit + 1 ) - 1 );
+}
+
+sub and {
+    my $self = shift;
+    my $other = shift;
+
+    # test other's class
+
+    for ( my $i = 0; $i < @{ $self->{bits} }; ++$i ) {
+        last
+            if $i == @{ $other->{bits} };
+
+        $self->{bits}[ $i ] &= $other->{bits}[ $i ];
+    }
+
+    # ignore higher chunk, it will not change
+}
 
 1;

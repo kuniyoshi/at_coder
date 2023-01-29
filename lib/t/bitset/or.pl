@@ -8,7 +8,7 @@ use Data::Dumper;
 use Test::More;
 use Bitset;
 
-plan tests => 2;
+plan tests => 3;
 
 my $a = Bitset->new( 7 )->one;
 is( $a->dump, "0000001" );

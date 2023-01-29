@@ -42,8 +42,6 @@ sub dump {
 
     for ( my $i = 0; $i < @{ $self->{bits} }; ++$i ) {
         my $width = $remain > $self->BITS_PER_VARIABLE ? $self->BITS_PER_VARIABLE : $remain;
-        warn "\$width: $width";
-        warn "length: ", length( sprintf "%0${width}b", $self->{bits}[ $i ] );
         $remain = $remain - $self->BITS_PER_VARIABLE;
         push @partitions, sprintf "%0${width}b", $self->{bits}[ $i ];
     }
@@ -92,7 +90,7 @@ sub shift_left {
     $self->{bits}[ 0 ] <<= $remain;
 
     my $require = $self->{length} % $self->BITS_PER_VARIABLE;
-    my $mask = ( 1 << ( $require + 1 ) ) - 1;
+    my $mask = ( 1 << $require ) - 1;
 
     $self->{bits}[-1] &= $mask;
 }

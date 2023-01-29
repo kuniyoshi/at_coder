@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 package Bitset;
-use Readonly;
 use POSIX qw( ceil );
 
 sub BITS_PER_VARIABLE { 64 }

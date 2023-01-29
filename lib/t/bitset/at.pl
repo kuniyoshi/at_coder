@@ -18,7 +18,12 @@ $a->shift_left( 2 );
 
 is( $a->at( 0 ), 0 );
 is( $a->at( 1 ), 0 );
-is( $a->at( 2 ), 1 );
+is( $a->at( 2 ), 1 << 2 );
+
+my $b = Bitset->new( 100 + 1 )->one;
+
+$b->shift_left( 63 );
+#is( $b->at( 
 
 
 exit;

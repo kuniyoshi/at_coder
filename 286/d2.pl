@@ -43,7 +43,6 @@ use strict;
 use warnings;
 
 package Bitset;
-use Readonly;
 use POSIX qw( ceil );
 
 sub BITS_PER_VARIABLE { 64 }
@@ -55,7 +54,8 @@ sub BITS_PER_VARIABLE { 64 }
 
 sub new {
     my $class = shift;
-    my $length = shift;
+    my $length = shift
+        or die "length required";
     my $size = ceil( $length / $class->BITS_PER_VARIABLE );
     return bless { length => $length, bits => [ ( 0 ) x $size ] }, $class;
 }
@@ -152,8 +152,8 @@ sub or {
         if ( ( $self->{length} % $self->BITS_PER_VARIABLE ) == 0 );
 
     my $omit = $self->BITS_PER_VARIABLE - ( $self->{length} % $self->BITS_PER_VARIABLE );
-
-    $self->{bits}[-1] &= ( 1 << ( $omit + 1 ) ) - 1;
+    my $mask = ( -1 << $omit ) >> $omit;
+    $self->{bits}[-1] &= $mask;
 }
 
 sub and {

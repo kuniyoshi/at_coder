@@ -14,10 +14,10 @@ my $remain = $m;
 while ( $remain-- ) {
     chomp( my $unuse = <> );
     my @a = do { chomp( my $l = <> ); split m{\s}, $l };
-    my %set;
-    $set{ $_ }++
+    my $bits = 0;
+    $bits |= 1 << ($_ - 1 )
         for @a;
-    push @sets, \%set;
+    push @sets, $bits;
 }
 
 my $answer = 0;
@@ -26,16 +26,12 @@ OUTER:
 for my $i ( 0 .. ( 2 ** $m - 1 ) ) {
     my @bits = reverse split m{}, sprintf "%b", $i;
     my @selections = grep { $bits[ $_ ] } 0 .. $#bits;
-    die "somehow"
-        if $i == 0 && @selections;
-    for my $j ( 1 .. $n ) {
-        next OUTER
-            if !grep { $_->{ $j } } @sets[ @selections ];
+    my $bits = 0;
+    $bits |= $_
+        for @sets[ @selections ];
+    if ( $bits == ( 1 << $n ) - 1 ) {
+        $answer++;
     }
-    #warn join q{, }, @bits;
-    #warn join q{, }, @selections;
-    #die Dumper [ @sets[ @selections ] ];
-    $answer++;
 }
 
 say $answer;

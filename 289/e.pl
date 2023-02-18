@@ -6,15 +6,6 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 
-for my $i ( 0 .. 2000 ) {
-    for my $j ( 0 .. 2000 ) {
-        for my $k ( 0 .. 2000 ) {
-        }
-    }
-}
-
-__END__
-
 chomp( my $t = <> );
 
 while ( $t-- ) {
@@ -30,6 +21,8 @@ sub solve {
                 map { scalar <> }
                 1 .. $m;
 
+    unshift @c, 0;
+
     my %links;
 
     for my $ref ( @edges ) {
@@ -38,5 +31,28 @@ sub solve {
         push @{ $links{ $v } }, $u;
     }
 
+    my @queue = ( [ 1, $n, 0 ] );
+    my %visited;
 
+    while ( @queue ) {
+        my( $t, $a, $cost ) = @{ shift @queue };
+
+        return $cost
+            if $t == $n && $a == 1;
+        next
+            if $visited{ $t }{ $a }++;
+
+        for my $tn ( @{ $links{ $t } } ) {
+            for my $an ( @{ $links{ $a } } ) {
+                next
+                    if $visited{ $tn }{ $an };
+                next
+                    if $c[ $an ] == $c[ $tn ];
+
+                push @queue, [ $tn, $an, $cost + 1 ];
+            }
+        }
+    }
+
+    return -1;
 }

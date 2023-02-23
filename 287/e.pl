@@ -11,12 +11,40 @@ my @s = map { chomp; [ split m{} ] }
         map { scalar <> }
         1 .. $n;
 
-my %count;
+my %trie;
 
 for my $s_ref ( @s ) {
-    for ( my $i = 0; $i < @{ $s_ref }; ++$i ) {
-        $count{ $s_ref->[ $i ] }++;
-    }
+    my @chars = @{ $s_ref };
+    r( \@chars, \%trie );
+}
+
+for my $s_ref ( @s ) {
+    say count( 0, $s_ref, \%trie );
 }
 
 exit;
+
+sub count {
+    my $depth = shift;
+    my $chars_ref = shift;
+    my $tree_ref = shift;
+
+    if ( !%{ $tree_ref } ) {
+        return 0;
+    }
+
+    if ( %{ $tree_ref } == 1 ||
+}
+
+sub r {
+    my $chars_ref = shift;
+    my $tree_ref = shift;
+    $tree_ref->{__count}++;
+    if ( !@{ $chars_ref } ) {
+        return;
+    }
+    my $char = shift @{ $chars_ref };
+    warn "\$char: $char";
+    $tree_ref->{ $char } //= { };
+    r( $chars_ref, $tree_ref->{ $char } );
+}

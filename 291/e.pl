@@ -11,23 +11,24 @@ my @xy = map { chomp; [ split m{\s} ] }
          map { scalar <> }
          1 .. $m;
 
-my %isnt_max;
-
+my %out_degree;
 my %link;
 
 for my $ref ( @xy ) {
     my( $x, $y ) = @{ $ref };
-    $isnt_max{ $x }++;
+    $out_degree{ $x }++
+        unless $link{ $y }{ $x };
     $link{ $y }{ $x }++;
 }
 
-my @s = grep { !$isnt_max{ $_ } } 1 .. $n;
-my @l;
+my @s = grep { !$out_degree{ $_ } } 1 .. $n;
 
 if ( !@s ) {
     say YesNo::get( 0 );
     exit;
 }
+
+my @l;
 
 while ( @s ) {
     if ( @s > 1 ) {
@@ -37,19 +38,17 @@ while ( @s ) {
     my $v = shift @s;
     push @l, $v;
     for my $w ( keys %{ $link{ $v } // { } } ) {
-        if ( $isnt_max{ $w } ) {
-            $isnt_max{ $w }--;
+        delete $link{ $v }{ $w };
+        if ( $out_degree{ $w } ) {
+            $out_degree{ $w }--;
             push @s, $w
-                unless $isnt_max{ $w };
+                unless $out_degree{ $w };
         }
     }
 }
 
-my @whole = 1 .. $n;
-
 say YesNo::get( 1 );
-warn join q{ }, @l;
-say join q{ }, map { $_->[1] } sort { $a->[0] <=> $b->[0] } map { [ $l[ $_ ], $whole[ $_ ] ] } 0 .. $#l;
+say join q{ }, map { $n - $_ + 1 } @l;
 
 exit;
 

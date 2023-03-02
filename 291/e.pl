@@ -11,24 +11,25 @@ my @xy = map { chomp; [ split m{\s} ] }
          map { scalar <> }
          1 .. $m;
 
-my %out_degree;
+my %in_degree;
 my %link;
 
 for my $ref ( @xy ) {
     my( $x, $y ) = @{ $ref };
-    $out_degree{ $x }++
-        unless $link{ $y }{ $x };
-    $link{ $y }{ $x }++;
+    $in_degree{ $y }++
+        unless $link{ $x }{ $y };
+    $link{ $x }{ $y }++;
 }
 
-my @s = grep { !$out_degree{ $_ } } 1 .. $n;
+my @s = grep { !$in_degree{ $_ } } 1 .. $n;
 
 if ( !@s ) {
     say YesNo::get( 0 );
     exit;
 }
 
-my @l;
+my @values;
+my $value = 0;
 
 while ( @s ) {
     if ( @s > 1 ) {
@@ -36,19 +37,17 @@ while ( @s ) {
         exit;
     }
     my $v = shift @s;
-    push @l, $v;
+    $values[ $v - 1 ] = ++$value;
     for my $w ( keys %{ $link{ $v } // { } } ) {
-        delete $link{ $v }{ $w };
-        if ( $out_degree{ $w } ) {
-            $out_degree{ $w }--;
-            push @s, $w
-                unless $out_degree{ $w };
-        }
+        $in_degree{ $w }--;
+        push @s, $w
+            if $in_degree{ $w } == 0;
     }
 }
 
 say YesNo::get( 1 );
-say join q{ }, map { $n - $_ + 1 } @l;
+#say join q{ }, map { $n - $_ + 1 } reverse @l;
+say join q{ }, @values;
 
 exit;
 

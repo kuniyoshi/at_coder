@@ -28,8 +28,7 @@ if ( !@s ) {
     exit;
 }
 
-my @values;
-my $value = 0;
+my @l;
 
 while ( @s ) {
     if ( @s > 1 ) {
@@ -37,7 +36,7 @@ while ( @s ) {
         exit;
     }
     my $v = shift @s;
-    $values[ $v - 1 ] = ++$value;
+    push @l, $v;
     for my $w ( keys %{ $link{ $v } // { } } ) {
         $in_degree{ $w }--;
         push @s, $w
@@ -45,9 +44,13 @@ while ( @s ) {
     }
 }
 
+#my @values;
+#my $value = 1;
+#$values[ $_ - 1 ] = $value++
+#    for @l;
+
 say YesNo::get( 1 );
-#say join q{ }, map { $n - $_ + 1 } reverse @l;
-say join q{ }, @values;
+say join q{ }, map { $_->[0] } sort { $a->[1] <=> $b->[1] } map { [ $_ + 1, $l[ $_ ] ] } reverse 0 .. $#l;
 
 exit;
 

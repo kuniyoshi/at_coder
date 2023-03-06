@@ -15,11 +15,21 @@ memoize( "kaijou" );
 
 chomp( my $n = <> );
 
+my %patterns;
+
+for my $i ( 1 .. $n ) {
+    for my $j ( 1 .. $n ) {
+        last
+            if $i * $j > $n;
+        $patterns{ $i * $j }++;
+    }
+}
+
 my $count = 0;
 
-for my $ab ( 1 .. $n - 1 / 2 ) {
+for my $ab ( 1 .. $n - 1 ) {
     my $cd = $n - $ab;
-    $count += g( $ab ) * g( $cd );
+    $count += $patterns{ $ab } * $patterns{ $cd };
 }
 
 say $count;

@@ -22,7 +22,7 @@ my $total = 0;
 
 for my $v ( 1 .. $n ) {
     my %visited;
-    my @queue = @{ $links{ $v } // [ ] };
+    my @queue = ( $v );
 
     while ( @queue ) {
         my $w = shift @queue;
@@ -31,10 +31,10 @@ for my $v ( 1 .. $n ) {
         push @queue, grep { !$visited{ $_ } } @{ $links{ $w } // [ ] };
     }
 
-    $total += %visited - @{ $links{ $v } // [ ] };
+    $total += %visited - 1;
 }
 
-say $total;
+say $total - $m;
 
 
 exit;

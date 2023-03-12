@@ -6,6 +6,7 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 use List::Util qw( min );
+use Time::HiRes qw( tv_interval );
 
 my $s = State->new( height => 3, width => 4, seed => 42, turn_limit => 4 );
 $s->dump;
@@ -68,6 +69,21 @@ sub random {
     }
 
     return $total / $playout;
+}
+
+package TimeLimit {
+    use Time::HiRes qw( tv_interval gettimeofday );
+
+    sub new {
+        my $class = shift;
+        my $limit = shift;
+        return bless { began_at => [ gettimeofday ] }, $class;
+    }
+
+    sub did_exceeded {
+        my $self = shift;
+        return tv_interval( $self->{began_at}, [ gettimeofday ] ) > $limit;
+    }
 }
 
 package State {

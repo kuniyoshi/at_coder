@@ -7,6 +7,9 @@ use open qw( :utf8 :std );
 use Data::Dumper;
 use List::Util qw( min );
 use Time::HiRes qw( tv_interval );
+use Readonly;
+
+Readonly my $TIME_LIMIT => 0.0001;
 
 my $s = State->new( height => 3, width => 4, seed => 42, turn_limit => 4 );
 $s->dump;
@@ -27,17 +30,26 @@ sub chokudai_search {
     srand $seed;
 
     my $total = 0;
+    my $count = 0;
     my @chokudai_beams = map { { set => { }, beams => [ ] } } 0 .. $beam_depth;
     $chokudai_beams[0] = { set => { q{} => 1 }, beams => [ { operations => [ ], state => $base->clone } ] };
 
     for my $p ( 0 .. $playout - 1 ) {
+        my $timer = TimeLimit->new( $TIME_LIMIT );
+
         for my $i ( 0 .. $beam_size - 1 ) {
+            last
+                if $timer->did_exceeded;
             for my $j ( 0 .. $beam_depth - 1 ) {
+                last
+                    if $timer->did_exceeded;
                 my @current_beams = @{ $chokudai_beams[ $j ]{beams} };
                 my %next_operation = %{ $chokudai_beams[ $j + 1 ]{set} };
                 my @next_beams = @{ $chokudai_beams[ $j + 1 ]{beams} };
 
                 for my $k ( 0 .. min( $beam_width - 1, $#current_beams ) ) {
+                    last
+                        if $timer->did_exceeded;
                     my %h = %{ shift @current_beams };
 
                     for my $action ( $h{state}->valid_actions ) {
@@ -49,15 +61,24 @@ sub chokudai_search {
                     }
                 }
 
+                next
+                    unless @next_beams;
+
                 $chokudai_beams[ $j + 1 ]{beams} = [ sort { $b->{state}->score <=> $a->{state}->score } @next_beams ];
                 $#{ $chokudai_beams[ $j + 1 ]{beams} } = min( $#{ $chokudai_beams[ $j + 1 ]{beams} }, $beam_width );
             }
         }
 
+        next
+            unless @{ $chokudai_beams[ $beam_depth ]{beams} };
+
         $total += $chokudai_beams[ $beam_depth ]{beams}[0]{state}->score;
+        $count++;
     }
 
-    return $total / $playout;
+    return 0
+        unless $count;
+    return $total / $count;
 }
 
 sub get_operations_hash {
@@ -75,14 +96,22 @@ sub beam_search {
     srand $seed;
 
     my $total = 0;
+    my $count = 0;
 
     for my $i ( 0 .. $playout - 1 ) {
         my @beams = ( $base->clone );
 
+        my $timer = TimeLimit->new( $TIME_LIMIT );
+
         for my $j ( 0 .. $beam_depth - 1 ) {
+            last
+                if $timer->did_exceeded;
             my @next_beams;
 
             for my $beam ( @beams ) {
+                last
+                    if $timer->did_exceeded;
+
                 push @next_beams, map {
                     my $state = $beam->clone;
                     $state->advance( $_ );
@@ -94,10 +123,16 @@ sub beam_search {
             $#beams = min( $#beams, $beam_width - 1 );
         }
 
+        next
+            unless @beams;
+
+        $count++;
         $total += $beams[0]->score;
     }
 
-    return $total / $playout;
+    return 0
+        unless $count;
+    return $total / $count;
 }
 
 sub random {

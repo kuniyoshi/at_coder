@@ -5,11 +5,13 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use List::Util qw( min );
 
 my $s = State->new( height => 3, width => 4, seed => 42, turn_limit => 4 );
+$s->dump;
 
 #say random( $s, 92, 1000 ); # 12.754
-say beam_search( $s, 92, 1000 );
+#say beam_search( $s, 92, 1000, 4, 100 ); # 23
 
 exit;
 
@@ -17,12 +19,31 @@ sub beam_search {
     my $base = shift;
     my $seed = shift;
     my $playout = shift;
+    my $beam_depth = shift;
+    my $beam_width = shift;
     srand $seed;
 
     my $total = 0;
 
     for my $i ( 0 .. $playout - 1 ) {
-        my $state = $base->clone;
+        my @beams = ( $base->clone );
+
+        for my $j ( 0 .. $beam_depth - 1 ) {
+            my @next_beams;
+
+            for my $beam ( @beams ) {
+                push @next_beams, map {
+                    my $state = $beam->clone;
+                    $state->advance( $_ );
+                    $state
+                } $beam->valid_actions;
+            }
+
+            @beams = sort { $b->score <=> $a->score } @next_beams;
+            $#beams = min( $#beams, $beam_width - 1 );
+        }
+
+        $total += $beams[0]->score;
     }
 
     return $total / $playout;

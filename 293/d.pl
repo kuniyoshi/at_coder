@@ -11,59 +11,26 @@ my @abcd = map { chomp; [ split m{\s} ] }
            map { scalar <> }
            1 .. $m;
 
-my %links;
+my $tree = UnionFindTree->new( $n );
+my $loop_count = 0;
 
 for my $ref ( @abcd ) {
     my( $a, $b, $c, $d ) = @{ $ref };
     $a--;
     $c--;
-    if ( $b eq q{B} ) {
-        $a += $n;
+
+    if ( $tree->root( $a ) == $tree->root( $c ) ) {
+        $loop_count++;
     }
-    if ( $d eq q{B} ) {
-        $c += $n;
-    }
-    push @{ $links{ $a } }, $c;
-    push @{ $links{ $c } }, $a;
+
+    $tree->unite( $a, $c );
 }
 
-for my $i ( 0 .. $n - 1 ) {
-    my $j = $i + $n;
-    push @{ $links{ $i } }, $j;
-    push @{ $links{ $j } }, $i;
-}
+my %root;
+$root{ $tree->root( $_ ) }++
+    for 0 .. $n - 1;
 
-my $tree = UnionFindTree->new( 2 * $n );
-
-for my $i ( 0 .. $n - 1 ) {
-    for my $j ( @{ $links{ $i } // [ ] } ) {
-        $tree->unite( $i, $j );
-    }
-}
-
-for my $i ( 0 .. $n - 1 ) {
-    $tree->unite( $i, $i + $n );
-}
-
-my %vetex_count;
-my %edge_count;
-
-for my $i ( 0 .. $n - 1 ) {
-    my $root = $tree->root( $i );
-    $vetex_count{ $root }++;
-    $vetex_count{ $root }++;
-    $edge_count{ $root } += @{ $links{ $i } // [ ] };
-    $edge_count{ $root } += @{ $links{ $i + $n } // [ ] };
-}
-
-my $count = 0;
-
-for my $root ( keys %vetex_count ) {
-    $count++
-        if $vetex_count{ $root } == $edge_count{ $root } / 2;
-}
-
-say $count, q{ }, %vetex_count - $count;
+say $loop_count, q{ }, scalar %root - $loop_count;
 
 exit;
 

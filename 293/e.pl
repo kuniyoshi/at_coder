@@ -6,6 +6,32 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 
+say f( 3, 0 );
+say f( 3, 1 );
+say f( 3, 2 );
+say f( 3, 3 );
+say f( 3, 4 );
+say f( 3, 5 );
+
+sub f {
+    my $x = shift;
+    my $y = shift;
+    my $a = 1;
+
+    while ( $y ) {
+        if ( $y & 1 ) {
+            $a *= $x;
+        }
+        else {
+            $a *= $x;
+        }
+        $y >>= 1;
+    }
+
+    return $a;
+}
+
+__END__
 my $x = 4;
 my $m = 700;
 

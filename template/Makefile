@@ -1,4 +1,4 @@
-.PHONY: a b c d e
+.PHONY: a b c d e f
 
 a:
 	cat data/a.1 | ./a.pl
@@ -19,3 +19,7 @@ d:
 e:
 	cat data/e.1 | ./e.pl
 	cat data/e.2 | ./e.pl
+
+f:
+	cat data/f.1 | ./f.pl
+	cat data/f.2 | ./f.pl

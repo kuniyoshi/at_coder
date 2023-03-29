@@ -28,6 +28,18 @@ for my $i ( 0 .. @s ) {
         for 0 .. 9;
 }
 
-die Dumper \@values;
+my %count;
+$count{ $_ }++
+    for @values;
+
+my $result = 0;
+
+for my $count ( values %count ) {
+    next
+        if $count == 1;
+    $result += $count * ( $count - 1 ) / 2;
+}
+
+say $result;
 
 exit;

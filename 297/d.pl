@@ -5,22 +5,21 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use POSIX qw( floor );
 
 my( $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @pair = ( $a, $b );
 
 my $count = 0;
 
-while ( $pair[0] != $pair[1] ) {
-    my $large = $pair[0] > $pair[1] ? 0 : 1;
-    my $small = !$large || 0;
+while ( $a != $b ) {
+    my( $large, $small ) = $a > $b ? ( \$a, \$b ) : ( \$b, \$a );
 
     my $ac = 1;
-    my $wa = int( $pair[ $large ] / $pair[ $small ] ) + 1;
+    my $wa = int( ${ $large } / ${ $small } ) + 1;
 
     while ( $wa - $ac > 1 ) {
         my $wj = int( ( $ac + $wa ) / 2 );
-        if ( $pair[ $large ] - $wj * $pair[ $small ] >= $pair[ $small ] ) {
+        if ( $$large >= ( 1 + $wj ) * $$small ) {
             $ac = $wj;
         }
         else {
@@ -30,7 +29,7 @@ while ( $pair[0] != $pair[1] ) {
 
     $count += $ac;
 
-    $pair[ $large ] = $pair[ $large ] - $ac * $pair[ $small ];
+    ${ $large } = ${ $large } - $ac * ${ $small };
 }
 
 say $count;

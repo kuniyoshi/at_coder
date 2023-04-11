@@ -6,6 +6,7 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 use POSIX qw( floor );
+use bigint;
 
 my( $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
 

@@ -22,9 +22,9 @@ d:
 	cat data/d.5 | ./d2.pl
 
 e:
-	cat data/e.1 | ./e.pl
-	cat data/e.2 | ./e.pl
-	cat data/e.3 | ./e.pl
+	cat data/e.1 | ./e2.pl
+	cat data/e.2 | ./e2.pl
+	cat data/e.3 | ./e2.pl
 
 f:
 	cat data/f.1 | ./f.pl

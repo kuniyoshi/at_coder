@@ -5,49 +5,66 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use Memoize qw( memoize );
+
+memoize( "mod" );
 
 my $MOD = 998244353;
+
+die mod( 3, 4 );
 
 chomp( my $q = <> );
 my @queries = map { chomp; [ split m{\s} ] }
               map { scalar <> }
               1 .. $q;
 
-my $z = 1;
 my @values = ( 1 );
-my @mods;
+my $mod = 1;
 
 for my $ref ( @queries ) {
     my $op = $ref->[0];
 
     if ( $op == 1 ) {
         my $x = $ref->[1];
-        $z *= 10;
-        $z += $x;
-        $z %= $MOD;
+        $mod *= 10;
+        $mod += $x;
+        $mod %= $MOD;
         push @values, $x;
-        push @mods, ( @values[0] * 10 ** ( @values - 1 ) ) % $MOD;
     }
 
     if ( $op == 2 ) {
-        $z = $MOD + $z - shift @mods;
-        shift @values;
-        $z %= $MOD;
+        my $top = shift @values;
+        $mod -= mod( $top, scalar @values );
     }
 
     if ( $op == 3 ) {
-        say $z;
+        say $mod;
     }
 }
 
 exit;
 
 sub mod {
-    my $size = shift;
-    my $y = 1;
-    while ( $size-- ) {
-        $y *= 10;
-        $y %= $MOD;
+    my $top = shift;
+    my $pow = shift;
+
+    my @bits = split m{}, sprintf "%b", $pow;
+
+    my $acc = 1;
+    my @pows;
+    push @pows, do { $acc *= 10; $acc %= $MOD }
+        for @bits;
+
+warn Dumper \@pows;
+
+    my $result = 1;
+
+    for ( my $i = 0; $i < @bits; ++$i ) {
+        next
+            unless $bits[ @bits - $i - 1 ];
+        $result *= $pows[ $i ];
+        $result %= $MOD;
     }
-    return $y;
+
+    return( ( $top * $result ) % $MOD );
 }

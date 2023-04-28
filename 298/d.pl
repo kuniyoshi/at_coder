@@ -11,8 +11,6 @@ memoize( "mod" );
 
 my $MOD = 998244353;
 
-die mod( 3, 4 );
-
 chomp( my $q = <> );
 my @queries = map { chomp; [ split m{\s} ] }
               map { scalar <> }
@@ -35,6 +33,9 @@ for my $ref ( @queries ) {
     if ( $op == 2 ) {
         my $top = shift @values;
         $mod -= mod( $top, scalar @values );
+        if ( $mod < 0 ) {
+            $mod += $MOD;
+        }
     }
 
     if ( $op == 3 ) {
@@ -48,23 +49,18 @@ sub mod {
     my $top = shift;
     my $pow = shift;
 
-    my @bits = split m{}, sprintf "%b", $pow;
+    my $result = $top;
+    my $base = 10;
 
-    my $acc = 1;
-    my @pows;
-    push @pows, do { $acc *= 10; $acc %= $MOD }
-        for @bits;
-
-warn Dumper \@pows;
-
-    my $result = 1;
-
-    for ( my $i = 0; $i < @bits; ++$i ) {
-        next
-            unless $bits[ @bits - $i - 1 ];
-        $result *= $pows[ $i ];
-        $result %= $MOD;
+    while ( $pow ) {
+        if ( $pow % 2 ) {
+            $result *= $base;
+            $result %= $MOD;
+        }
+        $base *= $base;
+        $base %= $MOD;
+        $pow >>= 1;
     }
 
-    return( ( $top * $result ) % $MOD );
+    return $result;
 }

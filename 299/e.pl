@@ -23,60 +23,50 @@ for my $ref ( @edges ) {
     push @{ $link{ $v } }, $u;
 }
 
-my @colors;
-$#colors = $n - 1;
-my %blacks;
+my %distance;
 
-for my $cond_ref ( @conditions ) {
-    my( $v, $d ) = @{ $cond_ref };
-
+for my $v ( 0 .. $n - 1 ) {
     my @queue = ( [ $v, 0 ] );
-
-    if ( $d == 0 ) {
-        if ( defined $colors[ $d ] && !$colors[ $d ] ) {
-            say YesNo::get( 0 );
-            exit;
-        }
-        $colors[ $d ] = 1;
-    }
-
     my %visited;
 
     while ( @queue ) {
         my $ref = shift @queue;
         next
             if $visited{ $ref->[0] }++;
-        next
-            if $ref->[1] >= $d;
-
-        if ( defined $colors[ $ref->[0] ] && $colors[ $ref->[0] ] ) {
-            say YesNo::get( 0 );
-            exit;
-        }
-        $colors[ $ref->[0] ] = 0;
-        my @neighbors = grep { !$visited{ $_ } } @{ $link{ $ref->[0] } // [ ] };
-        push @queue, map { [ $_, $ref->[1] + 1 ] } @neighbors;
-
-        if ( $ref->[1] + 1 == $d ) {
-            $blacks{ $v } = \@neighbors;
-        }
+        $distance{ $v }{ $ref->[0] } = $ref->[1];
+        push @queue, [ $_, $ref->[1] + 1 ]
+            for grep { !$visited{ $_ } }
+                @{ $link{ $v } };
     }
 }
+
+my @colors;
+$#colors = $n - 1;
 
 for my $cond_ref ( @conditions ) {
     my( $v, $d ) = @{ $cond_ref };
 
-    my @blacks = @{ $blacks{ $v } // [ ] };
-    if ( !@blacks ) {
-        say YesNo::get( 0 );
-        exit;
+    $colors[ $v ] = 0;
+
+    while ( my( $neighbor, $distance ) = each %{ $distance{ $v } } ) {
+        next
+            if $distance > $d;
+        $colors[ $neighbor ] = 0;
     }
-    @colors[ $_ ] = 1
-        for @blacks;
+}
+
+$_ = 1
+    for grep { !defined } @colors;
+
+my $blacks = grep { $_ } @colors;
+
+if ( !$blacks ) {
+    say YesNo::get( 0 );
+    exit;
 }
 
 say YesNo::get( 1 );
-say join q{}, map { defined ? $_ : 1 } @colors;
+say join q{}, @colors;
 
 exit;
 use utf8;

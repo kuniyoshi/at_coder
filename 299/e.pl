@@ -11,7 +11,7 @@ my @edges = map { chomp; [ map { $_ - 1 } split m{\s} ] }
             map { scalar <> }
             1 .. $m;
 chomp( my $k = <> );
-my @conditions = map { chomp; [ map { $_ - 1 } split m{\s} ] }
+my @conditions = map { chomp; my @l = split m{\s}; $l[0]--; \@l }
                  map { scalar <> }
                  1 .. $k;
 
@@ -46,8 +46,6 @@ $#colors = $n - 1;
 for my $cond_ref ( @conditions ) {
     my( $v, $d ) = @{ $cond_ref };
 
-    $colors[ $v ] = 0;
-
     while ( my( $neighbor, $distance ) = each %{ $distance{ $v } } ) {
         next
             if $distance > $d;
@@ -55,14 +53,30 @@ for my $cond_ref ( @conditions ) {
     }
 }
 
-$_ = 1
-    for grep { !defined } @colors;
+for my $i ( 0 .. $#colors ) {
+    next
+        if defined $colors[ $i ];
+    $colors[ $i ] = 1;
+}
 
 my $blacks = grep { $_ } @colors;
 
 if ( !$blacks ) {
     say YesNo::get( 0 );
     exit;
+}
+
+for my $cond_ref ( @conditions ) {
+    my( $v, $d ) = @{ $cond_ref };
+    warn "($v, $d)";
+
+    my $found = grep { $colors[ $_ ] && $distance{ $v }{ $_ } == $d } keys %{ $distance{ $v } };
+
+    if ( !$found ) {
+        warn "$v, $d";
+        say YesNo::get( 0 );
+        exit;
+    }
 }
 
 say YesNo::get( 1 );

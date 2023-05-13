@@ -20,40 +20,19 @@ my $both = grep { m{\A B .* A \z}msx } @s;
 my $only_b = $begin_with_b - $both;
 my $only_a = $end_with_a - $both;
 
-warn "($only_a, $only_b, $both)";
-$total += 2 * simulate( \$both, \$only_a, \$only_b );
+if ( !$both ) {
+    say $total + min( $only_a, $only_b );
+    exit;
+}
 
-warn "($only_a, $only_b, $both)";
-my $z = min( min( $only_a, $both ), min( $only_b, $both ) );
-$total += 2 * $z;
-$only_a -= $z;
-$both -= 2 * $z;
+if ( $only_a || $only_b ) {
+    say $total + $both + min( $only_a, $only_b );
+    exit;
+}
 
-warn "($only_a, $only_b, $both)";
-$total += simulate( \$only_b, \$only_a );
-
-warn "($only_a, $only_b, $both)";
-$total += simulate( \$only_a, \$both );
-
-warn "($only_a, $only_b, $both)";
-$total += simulate( \$only_b, \$both );
-
-my $x = int( $both / 2 );
-$total += $x;
-$both -= $x;
-
-warn "finally: ($only_a, $only_b, $both)";
-say $total;
+say $total + $both - 1;
 
 exit;
-
-sub simulate {
-    my @values = @_;
-    my $min = min( map { $$_ } @values );
-    $$_ -= $min
-        for @values;
-    return $min;
-}
 
 __END__
 ONLY A  ONLY B  BOTH    TOTAL

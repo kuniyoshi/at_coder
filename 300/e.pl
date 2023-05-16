@@ -12,8 +12,11 @@ use Data::Dumper;
 #my @l = map { chomp; [ split m{\s} ] }
 #        map { scalar <> }
 #        1 .. $n;
-my %factor = factor( 1e18 );
+#my %factor = factor( 1e18 );
 my $mod = Mod->new;
+$mod->add( 7 );
+$mod->divide( 25 );
+say $mod->value;
 
 exit;
 
@@ -70,5 +73,22 @@ package Mod {
         ${ $self } *= $value;
         ${ $self } %= mod( );
         return $self;
+    }
+
+    sub divide {
+        my $self = shift;
+        my $value = shift;
+        return $self->multiply( _pow( $value, mod( ) - 2 ) );
+    }
+
+    sub _pow {
+        my $base = shift;
+        my $power = shift;
+        return $base
+            if $power == 1;
+        return $base * _pow( $base, $power - 1 ) % mod( )
+            if $power % 2;
+        my $value = _pow( $base, $power / 2 );
+        return( ( $value * $value ) % mod( ) );
     }
 }

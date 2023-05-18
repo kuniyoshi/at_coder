@@ -19,12 +19,12 @@ while ( @queue ) {
 
     next
         if defined $distances[ $row ][ $col ];
+
     $distances[ $row ][ $col ] = $dist;
 
     for my $move ( @moves ) {
-        my( $d_row, $d_col ) = @{ $move };
-        my $n_row = $row + $d_row;
-        my $n_col = $col + $d_col;
+        my $n_row = $row + $move->[0];
+        my $n_col = $col + $move->[1];
         next
             if $n_row < 0 || $n_row >= $n;
         next

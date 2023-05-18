@@ -10,12 +10,16 @@ my( $n, $m ) = do { chomp( my $l = <> ); split m{\s}, $l };
 
 my @moves = get_moves( $n, $m );
 
-my @queue = ( [ 0, 0 ] );
-my @distances = ( [ 0 ] );
+my @queue = ( [ 0, 0, 0 ] );
+my @distances = map { [ ( undef ) x $n ] } 1 .. $n;
 
 while ( @queue ) {
     my $cursor = shift @queue;
-    my( $row, $col ) = @{ $cursor };
+    my( $row, $col, $dist ) = @{ $cursor };
+
+    next
+        if defined $distances[ $row ][ $col ];
+    $distances[ $row ][ $col ] = $dist;
 
     for my $move ( @moves ) {
         my( $d_row, $d_col ) = @{ $move };
@@ -27,8 +31,7 @@ while ( @queue ) {
             if $n_col < 0 || $n_col >= $n;
         next
             if defined $distances[ $n_row ][ $n_col ];
-        $distances[ $n_row ][ $n_col ] = $distances[ $row ][ $col ] + 1;
-        push @queue, [ $n_row, $n_col ];
+        push @queue, [ $n_row, $n_col, $dist + 1 ];
     }
 }
 

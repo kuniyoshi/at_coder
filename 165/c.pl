@@ -8,7 +8,7 @@ use Data::Dumper;
 use List::Util qw( sum max );
 
 my( $n, $m, $q ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @queries = map { chomp; my $ref = [ split m{\s} ]; $ref->[0]--; $ref->[1]--; $ref }
+my @queries = map { chomp; my @l = split m{\s}; $l[0]--; $l[1]--; \@l }
               map { scalar <> }
               1 .. $q;
 
@@ -25,9 +25,9 @@ sub r {
 
     my $max = 0;
 
-    for my $i ( 1 .. 10 ) {
+    for my $i ( 1 .. $m ) {
         next
-            if @{ $ref } && $ref->[-1] > $i;
+            if $i < ( $ref->[-1] // 0 );
         push @{ $ref }, $i;
         $max = max( $max, r( $ref ) );
         pop @{ $ref };

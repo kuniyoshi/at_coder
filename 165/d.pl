@@ -5,12 +5,14 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use List::Util qw( min );
+use integer;
 
-chomp( my $n = <> );
-my( $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
-my @s = do { chomp( my $l = <> ); split m{\s}, $l };
-my @l = map { chomp; [ split m{\s} ] }
-        map { scalar <> }
-        1 .. $n;
+my( $a, $b, $n ) = do { chomp( my $l = <> ); split m{\s}, $l };
+
+my $x = min( $b - 1, $n );
+
+say( ( $a * $x ) / $b - $a * ( $x / $b ) );
+
 
 exit;

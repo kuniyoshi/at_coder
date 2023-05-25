@@ -9,6 +9,6 @@ use bigint;
 
 my( $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
 
-say int( ( $a + $b + 1 ) / $b );
+say int( ( $a + $b - 1 ) / $b );
 
 exit;

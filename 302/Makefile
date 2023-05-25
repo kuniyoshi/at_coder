@@ -1,9 +1,9 @@
 .PHONY: a b c d e f
 
 a:
-	cat data/a.1 | ./a.pl
-	cat data/a.2 | ./a.pl
-	cat data/a.3 | ./a.pl
+	cat data/a.1 | ./a2.pl
+	cat data/a.2 | ./a2.pl
+	cat data/a.3 | ./a2.pl
 
 b:
 	cat data/b.1 | ./b.pl

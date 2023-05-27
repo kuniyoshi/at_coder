@@ -13,6 +13,8 @@ b:
 c:
 	cat data/c.1 | ./c.pl
 	cat data/c.2 | ./c.pl
+	cat data/c.3 | ./c.pl
+	cat data/c.4 | ./c.pl
 
 d:
 	cat data/d.1 | ./d.pl

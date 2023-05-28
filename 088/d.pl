@@ -22,26 +22,23 @@ my @moves = (
     Vector2->new( 0, -1 ),
 );
 
-my @dp = map { [ ( undef ) x $w ] } 1 .. $h;
-$dp[0][0] = 0;
+my %distance;
 
-for my $i ( 0 .. $h - 1 ) {
-    for my $j ( 0 .. $w - 1 ) {
-        next
-            unless defined $dp[ $i ][ $j ];
+my @queue = ( [ Vector2->new( 0, 0 ), 0 ] );
 
-        for my $p ( map { $_->add_xy( $j, $i ) } @moves ) {
-            next
-                unless $p->is_in;
-            next
-                unless $s[ $p->y ][ $p->x ] eq q{.};
-            $dp[ $p->y ][ $p->x ] //= $dp[ $i ][ $j ] + 1;
-            $dp[ $p->y ][ $p->x ] = min( $dp[ $p->y ][ $p->x ], $dp[ $i ][ $j ] + 1 );
-        }
-    }
+while ( @queue ) {
+    my $ref = shift @queue;
+    my( $p, $d ) = @{ $ref };
+    next
+        if defined $distance{ $p->x }{ $p->y };
+    $distance{ $p->x }{ $p->y } = $d;
+    push @queue, map { [ $_, $d + 1 ] }
+                 grep { $_->is_in && $s[ $_->y ][ $_->x ] eq q{.} && !defined $distance{ $_->x }{ $_->y } }
+                 map { $p->add_other( $_ ) }
+                 @moves;
 }
 
-my $cost = $dp[ $h - 1 ][ $w - 1 ];
+my $cost = $distance{ $w - 1 }{ $h - 1 };
 
 if ( !defined $cost ) {
     say -1;
@@ -50,24 +47,6 @@ if ( !defined $cost ) {
 
 my $whites = grep { $_ eq q{.} } map { @{ $_ } } @s;
 say $whites - $cost - 1;
-
-#my $count = 1;
-#my $cursor = Vector2->new( $w - 1, $h - 1 );
-#
-#while ( !$cursor->is_origin ) {
-#    my( $moved ) = grep { defined $dp[ $_->y ][ $_->x ] && $dp[ $_->y ][ $_->x ] == $dp[ $cursor->y ][ $cursor->x ] - 1 }
-#                   grep { $_->is_in }
-#                   map { $_->add_other( $cursor ) }
-#                   @moves;
-#    die "No move found from: ", $cursor->dump
-#        unless $moved;
-#    $cursor = $moved;
-#    $count++;
-#}
-#
-#my $whites = grep { $_ eq q{.} } map { @{ $_ } } @s;
-#
-#say $whites - $count;
 
 exit;
 

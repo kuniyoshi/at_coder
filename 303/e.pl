@@ -12,54 +12,47 @@ my @edges = map { chomp; [ split m{\s} ] }
             1 .. ( $n - 1 );
 
 my %link;
+my %degree;
 
 for my $ref ( @edges ) {
     my( $u, $v ) = @{ $ref };
+
     $link{ $u }{ $v }++;
     $link{ $v }{ $u }++;
+
+    $degree{ $u }++;
+    $degree{ $v }++;
 }
 
-for my $i ( 1 .. $n ) {
-    #    warn "links: ", scalar %{ $link{ $i } };
-    next
-        unless %{ $link{ $i } // { } } > 1;
-    my @vertexes = keys %{ $link{ $i } };
-    my @candidates = grep { 1 < %{ $link{ $_ } } } @vertexes;
-    next
-        if @candidates != 1;
-        #warn "\$i: $i";
+my $leaf = leaf( %degree );
+my %star;
 
-    my( $to_be_removed_with ) = grep { $_ != $i } keys %{ $link{ $candidates[0] } };
+dfs( $leaf, undef, 0 );
 
-    delete $link{ $candidates[0] }{ $to_be_removed_with };
-    delete $link{ $to_be_removed_with }{ $candidates[0] };
-}
-
-my %count;
-my %visited;
-my @levels;
-
-#die Dumper \%link;
-
-for my $i ( 1 .. $n ) {
-    next
-        if $visited{ $i };
-
-    my $before = %visited;
-    my @queue = ( $i );
-
-    while ( @queue ) {
-        my $u = shift @queue;
-        next
-            if $visited{ $u }++;
-        push @queue, grep { !$visited{ $_ } } keys %{ $link{ $u } // { } };
-    }
-
-    push @levels, %visited - $before - 1;
-    #    $count{ %visited - $before - 1 }++;
-}
-
-#print map { sprintf "$_ $count{ $_ }\n" } sort { $a <=> $b } keys %count;
-say join q{ }, sort { $a <=> $b } @levels;
+say join q{ }, map { ( $_ ) x $star{ $_ } } sort { $a <=> $b } keys %star;
 
 exit;
+
+sub dfs {
+    my $v = shift;
+    my $parent = shift;
+    my $distance = shift;
+
+    for my $u ( keys %{ $link{ $v } // { } } ) {
+        next
+            if defined $parent && $u == $parent;
+        if ( ( $distance + 1 ) % 3 == 1 ) {
+            $star{ $degree{ $u } }++;
+        }
+        dfs( $u, $v, $distance + 1 );
+    }
+}
+
+sub leaf {
+    my %degree = @_;
+    for my $v ( 1 .. $n ) {
+        return $v
+            if $degree{ $v } && $degree{ $v } == 1;
+    }
+    die "Could not find leaf";
+}

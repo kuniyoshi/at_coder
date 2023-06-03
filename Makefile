@@ -7,3 +7,4 @@ usage:
 add:
 	@if [ -e "${CONTEST}" ]; then echo ${CONTEST} already exists; exit 1; fi
 	rsync -av --delete "${TEMPLATE_DIR}"/ "${CONTEST}"/
+	echo "- [${CONTEST}](${CONTEST}/README.md)" >>README.md

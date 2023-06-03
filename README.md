@@ -118,3 +118,4 @@ Move contest directory to `contest number`.
 - [165](165/README.md)
 - [088](088/README.md)
 - [303](303/README.md)
+- [304](304/README.md)

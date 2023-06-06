@@ -18,6 +18,6 @@ for ( my $i = 0; $i < $n; ++$i ) {
     $min = $people[ $i ][1] < $people[ $min ][1] ? $i : $min;
 }
 
-print map { $_, "\n" } map { $_->[0] } @people[ ( $min .. $#people ), ( 0 .. ( $min - 1 ) ) ];
+print map { $_, "\n" } map { $people[ $_ % $n ][0] } $min .. $min + $n - 1;
 
 exit;

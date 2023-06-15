@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
+use List::Util qw( min );
 
 my( $n, $c, $k ) = do { chomp( my $l = <> ); split m{\s}, $l };
 my @t = sort { $a <=> $b }
@@ -16,19 +17,19 @@ my $queue = PriorityQueue::PriorSmall->new;
 my $busses = 0;
 
 for my $t ( @t ) {
-    if ( $t $queue->peek
-    $queue->enqueue( $t );
-
-    if ( $queue->size == $c ) {
-        $queue->clear;
-        $busses++;
+    while ( $queue->size && $t > $queue->peek ) {
+        for my $i ( 0 .. min( $c, $queue->size ) - 1 ) {
+            $queue->pop;
+        }
+        $busses++
     }
+
+    $queue->push( $t + $k );
 }
 
-if ( $queue->size ) {
-    $queue->clear;
-    $busses++;
-}
+$busses += int( $queue->size / $c );
+$busses++
+    if $queue->size % $c;
 
 say $busses;
 

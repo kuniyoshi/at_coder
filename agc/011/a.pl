@@ -35,6 +35,7 @@ for my $t ( sort { $a <=> $b } keys %arrive ) {
     }
     else {
         $size += $arrive{ $t };
+        ship( \$size );
     }
 }
 

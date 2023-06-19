@@ -7,6 +7,7 @@ a:
 b:
 	cat data/b.1 | ./b.pl
 	cat data/b.2 | ./b.pl
+	cat data/b.3 | ./b.pl
 
 c:
 	cat data/c.1 | ./c.pl

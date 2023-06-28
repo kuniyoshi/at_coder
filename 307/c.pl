@@ -9,12 +9,6 @@ use Data::Dumper;
 my( $ha, $wa, @a ) = read_matrix( );
 my( $hb, $wb, @b ) = read_matrix( );
 my( $hx, $wx, @x ) = read_matrix( );
-warn "($ha, $wa)";
-warn Dumper \@a;
-warn "($hb, $wb)";
-warn Dumper \@b;
-warn "($hx, $wx)";
-warn Dumper \@x;
 
 for ( my $ai = 0; $ai < $hx; ++$ai ) {
     last

@@ -10,30 +10,21 @@ chomp( my $n = <> );
 chomp( my $s = <> );
 my @s = split m{}, $s;
 
-my @closes;
-my @opens;
+my @levels;
+my $acc = 0;
 
-for my $i ( 0 .. $#s ) {
-    if ( $s[ $i ] eq q{(} ) {
-        push @opens, $i;
+for my $s ( @s ) {
+    if ( $s eq q{(} ) {
+        $acc++;
     }
-    if ( $s[ $i ] eq q{)} ) {
-        push @closes, $i;
+    elsif ( $s eq q{)} ) {
+        $acc--;
     }
+
+    push @levels, $acc;
 }
 
-my @is_use = ( 1 ) x $n;
-
-for my $i ( 0 .. $#closes ) {
-    
+for my $r_index ( reverse 0 .. $#s ) {
 }
-
-
-__END__
-while ( $s && $s =~ s{([(][^()]*[)])+}{}g ) {
-    ;
-}
-
-say $s || q{};
 
 exit;

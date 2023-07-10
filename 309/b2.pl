@@ -11,25 +11,23 @@ my @a = map { chomp; [ split m{} ] }
         map { scalar <> }
         1 .. $n;
 
-my @borders = (
-    ( map { $a[0][ $_ ] } 0 .. $n - 2 ),
-    ( map { $a[ $_ ][ $n - 1 ] } 0 .. $n - 2 ),
-    ( map { $a[ $n - 1 ][ $_ ] } reverse 1 .. $n - 1 ),
-    ( map { $a[ $_ ][0] } reverse 1 .. $n - 1 ),
+my @border_coords = (
+    ( map { [ 0, $_ ] } 0 .. $n - 2 ),
+    ( map { [ $_, $n - 1 ] } 0 .. $n - 2 ),
+    ( map { [ $n - 1, $_ ] } reverse 1 .. $n - 1 ),
+    ( map { [ $_, 0 ] } reverse 1 .. $n - 1 ),
 );
 
-unshift @borders, pop @borders;
+my @coords = @border_coords;
+unshift @coords, pop @coords;
 
-$a[0][ $_ ] = $borders[ ( $n - 1 ) * 0 + $_ ]
-    for 0 .. $n - 2;
-$a[ $_ ][ $n - 1 ] = $borders[ ( $n - 1 ) * 1 + $_ ]
-    for 0 .. $n - 2;
-$a[ $n - 1 ][ $_ ] = $borders[ ( $n - 1 ) * 2 + ( $n - $_ - 1 ) ]
-    for 1 .. $n - 1;
-$a[ $_ ][0] = $borders[ ( $n - 1 ) * 3 + ( $n - $_ - 1 ) ]
-    for 1 .. $n - 1;
+my @b = map { [ @{ $_ } ] } @a;
 
-print map { join( q{}, @{ $_ } ), "\n" } @a;
+for ( my $i = 0; $i < @coords; ++$i ) {
+    $b[ $border_coords[ $i ][0] ][ $border_coords[ $i ][1] ] = $a[ $coords[ $i ][0] ][ $coords[ $i ][1] ];
+}
+
+print map { join( q{}, @{ $_ } ), "\n" } @b;
 
 
 exit;

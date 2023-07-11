@@ -15,14 +15,19 @@ my @ab = sort { $a->[0] <=> $b->[0] }
 
 my $total = sum( map { $_->[1] } @ab );
 
+if ( $total <= $k ) {
+    say 1;
+    exit;
+}
+
 my $passed = 0;
 
-while ( $total > $k ) {
-    die "No more ab"
-        unless @ab;
-    my $ab = shift @ab;
+for my $ab ( @ab ) {
     $passed = $ab->[0];
     $total -= $ab->[1];
+
+    last
+        if $total <= $k;
 }
 
 say $passed + 1;

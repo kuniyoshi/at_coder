@@ -12,7 +12,7 @@ my @edges = map { chomp; [ split m{\s} ] }
             map { scalar <> }
             1 .. $m;
 
-my %link;
+my %children;
 
 for my $ref ( @edges ) {
     my( $u, $v ) = @{ $ref };

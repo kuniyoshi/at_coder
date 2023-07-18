@@ -29,8 +29,8 @@ for ( my $i = 0; $i < ( 1 << $m ); ++$i ) {
     $u{ $sum }++;
 }
 
-for ( my $i = 1 << $m; $i < ( 1 << $n ); ++$i ) {
-    my $bits = $i;
+for ( my $i = 0; $i < ( 1 << ( $n - $m ) ); ++$i ) {
+    my $bits = $i << $m;
     my $sum = 0;
     my $j = 0;
 

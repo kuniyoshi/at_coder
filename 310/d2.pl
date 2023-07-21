@@ -19,7 +19,7 @@ for my $ref ( @pairs ) {
     $bad{ $b }{ $a }++;
 }
 
-say dfs( [ ], 1 );
+say dfs( [ ], 1 ) || 0;
 
 exit;
 

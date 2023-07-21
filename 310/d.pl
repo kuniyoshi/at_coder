@@ -33,9 +33,13 @@ sub permutation {
     return $acc;
 }
 
+my %cache;
+
 sub dfs {
     my $team_ref = shift;
     my $who = shift;
+
+    my $key = key( $team_ref );
 
     return $t == grep { %{ $_ } } @{ $team_ref }
         if $who > $n;

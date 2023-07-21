@@ -18,6 +18,8 @@ d:
 	cat data/d.2 | time ./d2.pl
 	cat data/d.3 | time ./d2.pl
 	cat data/d.4 | time ./d2.pl
+	cat data/d.5 | time ./d2.pl
+#	cat data/d.5 | time ./d.pl
 
 e:
 	cat data/e.1 | ./e.pl

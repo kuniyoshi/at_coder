@@ -10,21 +10,32 @@ chomp( my $n = <> );
 chomp( my $s = <> );
 my @s = split m{}, $s;
 
-my @levels;
-my $acc = 0;
+my @stacks = ( [ ] );
 
-for my $s ( @s ) {
-    if ( $s eq q{(} ) {
-        $acc++;
-    }
-    elsif ( $s eq q{)} ) {
-        $acc--;
+for my $char ( @s ) {
+    if ( $char eq q{(} ) {
+        push @stacks, [ $char ];
+        next;
     }
 
-    push @levels, $acc;
+    if ( $char eq q{)} ) {
+        if ( @stacks && $stacks[-1][0] eq q{(} ) {
+            pop @stacks;
+        }
+        else {
+            push @{ $stacks[-1] }, $char;
+        }
+        next;
+    }
+
+    push @{ $stacks[-1] }, $char;
 }
 
-for my $r_index ( reverse 0 .. $#s ) {
+while ( @stacks ) {
+    my $ref = shift @stacks;
+    print join q{}, @{ $ref };
 }
+
+print "\n";
 
 exit;

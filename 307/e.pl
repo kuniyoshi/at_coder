@@ -10,21 +10,16 @@ my $MOD = 998244353;
 
 my( $n, $m ) = do { chomp( my $l = <> ); split m{\s}, $l };
 
-my @dp = map { [ ( $_ == 1 ) x $m ] } 1 .. $n;
+my @dp = ( 0, $m );
 
-for ( my $i = 1; $i < $n; ++$i ) {
-    for ( my $j = 0; $j < $m; ++$j ) {
-        for ( my $k = 0; $k < $m; ++$k ) {
-            next
-                if $k == $i;
-            $dp[ $i ][ $j ] += $dp[ $i - 1 ][ $k ];
-            $dp[ $i ][ $j ] %= $MOD;
-        }
-    }
+for ( my $i = 1; $i <= $n; ++$i ) {
+    my @values = @dp;
+    $dp[0] = $values[0] * ( $m - 2 ) + $values[1] * ( $m - 1 );
+    $dp[1] = $values[0];
+    $_ %= $MOD
+        for @dp;
 }
 
-die Dumper \@dp;
-say $dp[ $n - 1 ][ $m - 1 ];
-
+say $dp[1];
 
 exit;

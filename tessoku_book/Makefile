@@ -8,6 +8,10 @@ a20:
 	cat data/a20.2 | ./a20.pl
 	cat data/a20.3 | ./a20.pl
 
+a21:
+	cat data/a21.1 | ./a21.pl
+	cat data/a21.2 | ./a21.pl
+
 b14:
 	cat data/b14.1 | ./b14.pl
 

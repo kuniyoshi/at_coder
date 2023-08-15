@@ -22,10 +22,10 @@ d:
 	cat data/d.2 | ./d.pl
 
 e:
-	cat data/e.1 | time ./e.pl
-	cat data/e.2 | time ./e.pl
-	cat data/e.3 | time ./e.pl
-	cat data/e.4 | time ./e.pl
+	cat data/e.1 | time ./e2.pl
+	cat data/e.2 | time ./e2.pl
+	cat data/e.3 | time ./e2.pl
+	cat data/e.4 | time ./e2.pl
 
 f:
 	cat data/f.1 | ./f.pl

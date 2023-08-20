@@ -16,6 +16,10 @@ a22:
 	cat data/a22.1 | ./a22.pl
 	cat data/a22.2 | ./a22.pl
 
+a23:
+	cat data/a23.1 | ./a23.pl
+	cat data/a23.2 | ./a23.pl
+
 b14:
 	cat data/b14.1 | ./b14.pl
 

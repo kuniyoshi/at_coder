@@ -18,11 +18,23 @@ if ( @a == 1 ) {
 my $sum_a = sum( @a );
 
 my $mean = int( $sum_a / $n );
+my $remain = $sum_a % $mean;
 
-say t( $mean );
-#say min( t( $mean ), t( $mean + 1 ) );
+say solve( $mean, $remain );
 
 exit;
+
+sub solve {
+    my $mean = shift;
+    my $remain = shift;
+    my @to_be = (
+        ( $mean ) x ( $n - $remain ),
+        ( $mean + 1 ) x $remain,
+    );
+    my @originals = sort { $a <=> $b } @a;
+    my $diff = sum( map { abs( $to_be[ $_ ] - $originals[ $_ ] ) } 0 .. $n - 1 );
+    return $diff / 2;
+}
 
 sub t {
     my $mean = shift;

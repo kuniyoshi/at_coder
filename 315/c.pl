@@ -23,10 +23,6 @@ for my $f ( keys %tasty ) {
     $tasty{ $f } = [ sort { $a <=> $b } @{ $tasty{ $f } } ];
 }
 
-my @mosts = sort { $a <=> $b }
-            map { $_->[-1] }
-            values %tasty;
-
 my $max = 0;
 my @keys = keys %tasty;
 
@@ -35,19 +31,12 @@ for my $f ( grep { @{ $tasty{ $_ } } != 1 } @keys ) {
     $max = max( $max, $ref->[-1] + $ref->[-2] / 2 );
 }
 
-if ( %tasty > 1 ) {
-    for my $f ( @keys ) {
-        my $candidate = $tasty{ $f }[-1];
+my @mosts = sort { $a <=> $b }
+            map { $_->[-1] }
+            values %tasty;
 
-        if ( $candidate == $mosts[-1] ) {
-            $candidate += $mosts[-2];
-        }
-        else {
-            $candidate += $mosts[-1];
-        }
-
-        $max = max( $max, $candidate );
-    }
+if ( @mosts > 1 ) {
+    $max = max( $max, $mosts[-1] + $mosts[-2] );
 }
 
 say $max;

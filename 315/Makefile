@@ -11,8 +11,8 @@ b:
 	cat data/b.3 | ./b2.pl
 
 c:
-	cat data/c.1 | ./c.pl
-	cat data/c.2 | ./c.pl
+	cat data/c.1 | ./c2.pl
+	cat data/c.2 | ./c2.pl
 
 d:
 	cat data/d.1 | ./d.pl

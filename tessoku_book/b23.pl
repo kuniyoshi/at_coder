@@ -20,7 +20,45 @@ for ( my $i = 0; $i < $n; ++$i ) {
     }
 }
 
-my @dp = ( 0 );
+my @dp;
+
+dfs( 0, $_ )
+    for 0 .. $n - 1;
+
+say min( map { $dp[ ( 1 << $n ) - 1 ][ $_ ] } 0 .. $n - 1 );
+
+exit;
+
+sub dfs {
+    my $visited = shift;
+    my $current = shift;
+    return
+        if $visited == ( 1 << $n ) - 1;
+    die "$current has visited already"
+        if $visited & ( 1 << $current );
+
+    $visited |= 1 << $current;
+
+    for ( my $i = 0; $i < $n; ++$i ) {
+        next
+            if $visited & ( 1 << $i );
+        my $addition = $distance{ $current }{ $i };
+        $dp[ 
+        dfs( $visited, $i );
+    }
+}
+
+__END__
+
+for ( my $i = 0; $i < $n; ++$i ) {
+    $dp[0][ $i ] = 0;
+}
+
+for ( my $i = 1; $i < 1 << $n; ++$i ) {
+    for ( my $j = 0; $j < $n; ++$j ) {
+        $dp[ $i ][ $j ] = $dp[ $i - 1 ][
+    }
+}
 
 for ( my $i = 0; $i < $n; ++$i ) {
     $dp[ 1 << $i ] = 0;
@@ -38,5 +76,9 @@ for ( my $i = 0; $i < $n; ++$i ) {
     }
 }
 
+die Dumper \@dp;
+
 
 exit;
+
+

@@ -6,6 +6,9 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 use List::Util qw( min );
+use Memoize qw( memoize );
+
+memoize( "dfs" );
 
 chomp( my $n = <> );
 my @xy = map { chomp; [ split m{\s} ] }
@@ -16,36 +19,46 @@ my %distance;
 
 for ( my $i = 0; $i < $n; ++$i ) {
     for ( my $j = 0; $j < $n; ++$j ) {
-        $distance{ $i }{ $j } = ( $xy[ $j ][0] - $xy[ $i ][0] ) ** 2 + ( $xy[ $j ][1] - $xy[ $i ][1] ) ** 2;
+        $distance{ $i }{ $j } = sqrt( ( $xy[ $j ][0] - $xy[ $i ][0] ) ** 2 + ( $xy[ $j ][1] - $xy[ $i ][1] ) ** 2 );
     }
 }
 
-my @dp;
+my $squared = min( grep { defined } map { dfs( 0, $_, $_, 0 ) } 0 .. $n - 1 )
+    or die "No route found";
 
-dfs( 0, $_ )
-    for 0 .. $n - 1;
-
-say min( map { $dp[ ( 1 << $n ) - 1 ][ $_ ] } 0 .. $n - 1 );
+say $squared;
 
 exit;
 
 sub dfs {
-    my $visited = shift;
+    my $passed = shift;
     my $current = shift;
-    return
-        if $visited == ( 1 << $n ) - 1;
-    die "$current has visited already"
-        if $visited & ( 1 << $current );
+    my $first = shift;
+    my $total = shift;
 
-    $visited |= 1 << $current;
+    #    warn sprintf "(%0${n}b, %d, %d)", $passed, $current, $total;
+
+    return $total
+        if ( ( $passed == ( 1 << $n ) - 1 ) && $current == $first );
+
+    return
+        if $passed & ( 1 << $current );
+
+    my $min;
+
+    $passed |= 1 << $current;
 
     for ( my $i = 0; $i < $n; ++$i ) {
         next
-            if $visited & ( 1 << $i );
+            if $passed & 1 << $i && $i != $first;
         my $addition = $distance{ $current }{ $i };
-        $dp[ 
-        dfs( $visited, $i );
+        my $candidate = dfs( $passed, $i, $first, $total + $addition )
+            or next;
+        $min //= $candidate;
+        $min = min( $min, $candidate );
     }
+
+    return $min;
 }
 
 __END__

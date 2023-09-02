@@ -6,9 +6,6 @@ use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
 use List::Util qw( min );
-use Memoize qw( memoize );
-
-memoize( "dfs" );
 
 chomp( my $n = <> );
 my @xy = map { chomp; [ split m{\s} ] }
@@ -23,75 +20,32 @@ for ( my $i = 0; $i < $n; ++$i ) {
     }
 }
 
-my $squared = min( grep { defined } map { dfs( 0, $_, $_, 0 ) } 0 .. $n - 1 )
-    or die "No route found";
+my @dp;
+$dp[0][0] = 0;
 
-say $squared;
-
-exit;
-
-sub dfs {
-    my $passed = shift;
-    my $current = shift;
-    my $first = shift;
-    my $total = shift;
-
-    #    warn sprintf "(%0${n}b, %d, %d)", $passed, $current, $total;
-
-    return $total
-        if ( ( $passed == ( 1 << $n ) - 1 ) && $current == $first );
-
-    return
-        if $passed & ( 1 << $current );
-
-    my $min;
-
-    $passed |= 1 << $current;
-
-    for ( my $i = 0; $i < $n; ++$i ) {
-        next
-            if $passed & 1 << $i && $i != $first;
-        my $addition = $distance{ $current }{ $i };
-        my $candidate = dfs( $passed, $i, $first, $total + $addition )
-            or next;
-        $min //= $candidate;
-        $min = min( $min, $candidate );
-    }
-
-    return $min;
-}
-
-__END__
-
-for ( my $i = 0; $i < $n; ++$i ) {
-    $dp[0][ $i ] = 0;
-}
-
-for ( my $i = 1; $i < 1 << $n; ++$i ) {
+for ( my $i = 0; $i < 2 ** $n; ++$i ) {
     for ( my $j = 0; $j < $n; ++$j ) {
-        $dp[ $i ][ $j ] = $dp[ $i - 1 ][
-    }
-}
-
-for ( my $i = 0; $i < $n; ++$i ) {
-    $dp[ 1 << $i ] = 0;
-
-    for ( my $j = 0; $j < 1 << $n; ++$j ) {
         next
-            if !defined $dp[ $j ];
+            unless defined $dp[ $i ][ $j ];
 
-        if ( !defined $dp[ $j | ( 1 << $i ) ] ) {
-            $dp[ $j | ( 1 << $i ) ] = $dp[ $j ] + min_distance( $j, $i );
-        }
-        else {
-            $dp[ $j | ( 1 << $i ) ] = min( $dp[ $j | ( 1 << $i ) ], $dp[ $j ] + min_distance( $j, $i ) );
+        for ( my $k = 0; $k < $n; ++$k ) {
+            next
+                if $k == $j;
+
+            if ( !defined $dp[ $i | 1 << $j ][ $k ] ) {
+                $dp[ $i | 1 << $j ][ $k ] = $dp[ $i ][ $j ] + $distance{ $j }{ $k };
+            }
+            else {
+                $dp[ $i | 1 << $j ][ $k ] = min(
+                    $dp[ $i | 1 << $j ][ $k ],
+                    $dp[ $i ][ $j ] + $distance{ $j }{ $k },
+                );
+            }
         }
     }
 }
 
-die Dumper \@dp;
-
+say $dp[ ( 1 << $n ) - 1 ][0];
 
 exit;
-
 

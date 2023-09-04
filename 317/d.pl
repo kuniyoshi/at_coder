@@ -5,63 +5,43 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use List::Util qw( sum );
+use List::Util qw( min max sum );
 
 chomp( my $n = <> );
 my @xyz = map { chomp; [ split m{\s} ] }
           map { scalar <> }
           1 .. $n;
 
-my $total_seats = sum( map { $_->[-1] } @xyz );
+my @costs = map { max( 0, int( ( $_->[1] - $_->[0] + 1 ) / 2 ) ) }
+            @xyz;
+my @seats = map { $_->[2] }
+            @xyz;
 
+my $total = sum( @seats );
 my @dp;
+$dp[0] = [ 0 ];
 
 for ( my $i = 0; $i < $n; ++$i ) {
-    for ( my $j = 0; $j <= $total_seats; ++$j ) {
-        $dp[ $i ][ $j ] = 
+    for ( my $j = 0; $j < $total + 1; ++$j ) {
+        next
+            unless defined $dp[ $i ][ $j ];
+
+        update( \$dp[ $i + 1 ][ $j ], $dp[ $i ][ $j ] );
+        update( \$dp[ $i + 1 ][ $j + $seats[ $i ] ], $dp[ $i ][ $j ] + $costs[ $i ] );
     }
 }
 
-__END__
+say min( grep { defined } @{ $dp[ $n ] }[ ( ( $total + 1 ) / 2 ) .. $total ] );
 
-my $wa = 0;
-my $ac = 1e9;
+exit;
 
-while ( $ac - $wa > 1 ) {
-    my $wj = int( ( $ac + $wa ) / 2 );
-    if ( t( $wj ) ) {
-        $ac = $wj;
+sub update {
+    my $ref = shift;
+    my $other = shift;
+    if ( defined $$ref ) {
+        $$ref = min( $$ref, $other );
     }
     else {
-        $wa = $wj;
+        $$ref = $other;
     }
 }
-
-say $ac;
-
-exit;
-
-sub t {
-    my $count = shift;
-}
-
-__END__
-my %seat;
-
-for my $ref ( @xyz ) {
-    my( $x, $y, $z ) = @{ $ref };
-    push @{ $seat{ $z } }, [ $x, $y ];
-}
-
-my @seats = do {
-    my @numbers = sort { $a <=> $b } map { $_->[-1] } @xyz;
-    my $acc = 0;
-    map { $acc += $_ } @numbers;
-};
-
-my $wa = 0;
-my $ac = $#seats;
-
-while ( $ac - $wa 
-
-exit;

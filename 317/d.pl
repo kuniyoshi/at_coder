@@ -18,23 +18,20 @@ my @seats = map { $_->[2] }
             @xyz;
 
 my $total = sum( @seats );
-my @dp;
-$dp[0] = [ 0 ];
+my @dp = ( 0 );
 
 for ( my $i = 0; $i < $n; ++$i ) {
-    for ( my $j = 0; $j < $total + 1; ++$j ) {
+    for ( my $j = $total; $j >= 0; --$j ) {
         next
-            unless defined $dp[ $i ][ $j ];
-
-        $dp[ $i + 1 ][ $j ] = min( $dp[ $i + 1 ][ $j ] // $dp[ $i ][ $j ], $dp[ $i ][ $j ] );
-        $dp[ $i + 1 ][ $j + $seats[ $i ] ] = min(
-            $dp[ $i + 1 ][ $j + $seats[ $i ] ] // $dp[ $i ][ $j ] + $costs[ $i ],
-            $dp[ $i ][ $j ] + $costs[ $i ],
+            unless defined $dp[ $j ];
+        $dp[ $j + $seats[ $i ] ] = min(
+            $dp[ $j + $seats[ $i ] ] // $dp[ $j ] + $costs[ $i ],
+            $dp[ $j ] + $costs[ $i ],
         );
 
     }
 }
 
-say min( grep { defined } @{ $dp[ $n ] }[ ( ( $total + 1 ) / 2 ) .. $total ] );
+say min( grep { defined } @dp[ ( ( $total + 1 ) / 2 ) .. $total ] );
 
 exit;

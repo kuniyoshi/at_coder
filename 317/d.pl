@@ -26,22 +26,15 @@ for ( my $i = 0; $i < $n; ++$i ) {
         next
             unless defined $dp[ $i ][ $j ];
 
-        update( \$dp[ $i + 1 ][ $j ], $dp[ $i ][ $j ] );
-        update( \$dp[ $i + 1 ][ $j + $seats[ $i ] ], $dp[ $i ][ $j ] + $costs[ $i ] );
+        $dp[ $i + 1 ][ $j ] = min( $dp[ $i + 1 ][ $j ] // $dp[ $i ][ $j ], $dp[ $i ][ $j ] );
+        $dp[ $i + 1 ][ $j + $seats[ $i ] ] = min(
+            $dp[ $i + 1 ][ $j + $seats[ $i ] ] // $dp[ $i ][ $j ] + $costs[ $i ],
+            $dp[ $i ][ $j ] + $costs[ $i ],
+        );
+
     }
 }
 
 say min( grep { defined } @{ $dp[ $n ] }[ ( ( $total + 1 ) / 2 ) .. $total ] );
 
 exit;
-
-sub update {
-    my $ref = shift;
-    my $other = shift;
-    if ( defined $$ref ) {
-        $$ref = min( $$ref, $other );
-    }
-    else {
-        $$ref = $other;
-    }
-}

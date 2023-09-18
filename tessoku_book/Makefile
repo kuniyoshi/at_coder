@@ -44,6 +44,10 @@ a32:
 	cat data/a32.1 | ./a32.pl
 	cat data/a32.2 | ./a32.pl
 
+a33:
+	cat data/a33.1 | ./a33.pl
+	cat data/a33.2 | ./a33.pl
+
 b14:
 	cat data/b14.1 | ./b14.pl
 

@@ -8,6 +8,20 @@ use Data::Dumper;
 use List::Util qw( min );
 use Memoize;
 
+my( $n, $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };
+
+my @dp = ( 0 ) x ( $n + 1 );
+
+for ( my $i = 0; $i < $n + 1; ++$i ) {
+    $dp[ $i ]++
+        if $i >= $a && !$dp[ $i - $a ];
+    $dp[ $i ]++
+        if $i >= $b && !$dp[ $i - $b ];
+}
+
+say $dp[ $n ] ? "First" : "Second";
+
+__END__
 memoize( "r" );
 
 my( $n, $a, $b ) = do { chomp( my $l = <> ); split m{\s}, $l };

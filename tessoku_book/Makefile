@@ -1,4 +1,4 @@
-.PHONY: a10 a20 a21 a22 a24 a25 a26 a29 a30 a32 b14 b20 b21 b23 b24 b26 b27 b30 b32
+.PHONY: a10 a20 a21 a22 a24 a25 a26 a29 a30 a32 b14 b20 b21 b23 b24 b26 b27 b30 b32 b33
 
 a10:
 	cat data/a10.1 | ./a10.pl
@@ -84,4 +84,8 @@ b32:
 	cat data/b32.1 | ./b32.pl
 	cat data/b32.2 | ./b32.pl
 	cat data/b32.3 | ./b32.pl
+
+b33:
+	cat data/b33.1 | ./b33.pl
+	cat data/b33.2 | ./b33.pl
 

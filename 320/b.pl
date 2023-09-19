@@ -12,11 +12,35 @@ my @s = do { chomp( my $l = <> ); split m{}, $l };
 my $max = 0;
 
 for ( my $i = 0; $i < @s; ++$i ) {
-    for ( my $j = $i; $j < @s; ++$j ) {
-        if ( join( q{}, @s[ $i .. $j ] ) eq join( q{}, reverse @s[ $i .. $j ] ) ) {
-            $max = max( $max, $j - $i + 1 );
-        }
+    my $length = 1;
+
+    for ( my $j = 0; $j < @s; ++$j ) {
+        last
+            if $i - $j < 0 || $i + $j >= @s;
+        last
+            if $s[ $i - $j ] ne $s[ $i + $j ];
+        $length = 1 + 2 * $j;
     }
+
+    $max = max( $max, $length );
+}
+
+for ( my $i = 0; $i < @s; ++$i ) {
+    my $length = 0;
+
+    for ( my $j = 0; $j < @s; ++$j ) {
+        my $left = $i - $j;
+        my $right = $i + $j + 1;
+
+        $length = 2 * ( $j;
+        last
+            if $i - $j < 0 || $i + $j >= @s;
+        last
+            if $s[ $i - $j ] ne $s[ $i + $j ];
+
+    }
+
+    $max = max( $max, $length );
 }
 
 say $max;

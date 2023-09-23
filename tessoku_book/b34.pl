@@ -5,44 +5,38 @@ use strict;
 use warnings;
 use open qw( :utf8 :std );
 use Data::Dumper;
-use List::Util qw( min max );
+use List::Util qw( sum );
 
 my( $n, $x, $y ) = do { chomp( my $l = <> ); split m{\s}, $l };
 my @a = do { chomp( my $l = <> ); split m{\s}, $l };
 
-my $max = max( @a );
-
 my @g;
 
-for ( my $i = 0; $i <= $max; ++$i ) {
-    my %candidate;
+for ( my $i = 0; $i < sum( $x, $y ); ++$i ) {
+    my %h;
 
     if ( $i - $x >= 0 ) {
-        $candidate{ $g[ $i - $x ] }++;
+        $h{ $g[ $i - $x ] }++;
     }
 
     if ( $i - $y >= 0 ) {
-        $candidate{ $g[ $i - $y ] }++;
+        $h{ $g[ $i - $y ] }++;
     }
 
     my $g = 0;
 
-    while ( $candidate{ $g } ) {
-        $g++;
-    }
+    $g++
+        while $h{ $g };
 
     $g[ $i ] = $g;
 }
 
-die Dumper \@g;
-
 my $acc = 0;
 
 for my $a ( @a ) {
-    $acc ^= $g[ $a ];
+    $acc ^= $g[ $a % @g ];
 }
 
 say $acc ? "First" : "Second";
 
 exit;
-

@@ -26,7 +26,7 @@ for my $a ( @a ) {
     }
 }
 
-YesNo::get( 0 );
+say YesNo::get( 0 );
 
 exit;
 
@@ -36,8 +36,11 @@ sub update {
     my $i = shift;
     my $j = shift;
 
+    return
+        if $i + 3 >= @{ $result_ref };
+
     for my $u ( 0 .. 3 ) {
-        if ( $result_ref->[ $i + $u ] & ( ( $ref->[ $u ] // 0 ) << $j ) ) {
+        if ( $result_ref->[ $i + $u ] & ( $ref->[ $u ] << $j ) ) {
             return;
         }
 
@@ -45,41 +48,83 @@ sub update {
     }
 }
 
+sub is_center {
+    my $a = shift;
+    my( $i, $j ) = @_;
+
+    for ( my $u = 0; $u < 4; ++$u ) {
+        if ( $i + $u < 4 && $a->[ $u ] ) {
+            return;
+        }
+
+        if ( $i + $u > 7 && $a->[ $u ] ) {
+            return;
+        }
+
+        my $mask = 2 ** 4 - 1;
+
+        if ( ( $a->[ $u ] << $j ) & $mask ) {
+            return;
+        }
+
+        if ( ( $a->[ $u ] << $j ) & ( $mask << 8 ) ) {
+            return;
+        }
+    }
+
+    return 1;
+}
+
 sub test {
     my( $a, $b, $c ) = @_;
 
+    LOOP_I:
     for ( my $i = 0; $i < 16 * 9; ++$i ) {
-        my( $ai, $aj ) = ( int( $i / 3 * 16 ), $i % ( 3 * 16 ) );
+        my( $ai, $aj ) = ( int( $i / ( 3 * 4 ) ), $i % ( 3 * 4 ) );
 
+        next LOOP_I
+            if !is_center( $a, $ai, $aj );
+
+        LOOP_J:
         for ( my $j = 0; $j < 16 * 9; ++$j ) {
-            my( $bi, $bj ) = ( int( $j / 3 * 16 ), $j % ( 3 * 16 ) );
+            my( $bi, $bj ) = ( int( $j / ( 3 * 4 ) ), $j % ( 3 * 4 ) );
 
+            next LOOP_J
+                if !is_center( $b, $bi, $bj );
+
+            LOOP_K:
             for ( my $k = 0; $k < 16 * 9; ++$k ) {
-                my( $ci, $cj ) = ( int( $k / 3 * 16 ), $k % ( 3 * 16 ) );
+                my( $ci, $cj ) = ( int( $k / ( 3 * 4 ) ), $k % ( 3 * 4 ) );
+
+                next LOOP_K
+                    if !is_center( $c, $ci, $cj );
 
                 my @result = ( 0 ) x ( 4 * 3 );
 
                 if ( update( \@result, $a, $ai, $aj ) ) {
-                    return;
+                    next;
                 }
 
                 if ( update( \@result, $b, $bi, $bj ) ) {
-                    return;
+                    next;
                 }
 
                 if ( update( \@result, $c, $ci, $cj ) ) {
-                    return;
+                    next;
                 }
 
-                return
+                next
                     if grep { $_ } @result[ 0 .. 3, 8 .. 11 ];
 
                 for my $bits ( @result[ 4 .. 7 ] ) {
-                    return
-                        if $bits & 2 ** 4 - 1;
+                    next LOOP_K
+                        if $bits & ( 2 ** 4 - 1 );
                     $bits >>= 4;
-                    return
-                        if ( ( $bits & 2 ** 4 - 1 ) != 2 ** 4 - 1 );
+                    next LOOP_K
+                        if ( ( $bits & ( 2 ** 4 - 1 ) ) != ( 2 ** 4 - 1 ) );
+                    $bits >>= 4;
+                    next LOOP_K
+                        if $bits;
                 }
 
                 return 1;

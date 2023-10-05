@@ -9,13 +9,11 @@ use Data::Dumper;
 chomp( my $n = <> );
 chomp( my $s = <> );
 
-for ( my $i = 0; $i < $n - 2; ++$i ) {
-    if ( substr( $s, $i, 3 ) eq q{ABC} ) {
-        say $i + 1;
-        exit;
-    }
+if ( $s =~ m{\A (.*?) ABC }msx ) {
+    say 1 + length $1;
 }
-
-say -1;
+else {
+    say -1;
+}
 
 exit;

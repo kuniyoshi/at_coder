@@ -10,20 +10,11 @@ my( $m, $n ) = do { chomp( my $l = <> ); split m{\s}, $l };
 chomp( my $s = <> );
 chomp( my $t = <> );
 
-my $is_prefix = $t =~ m{\A $s }msx;
-my $is_suffix = $t =~ m{ $s \z}msx;
+my $is_prefix = $t =~ m{\A $s }msx ? 0 : 2;
+my $is_suffix = $t =~ m{ $s \z}msx ? 0 : 1;
 
-if ( $is_prefix && $is_suffix ) {
-    say 0;
-}
-elsif ( $is_prefix ) {
-    say 1;
-}
-elsif ( $is_suffix ) {
-    say 2;
-}
-else {
-    say 3;
-}
+my $result = 3 & ( $is_prefix | $is_suffix );
+
+say $result;
 
 exit;

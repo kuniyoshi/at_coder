@@ -12,13 +12,17 @@ my $b = read_grid( );
 my $c = read_grid( );
 
 my @a = patterns( $a );
-#die Dumper \@a;
 my @b = patterns( $b );
 my @c = patterns( $c );
 
 for my $a ( @a ) {
     for my $b ( @b ) {
+        next
+            if is_overlap( $a, $b );
+
         for my $c ( @c ) {
+            next
+                if is_overlap( $b, $c ) || is_overlap( $a, $c );
             if ( can( $a, $b, $c ) ) {
                 say YesNo::get( 1 );
                 exit;
@@ -30,6 +34,19 @@ for my $a ( @a ) {
 say YesNo::get( 0 );
 
 exit;
+
+sub dump_grid {
+    my $ref = shift;
+    warn map { $_, "\n" } map { sprintf "%04b", $_ } @{ $ref };
+}
+
+sub is_overlap {
+    my( $a, $b ) = @_;
+    for ( my $i = 0; $i < 4; ++$i ) {
+        return 1
+            if $a->[ $i ] & $b->[ $i ];
+    }
+}
 
 sub can {
     my @inputs = @_;
@@ -43,7 +60,9 @@ sub can {
         }
     }
 
-    return 4 == grep { $_ == 2 ** 4 - 1 } @results;
+    #    dump_grid( \@results );
+
+    return 4 == grep { $_ == ( 2 ** 4 - 1 ) } @results;
 }
 
 sub patterns {
@@ -64,6 +83,10 @@ sub patterns {
         for ( my $i = -4; $i < 4; ++$i ) {
             for ( my $j = -4; $j < 4; ++$j ) {
                 my $moved = move( $n, $i, $j );
+                #                if ( $moved ) {
+                #                    warn "-" x 80;
+                #                    dump_grid( $moved );
+                #                }
                 push @results, $moved
                     if $moved;
             }
@@ -95,34 +118,34 @@ sub move {
     my @results = @{ $ref };
 
     for ( my $i = 0; $i < $di; ++$i ) {
-        pop @results;
+        my $poped = pop @results;
+        return
+            if $poped;
         unshift @results, 0;
     }
 
     for ( my $i = 0; $i < -$di; ++$i ) {
-        shift @results;
+        my $shifted = shift @results;
+        return
+            if $shifted;
         push @results, 0;
     }
 
     for ( my $i = 0; $i < @results; ++$i ) {
         for ( my $j = 0; $j < $dj; ++$j ) {
+            return
+                if $results[ $i ] & 1;
             $results[ $i ] >>= 1;
         }
-        for ( my $j = 0; $j < $dj; ++$j ) {
+        for ( my $j = 0; $j < -$dj; ++$j ) {
+            return
+                if $results[ $i ] & ( 1 << 3 );
             $results[ $i ] <<= 1;
             $results[ $i ] &= 2 ** 4 - 1;
         }
     }
 
-    return
-        unless sum( @results ) != sum( @{ $ref } );
-
     return \@results;
-}
-
-sub dump_grid {
-    my $ref = shift;
-    print map { $_, "\n" } map { join q{}, @{ $_ } } @{ $ref };
 }
 
 sub rotate {

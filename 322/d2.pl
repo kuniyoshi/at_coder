@@ -35,11 +35,6 @@ say YesNo::get( 0 );
 
 exit;
 
-sub dump_grid {
-    my $ref = shift;
-    warn map { $_, "\n" } map { sprintf "%04b", $_ } @{ $ref };
-}
-
 sub is_overlap {
     my( $a, $b ) = @_;
     for ( my $i = 0; $i < 4; ++$i ) {
@@ -60,8 +55,6 @@ sub can {
         }
     }
 
-    #    dump_grid( \@results );
-
     return 4 == grep { $_ == ( 2 ** 4 - 1 ) } @results;
 }
 
@@ -73,20 +66,13 @@ sub patterns {
         push @chars, rotate( $chars[-1] );
     }
 
-    #    die Dumper \@chars;
-
     my @numbers = map { numbers( $_ ) } @chars;
-    #    die Dumper \@numbers;
     my @results;
 
     for my $n ( @numbers ) {
         for ( my $i = -4; $i < 4; ++$i ) {
             for ( my $j = -4; $j < 4; ++$j ) {
                 my $moved = move( $n, $i, $j );
-                #                if ( $moved ) {
-                #                    warn "-" x 80;
-                #                    dump_grid( $moved );
-                #                }
                 push @results, $moved
                     if $moved;
             }

@@ -62,6 +62,9 @@ a38:
 a40:
 	cat data/a40.1 | ./a40.pl
 
+a41:
+	cat data/a41.1 | ./a41.pl
+
 a39:
 	cat data/a39.1 | ./a39.pl
 

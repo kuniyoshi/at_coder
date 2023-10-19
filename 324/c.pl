@@ -23,36 +23,6 @@ say join q{ }, @candidates;
 
 exit;
 
-sub test4 {
-    my $s = shift;
-    my $length = length( $s );
-    my $errors = 0;
-
-    for ( my $i = 0; $i < $length; ++$i ) {
-        next
-            if substr( $s, $i, 1 ) eq substr( $t, $i - $errors, 1 );
-        return
-            if ++$errors > 1;
-    }
-
-    return 1;
-}
-
-sub test3 {
-    my $s = shift;
-    my $length = length( $t );
-    my $errors = 0;
-
-    for ( my $i = 0; $i < $length; ++$i ) {
-        next
-            if substr( $s, $i - $errors, 1 ) eq substr( $t, $i, 1 );
-        return
-            if ++$errors > 1;
-    }
-
-    return 1;
-}
-
 sub test2 {
     my $s = shift;
     my $length = length( $s );
@@ -68,16 +38,32 @@ sub test2 {
     return 1;
 }
 
+sub is_substring {
+    my $substring = shift;
+    my $string = shift;
+
+    my $cursor = 0;
+
+    for ( my $i = 0; $i < length $string; ++$i ) {
+        if ( substr( $substring, $cursor, 1 ) eq substr( $string, $i, 1 ) ) {
+            return 1
+                if ++$cursor == length $substring;
+        }
+    }
+
+    return;
+}
+
 sub test {
     my $s = shift;
     if ( length( $s ) == length( $t ) ) {
         return test2( $s );
     }
     elsif ( length( $s ) == length( $t ) - 1 ) {
-        return test3( $s );
+        return is_substring( $s, $t );
     }
     elsif ( length( $s ) == length( $t ) + 1 ) {
-        return test4( $s );
+        return is_substring( $t, $s );
     }
     else {
         return;

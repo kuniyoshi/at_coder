@@ -1,32 +1,38 @@
 .PHONY: a b c d e f
 
-bin/a: a.rs
-	rustc --out-dir bin a.rs
+BIN_DIR = bin
 
-a: bin/a
-	cat data/a.1 | bin/a
-	cat data/a.2 | bin/a
+$(BIN_DIR)/%: %.rs
+	! test -d $(BIN_DIR) && mkdir $(BIN_DIR)
+	rustc --out-dir $(BIN_DIR) $<
 
-b:
-	cat data/b.1 | ./b.pl
-	cat data/b.2 | ./b.pl
-	cat data/b.3 | ./b.pl
+clean:
+	rm -Rf "$(BIN_DIR)"
 
-c:
-	cat data/c.1 | ./c.pl
-	cat data/c.2 | ./c.pl
-	cat data/c.3 | ./c.pl
-	cat data/c.4 | ./c.pl
+a: $(BIN_DIR)/a
+	cat data/a.1 | $(BIN_DIR)/a
+	cat data/a.2 | $(BIN_DIR)/a
 
-d:
-	cat data/d.1 | ./d.pl
-	cat data/d.2 | ./d.pl
-	cat data/d.3 | ./d.pl
+b: $(BIN_DIR)/b
+	cat data/b.1 | $(BIN_DIR)/b
+	cat data/b.2 | $(BIN_DIR)/b
+	cat data/b.3 | $(BIN_DIR)/b
 
-e:
-	cat data/e.1 | ./e.pl
-	cat data/e.2 | ./e.pl
+c: $(BIN_DIR)/c
+	cat data/c.1 | $(BIN_DIR)/c
+	cat data/c.2 | $(BIN_DIR)/c
+	cat data/c.3 | $(BIN_DIR)/c
+	cat data/c.4 | $(BIN_DIR)/c
 
-f:
-	cat data/f.1 | ./f.pl
-	cat data/f.2 | ./f.pl
+d: $(BIN_DIR)/d
+	cat data/d.1 | $(BIN_DIR)/d
+	cat data/d.2 | $(BIN_DIR)/d
+	cat data/d.3 | $(BIN_DIR)/d
+
+e: $(BIN_DIR)/e
+	cat data/e.1 | $(BIN_DIR)/e
+	cat data/e.2 | $(BIN_DIR)/e
+
+f: $(BIN_DIR)/f
+	cat data/f.1 | $(BIN_DIR)/f
+	cat data/f.2 | $(BIN_DIR)/f

@@ -1,5 +1,4 @@
 use std::io::{self, BufRead};
-use std::collections::VecDeque;
 
 fn main() {
     let stdin = io::stdin();
@@ -31,43 +30,52 @@ fn main() {
 
             count += 1;
 
-            let mut queue = VecDeque::new();
-            queue.push_back([i, j]);
-
-            while let Some([r, c]) = queue.pop_front() {
-                if visited[r][c] {
-                    continue;
-                }
-
-                visited[r][c] = true;
-
-                for k in -1..=1 {
-                    for l in -1..=1 {
-                        if k == 0 && l == 0 {
-                            continue;
-                        }
-
-                        let row = r as isize + k;
-                        let col = c as isize + l;
-
-                        if row < 0 || row >= h as isize || col < 0 || col >= w as isize {
-                            continue;
-                        }
-
-                        if s[row as usize][col as usize] != '#' {
-                            continue;
-                        }
-
-                        if visited[row as usize][col as usize] {
-                            continue;
-                        }
-
-                        queue.push([row as usize, col as usize]);
-                    }
-                }
-            }
+            recursive([i, j], &mut visited, &s, h, w);
         }
     }
 
     println!("{}", count);
+}
+
+fn recursive([row, col]: [usize; 2], visited: &mut Vec<Vec<bool>>, s: &Vec<Vec<char>>, h: usize, w: usize) {
+    if visited[row][col] {
+        return;
+    }
+
+    visited[row][col] = true;
+
+    for i in -1..=1 {
+        for j in -1..=1 {
+            if let Some([r, c]) = coord([row, col], [i, j], h, w) {
+                if visited[r][c] {
+                    continue;
+                }
+
+                if s[r][c] != '#' {
+                    continue;
+                }
+
+                recursive([r, c], visited, &s, h, w);
+            }
+        }
+    }
+}
+
+fn coord([row, col]: [usize; 2], [dr, dc]: [isize; 2], h: usize, w: usize) -> Option<[usize; 2]> {
+    if let Some(r) = dcoord(row, dr, h) {
+        if let Some(c) = dcoord(col, dc, w) {
+            return Some([r, c]);
+        }
+    }
+
+    None
+}
+
+fn dcoord(current: usize, delta: isize, max: usize) -> Option<usize> {
+    let r = current as isize + delta;
+    if r >= 0 && (r as usize) < max {
+        return Some(r as usize);
+    }
+
+    None
 }

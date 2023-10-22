@@ -1,8 +1,11 @@
 .PHONY: a b c d e f
 
-a:
-	cat data/a.1 | ./a.pl
-	cat data/a.2 | ./a.pl
+bin/a: a.rs
+	rustc --out-dir bin a.rs
+
+a: bin/a
+	cat data/a.1 | bin/a
+	cat data/a.2 | bin/a
 
 b:
 	cat data/b.1 | ./b.pl

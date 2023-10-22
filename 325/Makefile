@@ -1,13 +1,12 @@
-.PHONY: a b c d e f
+.PHONY: a b c d e f ca cb cc cd ce cf
 
 BIN_DIR = bin
 
 $(BIN_DIR)/%: %.rs
-	! test -d $(BIN_DIR) && mkdir $(BIN_DIR)
 	rustc --out-dir $(BIN_DIR) $<
 
-clean:
-	rm -Rf "$(BIN_DIR)"
+p%:
+	@pbcopy <$*.rs
 
 a: $(BIN_DIR)/a
 	cat data/a.1 | $(BIN_DIR)/a

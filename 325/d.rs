@@ -7,10 +7,27 @@ fn main() {
     let items = sorted(read_tuple(n));
 
     let mut heap = BinaryHeap::new();
+    let mut time = 0;
+    let mut count = 0;
 
     for [a, b] in items {
+        let end_at = a + b;
+        heap.push(Reverse(end_at));
+
+        // 取れなかったものを捨てる
+        while heap.len() && ( Some(peek) = heap.peek() ) < time {
+            heap.pop();
+        }
+
+        // 取れる分だけとる
+        while heap.len() && ( Some(peek) = heap.peek() ) {
+            if Some(top) = heap.pop() {
+            }
+        }
         println!("{}, {}", a, b);
     }
+
+    println!("{}", count);
 }
 
 fn sorted(mut items: Vec<[usize; 2]>) -> VecDeque<[usize; 2]> {

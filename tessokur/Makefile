@@ -1,4 +1,4 @@
-.PHONY: a41
+.PHONY: a41 b41
 
 BIN_DIR = bin
 
@@ -11,4 +11,9 @@ p%:
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41
+
+
+b41: $(BIN_DIR)/b41
+	cat data/b41.1 | $(BIN_DIR)/b41
+	cat data/b41.2 | $(BIN_DIR)/b41
 

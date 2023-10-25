@@ -2,21 +2,18 @@ use std::io::{self, BufRead};
 use std::collections::BinaryHeap;
 use std::cmp::Reverse;
 
+// q: このコードを説明してください
 fn main() {
     let (n, a, b, c) = read_four();
     let cities = read_tuple(n);
 
     let mut heap = BinaryHeap::new();
-    heap.push((Reverse(0), 0));
+    // cost, city, train: 1 or car: 0
+    heap.push((Reverse(0), 0, 0));
 
     let mut time = vec![usize::MAX; n];
 
-    while let Some((Reverse(cost), u)) = heap.pop() {
-        if u == n - 1 {
-            println!("{}", cost);
-            return;
-        }
-
+    while let Some((Reverse(cost), u, how)) = heap.pop() {
         if cost >= time[u] {
             continue;
         }
@@ -24,10 +21,18 @@ fn main() {
         time[u] = cost;
 
         for i in 0..n {
-            heap.push((Reverse(cities[u][i] * a), i));
-            heap.push((Reverse(cities[u][i] * b + c), i));
+            if i == u {
+                continue;
+            }
+
+            if how == 0 {
+                heap.push((Reverse(time[u] + cities[u][i] * a), i, 0));
+            }
+            heap.push((Reverse(time[u] + cities[u][i] * b + c), i, 1));
         }
     }
+
+    println!("{}", time[n - 1]);
 }
 
 fn read_tuple(n: usize) -> Vec<Vec<usize>> {

@@ -7,17 +7,16 @@ fn main() {
     let cities = read_tuple(n);
 
     let mut heap = BinaryHeap::new();
-    // cost, city, train: 1 or car: 0
     heap.push((Reverse(0), 0, 0));
 
     let mut time = vec![vec![usize::MAX; n]; 2];
+    time[0][0] = 0;
+    time[1][0] = 0;
 
     while let Some((Reverse(cost), u, how)) = heap.pop() {
-        if cost >= time[how][u] {
+        if cost > time[how][u] {
             continue;
         }
-
-        time[how][u] = cost;
 
         for i in 0..n {
             if i == u {
@@ -25,9 +24,18 @@ fn main() {
             }
 
             if how == 0 {
-                heap.push((Reverse(time[how][u] + cities[u][i] * a), i, 0));
+                let new_cost_car = cost + cities[u][i] * a;
+                if new_cost_car < time[0][i] {
+                    time[0][i] = new_cost_car;
+                    heap.push((Reverse(new_cost_car), i, 0));
+                }
             }
-            heap.push((Reverse(time[how][u] + cities[u][i] * b + c), i, 1));
+
+            let new_cost_train = cost + cities[u][i] * b + c;
+            if new_cost_train < time[1][i] {
+                time[1][i] = new_cost_train;
+                heap.push((Reverse(new_cost_train), i, 1));
+            }
         }
     }
 
@@ -48,7 +56,6 @@ fn read_tuple(n: usize) -> Vec<Vec<usize>> {
 
     result
 }
-
 
 fn read_four() -> (usize, usize, usize, usize) {
     let stdin = io::stdin();

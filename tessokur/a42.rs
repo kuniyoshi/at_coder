@@ -1,9 +1,32 @@
 use std::io::{self, BufRead};
 use std::str::FromStr;
+use std::cmp;
 
 fn main() {
-    let (n, k): (usize, usize) = read_two();
-    println!("{}, {}", n, k);
+    let (n, width): (usize, i32) = read_two();
+    let mut students: Vec<(i32, i32)> = read_tuples(n);
+    students.sort();
+    let mut max = 0;
+
+    for i in 0..students.len() {
+        let min_a = students[i].0;
+
+        for j in 0..students.len() {
+            let min_b = students[j].1;
+
+            let mut count = 0;
+
+            for k in 0..students.len() {
+                if students[k].0 >= min_a && students[k].0 <= min_a + width && students[k].1 >= min_b && students[k].1 <= min_b + width {
+                    count += 1;
+                }
+            }
+
+            max = cmp::max(max, count);
+        }
+    }
+
+    println!("{}", max);
 }
 
 fn read_two<T: FromStr, U: FromStr>() -> (T, U)

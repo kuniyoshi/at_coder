@@ -81,6 +81,38 @@ impl ReadInput {
         Ok(result)
     }
 
+    pub fn read_triples<T: FromStr>(n: usize) -> Result<Vec<(T, T, T)>, Box<dyn Debug>>
+    where T::Err: Debug + 'static,
+    {
+        let stdin = io::stdin();
+        let mut lines = stdin.lock().lines();
+        let mut result = Vec::new();
+    
+        for i in 0..n {
+            if let Some(Ok(line)) = lines.next() {
+                let parts: Result<Vec<T>, _> = line.split_whitespace().map(|s| s.parse()).collect();
+                
+                match parts {
+                    Ok(mut parts) => {
+                        if parts.len() == 3 {
+                            let c = parts.pop().unwrap();
+                            let b = parts.pop().unwrap();
+                            let a = parts.pop().unwrap();
+                            result.push((a, b, c));
+                        } else {
+                            return Err(Box::new(format!("Error: Line {} does not contain exactly two elements.", i + 1)) as Box<dyn Debug>);
+                        }
+                    },
+                    Err(e) => return Err(Box::new(e)),
+                }
+            } else {
+                return Err(Box::new("Failed to read line from stdin.") as Box<dyn Debug>);
+            }
+        }
+    
+        Ok(result)
+    }
+
     pub fn read_values<T>() -> Result<Vec<T>, Box<dyn Debug>>
     where
         T: FromStr,
@@ -121,6 +153,12 @@ impl ReadInput {
 }
 
 fn main() {
+    println!("read triples x 3");
+    let f: Vec<(usize, usize, usize)> = ReadInput::read_triples(3).unwrap();
+    for (a, b, c) in f {
+        println!("{}, {}, {}", a, b, c);
+    }
+
     println!("read strings x 3");
     let s = ReadInput::read_strings(3).unwrap();
     for chars in &s {

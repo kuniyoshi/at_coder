@@ -102,9 +102,29 @@ impl ReadInput {
 
         Err(Box::new("Failed to read line from stdin.") as Box<dyn Debug>)
     }
+
+    pub fn read_strings(n: usize) -> io::Result<Vec<String>> {
+        let mut lines = io::stdin().lock().lines();
+        let mut result = Vec::new();
+
+        for _ in 0..n {
+            if let Some(Ok(line)) = lines.next() {
+                result.push(line);
+            }
+            else {
+                panic!("Could not read line");
+            }
+        }
+
+        Ok(result)
+    }
 }
 
 fn main() {
+    println!("read strings x 3");
+    let s = ReadInput::read_strings(3).unwrap();
+    println!("{}", s.join(", "));
+
     println!("read Vec<(usize, usize>) x 3");
     let e: Vec<(usize, usize)> = ReadInput::read_tuples(3).unwrap();
     for &(e1, e2) in &e {

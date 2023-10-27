@@ -17,11 +17,11 @@ b: $(BIN_DIR)/b
 	cat data/b.2 | $(BIN_DIR)/b
 	cat data/b.3 | $(BIN_DIR)/b
 
-c: $(BIN_DIR)/c
-	cat data/c.1 | $(BIN_DIR)/c
-	cat data/c.2 | $(BIN_DIR)/c
-	cat data/c.3 | $(BIN_DIR)/c
-	cat data/c.4 | $(BIN_DIR)/c
+c: $(BIN_DIR)/c2
+	cat data/c.1 | RUST_BACKTRACE=1 $(BIN_DIR)/c2
+	cat data/c.2 | RUST_BACKTRACE=1 $(BIN_DIR)/c2
+	cat data/c.3 | RUST_BACKTRACE=1 $(BIN_DIR)/c2
+	cat data/c.4 | RUST_BACKTRACE=1 $(BIN_DIR)/c2
 
 d: $(BIN_DIR)/d
 	cat data/d.1 | $(BIN_DIR)/d

@@ -150,9 +150,43 @@ impl ReadInput {
 
         Ok(result)
     }
+
+    pub fn read_matrix<T: FromStr>(h: usize, w: usize) -> Result<Vec<Vec<T>>, Box<dyn Debug>>
+    where T::Err: Debug + 'static,
+    {
+        let stdin = io::stdin();
+        let mut lines = stdin.lock().lines();
+        let mut matrix = Vec::new();
+
+        for _ in 0..h {
+            if let Some(Ok(line)) = lines.next() {
+                let row: Result<Vec<T>, _> = line.split_whitespace().map(|s| s.parse()).collect();
+                match row {
+                    Ok(row) => {
+                        if row.len() == w {
+                            matrix.push(row);
+                        } else {
+                            return Err(Box::new("Row length does not match width") as Box<dyn Debug>);
+                        }
+                    },
+                    Err(e) => return Err(Box::new(e) as Box<dyn Debug>),
+                }
+            } else {
+                return Err(Box::new("Failed to read line") as Box<dyn Debug>);
+            }
+        }
+
+        Ok(matrix)
+    }
 }
 
 fn main() {
+    println!("read matrix 2x3");
+    let g: Vec<Vec<usize>> = ReadInput::read_matrix(2, 3).unwrap();
+    for row in g {
+        println!("{}", row.iter().map(|n| n.to_string()).collect::<Vec<String>>().join(", "));
+    }
+
     println!("read triples x 3");
     let f: Vec<(usize, usize, usize)> = ReadInput::read_triples(3).unwrap();
     for (a, b, c) in f {

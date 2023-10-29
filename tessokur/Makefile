@@ -1,4 +1,4 @@
-.PHONY: a41 a42 a43 a44 a45 a46 b41 b42 b43 b44 b45 b51 b52
+.PHONY: a41 a42 a43 a44 a45 a46 b41 b42 b43 b44 b45 b51 b52 b54
 
 BIN_DIR = bin
 
@@ -49,3 +49,6 @@ b51: $(BIN_DIR)/b51
 
 b52: $(BIN_DIR)/b52
 	cat data/b52.1 | $(BIN_DIR)/b52
+
+b54: $(BIN_DIR)/b54
+	cat data/b54.1 | $(BIN_DIR)/b54

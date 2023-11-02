@@ -1,4 +1,4 @@
-TEMPLATE_DIR = template
+TEMPLATE_DIR = rust_template
 CONTEST = set_contest_number
 
 usage:

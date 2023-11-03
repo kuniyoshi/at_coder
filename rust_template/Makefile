@@ -1,9 +1,10 @@
 .PHONY: a b c d e f pa pb pc pd pe pf
 
 BIN_DIR = bin
+OPT_LEVEL = 0
 
 $(BIN_DIR)/%: %.rs
-	rustc --out-dir $(BIN_DIR) $<
+	rustc -C opt-level=$(OPT_LEVEL) --out-dir $(BIN_DIR) $<
 
 p%:
 	@pbcopy <$*.rs

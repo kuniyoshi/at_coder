@@ -2,6 +2,7 @@ use fmt::Debug;
 use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
+use std::collections::HashMap;
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
@@ -23,12 +24,18 @@ fn main() {
 }
 
 fn is_answer(rows: &Vec<Vec<char>>) -> bool {
+    return false;
+    // let answer: Vec<Vec<char>> = vec![
+    //     "AC..B".chars().collect(),
+    //     ".BA.C".chars().collect(),
+    //     "C.BA.".chars().collect(),
+    //     "BA.C.".chars().collect(),
+    //     "..CBA".chars().collect(),
+    // ];
     let answer: Vec<Vec<char>> = vec![
-        "AC..B".chars().collect(),
-        ".BA.C".chars().collect(),
-        "C.BA.".chars().collect(),
-        "BA.C.".chars().collect(),
-        "..CBA".chars().collect(),
+        "ABC".chars().collect(),
+        "BAC".chars().collect(),
+        "CAB".chars().collect(),
     ];
 
     rows.iter()
@@ -55,7 +62,16 @@ fn test(rows: &Vec<Vec<char>>, r: &Vec<char>, c: &Vec<char>) -> bool {
         }
     }
 
-    true
+    let cols: Vec<Vec<char>> = (0..rows[0].len()).map(|i| rows.iter().map(|row| row[i]).collect()).collect();
+
+    cols.iter().all(|chars| {
+        let mut count = HashMap::new();
+        for ch in chars.iter() {
+            *count.entry(*ch).or_insert(0) += 1;
+        }
+        count.remove(&'.');
+        count.len() == 3 && count.values().all(|&c| c == 1)
+    })
 }
 
 fn recursive(r: &Vec<char>, c: &Vec<char>, n: usize, rows: &mut Vec<Vec<char>>) -> bool {
@@ -83,7 +99,10 @@ fn recursive(r: &Vec<char>, c: &Vec<char>, n: usize, rows: &mut Vec<Vec<char>>) 
 
     loop {
         if !test_row(&rows[index], r[index]) {
-            break;
+            if !rows[index].next_permutation() {
+                break;
+            }
+            continue;
         }
 
         let result = recursive(r, c, n, rows);

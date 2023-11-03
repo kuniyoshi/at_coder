@@ -17,24 +17,35 @@ fn main() {
         for i in 0..result.len() {
             println!("{}", result[i].iter().collect::<String>());
         }
-    }
-    else {
+    } else {
         println!("{}", yes_no(false));
     }
+}
 
-    // loop {
-    //     eprintln!("{:?}", r);
-    //     if !r.next_permutation() {
-    //         break;
-    //     }
-    // }
+fn is_answer(rows: &Vec<Vec<char>>) -> bool {
+    let answer: Vec<Vec<char>> = vec![
+        "AC..B".chars().collect(),
+        ".BA.C".chars().collect(),
+        "C.BA.".chars().collect(),
+        "BA.C.".chars().collect(),
+        "..CBA".chars().collect(),
+    ];
+
+    rows.iter()
+        .zip(answer.iter())
+        .all(|(row, target)| row == target)
 }
 
 fn test(rows: &Vec<Vec<char>>, r: &Vec<char>, c: &Vec<char>) -> bool {
-    // eprintln!("{:?}", "-".repeat(80));
-    // for i in 0..rows.len() {
-    //     eprintln!("{:?}", rows[i].iter().collect::<String>());
-    // }
+    let is_answer = is_answer(rows);
+
+    if is_answer {
+        eprintln!("{:?}", "-".repeat(80));
+        for i in 0..rows.len() {
+            eprintln!("{:?}", rows[i].iter().collect::<String>());
+        }
+    }
+
     let n = rows.len();
     for i in 0..n {
         for j in 0..n {
@@ -80,7 +91,7 @@ fn recursive(r: &Vec<char>, c: &Vec<char>, n: usize, rows: &mut Vec<Vec<char>>) 
     }
 
     let mut cols = abc;
-    cols.splice(0..0, vec!('.'; n - 3));
+    cols.splice(0..0, vec!['.'; n - 3]);
 
     rows.push(cols);
     let index = rows.len() - 1;
@@ -106,13 +117,10 @@ fn recursive(r: &Vec<char>, c: &Vec<char>, n: usize, rows: &mut Vec<Vec<char>>) 
 }
 
 fn test_row(cols: &Vec<char>, first: char) -> bool {
-    for i in 0..cols.len() {
-        if cols[i] == '.' {
-            continue;
-        }
-        return cols[i] == first;
+    match cols.iter().find(|&&ch| ch != '.') {
+        Some(&ch) => ch == first,
+        None => panic!("Could not test permutation."),
     }
-    panic!("Could not test permutation.");
 }
 
 fn read_one<T: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> T

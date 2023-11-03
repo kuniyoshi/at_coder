@@ -46,30 +46,15 @@ fn test(rows: &Vec<Vec<char>>, r: &Vec<char>, c: &Vec<char>) -> bool {
         }
     }
 
-    let n = rows.len();
-    for i in 0..n {
-        for j in 0..n {
-            if rows[i][j] == '.' {
-                continue;
-            }
-            if rows[i][j] != r[i] {
-                // eprintln!("r -> ({}, {}), {} != {}", i, j, rows[i][j], r[i]);
-                return false;
-            }
-            break;
+    for i in 0..rows.len() {
+        if !test_row(&rows[i], r[i]) {
+            return false;
         }
-
-        for j in 0..n {
-            if rows[j][i] == '.' {
-                continue;
-            }
-            if rows[j][i] != c[i] {
-                // eprintln!("c -> ({}, {}), {} != {}", i, j, rows[j][i], c[i]);
-                return false;
-            }
-            break;
+        if !test_row(&rows.iter().map(|row| row[i]).collect::<Vec<char>>(), c[i]) {
+            return false;
         }
     }
+
     true
 }
 
@@ -119,7 +104,7 @@ fn recursive(r: &Vec<char>, c: &Vec<char>, n: usize, rows: &mut Vec<Vec<char>>) 
 fn test_row(cols: &Vec<char>, first: char) -> bool {
     match cols.iter().find(|&&ch| ch != '.') {
         Some(&ch) => ch == first,
-        None => panic!("Could not test permutation."),
+        None => false,
     }
 }
 

@@ -1,257 +1,163 @@
-use std::fmt::Debug;
+use fmt::Debug;
+use std::fmt;
 use std::io::{self, BufRead};
-use std::str::FromStr;
+use std::str;
 
 fn main() {
-    r(0);
-}
+    let mut lines = io::stdin().lock().lines();
+    let n: usize = read_one(&mut lines);
+    let r: Vec<_> = lines.next().unwrap().unwrap().chars().collect();
+    let c: Vec<_> = lines.next().unwrap().unwrap().chars().collect();
 
-fn r(v: usize) {
-    println!("{}", v);
-    r(v+1);
-}
+    let mut result = Vec::new();
+    let found = recursive(&r, &c, n, &mut result);
 
-// fn main() {
-//     let n: usize = ReadTiny::read_one();
-//     let r: Vec<char> = ReadTiny::read_line().chars().collect();
-//     let c: Vec<char> = ReadTiny::read_line().chars().collect();
-
-//     let mut matrix = vec![vec!('.'; n); n];
-
-//     println!("{}", YesNo::get(dfs((0, 0), &mut matrix, &r, &c)));
-// }
-
-fn test(matrix: &Vec<Vec<char>>) -> bool {
-    return true;
-}
-
-fn dfs(
-    (row, col): (usize, usize),
-    matrix: &mut Vec<Vec<char>>,
-    r_constraint: &Vec<char>,
-    c_constraint: &Vec<char>,
-) -> bool {
-    if row == matrix.len() - 1 && col == matrix.len() - 1 {
-        return test(&matrix);
+    if found {
+        println!("{}", yes_no(true));
+        for i in 0..result.len() {
+            println!("{}", result[i].iter().collect::<String>());
+        }
+    }
+    else {
+        println!("{}", yes_no(false));
     }
 
-    let chars = ['A', 'B', 'C', '.'];
+    // loop {
+    //     eprintln!("{:?}", r);
+    //     if !r.next_permutation() {
+    //         break;
+    //     }
+    // }
+}
 
-    for i in row..matrix.len() {
-        for j in col..matrix.len() {
-            for k in 0..chars.len() {
-                println!("{}, {}, {}", i, j, k);
-                let before = matrix[i][j];
-                matrix[i][j] = chars[k];
-                let candidate = dfs((i, j), matrix, r_constraint, c_constraint);
-                if candidate {
-                    return true;
-                }
-                matrix[i][j] = before;
+fn test(rows: &Vec<Vec<char>>, r: &Vec<char>, c: &Vec<char>) -> bool {
+    // eprintln!("{:?}", "-".repeat(80));
+    // for i in 0..rows.len() {
+    //     eprintln!("{:?}", rows[i].iter().collect::<String>());
+    // }
+    let n = rows.len();
+    for i in 0..n {
+        for j in 0..n {
+            if rows[i][j] == '.' {
+                continue;
             }
+            if rows[i][j] != r[i] {
+                // eprintln!("r -> ({}, {}), {} != {}", i, j, rows[i][j], r[i]);
+                return false;
+            }
+            break;
+        }
+
+        for j in 0..n {
+            if rows[j][i] == '.' {
+                continue;
+            }
+            if rows[j][i] != c[i] {
+                // eprintln!("c -> ({}, {}), {} != {}", i, j, rows[j][i], c[i]);
+                return false;
+            }
+            break;
+        }
+    }
+    true
+}
+
+fn recursive(r: &Vec<char>, c: &Vec<char>, n: usize, rows: &mut Vec<Vec<char>>) -> bool {
+    if rows.len() == n {
+        return test(rows, r, c);
+    }
+
+    let mut abc: Vec<_> = "ABC".chars().collect();
+
+    loop {
+        if abc[0] == r[rows.len()] {
+            break;
+        }
+
+        if !abc.next_permutation() {
+            panic!("Could not find permutation any more.");
         }
     }
 
+    let mut cols = abc;
+    cols.splice(0..0, vec!('.'; n - 3));
+
+    rows.push(cols);
+    let index = rows.len() - 1;
+
+    loop {
+        if !test_row(&rows[index], r[index]) {
+            break;
+        }
+
+        let result = recursive(r, c, n, rows);
+
+        if result {
+            return true;
+        }
+
+        if !rows[index].next_permutation() {
+            break;
+        }
+    }
+
+    rows.pop();
     false
 }
 
-struct YesNo;
-
-impl YesNo {
-    pub fn get(is_yes: bool) -> String {
-        if is_yes {
-            "Yes".to_string()
-        } else {
-            "No".to_string()
+fn test_row(cols: &Vec<char>, first: char) -> bool {
+    for i in 0..cols.len() {
+        if cols[i] == '.' {
+            continue;
         }
+        return cols[i] == first;
+    }
+    panic!("Could not test permutation.");
+}
+
+fn read_one<T: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> T
+where
+    T::Err: Debug + 'static,
+{
+    lines.next().unwrap().unwrap().parse().unwrap()
+}
+
+fn yes_no(is_yes: bool) -> String {
+    if is_yes {
+        "Yes".to_string()
+    } else {
+        "No".to_string()
     }
 }
 
-pub struct ReadTiny;
+trait Permutation {
+    fn next_permutation(&mut self) -> bool;
+}
 
-impl ReadTiny {
-    pub fn read_line() -> String {
-        let stdin = io::stdin();
-        let mut lines = stdin.lock().lines();
-        lines.next().unwrap().unwrap()
-    }
-
-    fn read_lines(n: usize) -> Vec<String> {
-        let mut lines = io::stdin().lock().lines();
-        let mut result = Vec::new();
-
-        for _ in 0..n {
-            result.push(lines.next().unwrap().unwrap());
+impl<T: Ord> Permutation for Vec<T> {
+    fn next_permutation(&mut self) -> bool {
+        if self.len() <= 1 {
+            return false;
         }
 
-        result
-    }
-
-    pub fn read_one<T>() -> T
-    where
-        T: FromStr,
-        T::Err: Debug,
-    {
-        let line = ReadTiny::read_line();
-        line.parse().expect("Could not parse")
-    }
-
-    pub fn read_two<S, T>() -> (S, T)
-    where
-        S: FromStr,
-        S::Err: Debug,
-        T: FromStr,
-        T::Err: Debug,
-    {
-        let line = ReadTiny::read_line();
-        let mut parts = line.split_whitespace();
-        let s: S = parts
-            .next()
-            .expect("No split")
-            .parse()
-            .expect("Could not parse");
-        let t: T = parts
-            .next()
-            .expect("No split")
-            .parse()
-            .expect("Could not parse");
-        (s, t)
-    }
-
-    pub fn read_three<S, T, U>() -> (S, T, U)
-    where
-        S: FromStr,
-        S::Err: Debug,
-        T: FromStr,
-        T::Err: Debug,
-        U: FromStr,
-        U::Err: Debug,
-    {
-        let line = ReadTiny::read_line();
-        let mut parts = line.split_whitespace();
-        let s: S = parts
-            .next()
-            .expect("No split")
-            .parse()
-            .expect("Could not parse");
-        let t: T = parts
-            .next()
-            .expect("No split")
-            .parse()
-            .expect("Could not parse");
-        let u: U = parts
-            .next()
-            .expect("No split")
-            .parse()
-            .expect("Could not parse");
-        (s, t, u)
-    }
-
-    pub fn read_doubles<T, U>(n: usize) -> Vec<(T, U)>
-    where
-        T: FromStr,
-        T::Err: Debug,
-        U: FromStr,
-        U::Err: Debug,
-    {
-        let mut lines = io::stdin().lock().lines();
-        let mut result = Vec::new();
-
-        for _ in 0..n {
-            let line = lines.next().unwrap().unwrap();
-            let mut parts = line.split_whitespace();
-            let t: T = parts
-                .next()
-                .expect("No split")
-                .parse()
-                .expect("Could not parse");
-            let u: U = parts
-                .next()
-                .expect("No split")
-                .parse()
-                .expect("Could not parse");
-            result.push((t, u));
+        let mut i = self.len() - 1;
+        while i > 0 && self[i - 1] >= self[i] {
+            i -= 1;
         }
 
-        result
-    }
-
-    pub fn read_triples<S, T, U>(n: usize) -> Vec<(S, T, U)>
-    where
-        S: FromStr,
-        S::Err: Debug,
-        T: FromStr,
-        T::Err: Debug,
-        U: FromStr,
-        U::Err: Debug,
-    {
-        let mut lines = io::stdin().lock().lines();
-        let mut result = Vec::new();
-
-        for _ in 0..n {
-            let line = lines.next().unwrap().unwrap();
-            let mut parts = line.split_whitespace();
-            let s: S = parts
-                .next()
-                .expect("No split")
-                .parse()
-                .expect("Could not parse");
-            let t: T = parts
-                .next()
-                .expect("No split")
-                .parse()
-                .expect("Could not parse");
-            let u: U = parts
-                .next()
-                .expect("No split")
-                .parse()
-                .expect("Could not parse");
-            result.push((s, t, u));
+        if i == 0 {
+            return false;
         }
 
-        result
-    }
-
-    pub fn read_values<T>() -> Vec<T>
-    where
-        T: FromStr,
-        T::Err: Debug,
-    {
-        let line = ReadTiny::read_line();
-        line.split_whitespace()
-            .map(|s| s.parse().expect("Could not parse"))
-            .collect()
-    }
-
-    pub fn read_chars(n: usize) -> Vec<Vec<char>> {
-        let mut lines = io::stdin().lock().lines();
-        let mut result = Vec::new();
-
-        for _ in 0..n {
-            let line = lines.next().unwrap().unwrap();
-            result.push(line.chars().collect());
+        let mut j = self.len() - 1;
+        while j >= i && self[j] <= self[i - 1] {
+            j -= 1;
         }
 
-        result
-    }
+        self.swap(i - 1, j);
 
-    pub fn read_matrix<T>(n: usize) -> Vec<Vec<T>>
-    where
-        T: FromStr,
-        T::Err: Debug,
-    {
-        let mut lines = io::stdin().lock().lines();
-        let mut result = Vec::new();
+        self[i..].reverse();
 
-        for _ in 0..n {
-            let line = lines.next().unwrap().unwrap();
-            let row: Vec<T> = line
-                .split_whitespace()
-                .map(|s| s.parse().expect("Could not parse"))
-                .collect();
-            result.push(row);
-        }
-
-        result
+        true
     }
 }

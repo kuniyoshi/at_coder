@@ -24,6 +24,7 @@ c: $(BIN_DIR)/c3
 	cat data/c.3 | $(BIN_DIR)/c3
 
 d: $(BIN_DIR)/d
+	cat data/d.0 | $(BIN_DIR)/d
 	cat data/d.1 | $(BIN_DIR)/d
 	cat data/d.2 | $(BIN_DIR)/d
 

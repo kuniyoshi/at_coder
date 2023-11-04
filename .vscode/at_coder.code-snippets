@@ -37,5 +37,13 @@
 			"Vec<char>$0",
 		],
 		"description": "vector char type"
+	},
+	"Vector type": {
+		"scope": "rust",
+		"prefix": "vt",
+		"body": [
+			"Vec<$1>$0",
+		],
+		"description": "vector type"
 	}
 }

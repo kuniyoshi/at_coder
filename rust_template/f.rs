@@ -8,6 +8,14 @@ fn main() {
     let mut lines = io::stdin().lock().lines();
 }
 
+fn yes_no(is_yes: bool) -> String {
+    if is_yes {
+        "Yes".to_string()
+    } else {
+        "No".to_string()
+    }
+}
+
 fn read_list<A: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> Vec<A>
 where
     A::Err: Debug + 'static,

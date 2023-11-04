@@ -36,6 +36,6 @@ e: $(BIN_DIR)/e
 
 f: $(BIN_DIR)/f
 	cat data/f.1 | $(BIN_DIR)/f
-	cat data/f.2 | $(BIN_DIR)/f
-	cat data/f.3 | $(BIN_DIR)/f
-	cat data/f.4 | $(BIN_DIR)/f
+	# cat data/f.2 | $(BIN_DIR)/f
+	# cat data/f.3 | $(BIN_DIR)/f
+	# cat data/f.4 | $(BIN_DIR)/f

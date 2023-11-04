@@ -1,4 +1,5 @@
 use fmt::Debug;
+use std::cmp;
 use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
@@ -10,17 +11,35 @@ fn main() {
 
     let (odds, evens) = split_odd_even(&a);
 
-    println!("{}", yes_no(test(&odds, x) && test(&evens, y)));
+    let can_odd = test(&odds, x);
+    let can_even = test(&evens, y);
+
+    match (can_odd, can_even) {
+        (Some(odd_dirs), Some(even_dirs)) => {
+            println!("{}", yes_no(true));
+            let mut dirs: Vec<&str> = Vec::new();
+            for i in 0..cmp::max(odd_dirs.len(), even_dirs.len()) {
+                if i < even_dirs.len() {
+                    dirs.push(if even_dirs[i] { "L" } else { "R" });
+                }
+                if i < odd_dirs.len() {
+                    dirs.push(if odd_dirs[i] { "R" } else { "L" });
+                }
+            }
+            println!("{}", dirs.join(""));
+        }
+        (_, _) => println!("{}", yes_no(false)),
+    };
 }
 
-fn test(values: &Vec<i32>, to: i32) -> bool {
+fn test(values: &Vec<i32>, to: i32) -> Option<Vec<bool>> {
     if values.len() == 0 {
-        return to == 0;
+        return if to == 0 { Some(Vec::new()) } else { None };
     }
 
     let abs_max = values.iter().map(|v| v.abs()).sum::<i32>() as usize;
 
-    let mut dp = vec!(vec!(false; abs_max * 2 + 1); values.len() + 1);
+    let mut dp = vec![vec!(false; abs_max * 2 + 1); values.len() + 1];
     dp[0][abs_max] = true;
 
     for i in 1..=values.len() {
@@ -43,12 +62,38 @@ fn test(values: &Vec<i32>, to: i32) -> bool {
     }
 
     if to < 0 && (to.abs() as usize) > abs_max {
-        return false;
+        return None;
     }
 
-    // eprintln!("{}", "-".repeat(80));
-    // eprintln!("{:?}", dp);
-    dp[values.len()][(abs_max as i32 + to) as usize]
+    eprintln!("{}", "-".repeat(80));
+    eprintln!("{:?}", dp);
+    if !dp[values.len()][(abs_max as i32 + to) as usize] {
+        return None;
+    }
+
+    let mut is_positives: Vec<bool> = Vec::new();
+    let mut cursor = (abs_max as i32 + to) as usize;
+    let len = dp[values.len()].len();
+
+    for i in (1..=values.len()).rev() {
+        let cand1 = cursor as i32 - values[i - 1];
+
+        if cand1 >= 0 && (cand1 as usize) < len && dp[i - 1][cand1 as usize] {
+            is_positives.push(true);
+            cursor = cand1 as usize;
+            continue;
+        }
+
+        let cand2 = cursor as i32 + values[i - 1];
+        assert!(cand2 >= 0 && (cand2 as usize) < len && dp[i - 1][cand2 as usize], "should moved negative direction");
+        is_positives.push(false);
+        cursor = cand2 as usize;
+    }
+    eprintln!("{:?}", is_positives.iter().rev().cloned().collect::<Vec<_>>());
+
+    assert!(cursor == abs_max, "should back to the origin");
+
+    Some(is_positives.iter().rev().cloned().collect())
 }
 
 fn yes_no(is_yes: bool) -> String {

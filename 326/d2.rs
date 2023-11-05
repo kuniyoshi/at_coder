@@ -1,102 +1,121 @@
-use std::io::{self, BufRead};
+use fmt::Debug;
 use std::collections::VecDeque;
-use std::cmp;
+use std::fmt;
+use std::io::{self, BufRead};
+use std::str;
 
 fn main() {
-    let stdin = io::stdin().lock();
-    let mut lines = stdin.lines();
-    let input = lines.next().unwrap().unwrap();
-    let mut iter = input.trim().split_whitespace();
-    let n: usize = iter.next().unwrap().parse().unwrap();
-    let r: Vec<char> = lines.next().unwrap().unwrap().chars().collect();
-    let c: Vec<char> = lines.next().unwrap().unwrap().chars().collect();
+    let mut lines = io::stdin().lock().lines();
+    let n: usize = read_one(&mut lines);
+    let r: Vec<char> = read_one::<String>(&mut lines).chars().collect();
+    let c: Vec<char> = read_one::<String>(&mut lines).chars().collect();
 
-    let mut abc = "ABC".to_string();
-    while abc.len() < n {
-        abc.push('.');
+    let mut remains: VecDeque<char> = vec!['A', 'B', 'C'].into();
+    let mut rows: Vec<Vec<char>> = vec![vec!('.'; n); n];
+    let is_found = dfs(&mut remains, &mut rows, &r, &c);
+
+    if is_found {
+        println!("{}", yes_no(true));
+        rows.iter()
+            .for_each(|cols| println!("{}", cols.iter().collect::<String>()));
+    } else {
+        println!("{}", yes_no(false));
     }
-    let mut rows = vec![VecDeque::new(); 3];
-    let mut chars: Vec<_> = abc.chars().collect();
-    chars.sort();
+}
 
-    loop {
-        if let Some(&first_non_dot) = chars.iter().find(|&&ch| ch != '.') {
-            rows[first_non_dot as usize - 'A' as usize].push_back(chars.clone());
+fn test2(sets: &Vec<Vec<char>>, constraints: &Vec<char>) -> bool {
+    assert!(sets.len() == constraints.len());
+
+    for i in 0..sets.len() {
+        let candidate = sets[i].iter().find(|&&c| c != '.');
+        match candidate {
+            Some(&ch) if ch == constraints[i] => continue,
+            _ => return false,
+        }
+    }
+
+    true
+}
+
+fn test(rows: &Vec<Vec<char>>, r: &Vec<char>, c: &Vec<char>) -> bool {
+    assert!(rows.len() == r.len());
+    let cols: Vec<_> = (0..rows.len())
+        .map(|i| rows.iter().map(|cols| cols[i]).collect::<Vec<_>>())
+        .collect();
+
+    test2(rows, r) && test2(&cols, c)
+}
+
+fn dfs(
+    remains: &mut VecDeque<char>,
+    rows: &mut Vec<Vec<char>>,
+    r: &Vec<char>,
+    c: &Vec<char>,
+) -> bool {
+    let code = match remains.pop_front() {
+        Some(code) => code,
+        None => return test(rows, r, c),
+    };
+
+    let mut permutations: Vec<usize> = (0..r.len()).collect();
+
+    'outer: loop {
+        for i in 0..permutations.len() {
+            if rows[i][permutations[i]] != '.' {
+                if !permutations.next_permutation() {
+                    break 'outer;
+                }
+                continue 'outer;
+            }
         }
 
-        if !chars.next_permutation() {
+        for i in 0..permutations.len() {
+            rows[i][permutations[i]] = code;
+        }
+
+        let result = dfs(remains, rows, r, c);
+
+        if result {
+            return true;
+        }
+
+        for i in 0..permutations.len() {
+            // assert!(rows[i][permutations[i]] == code, "{} == {}", rows[i][permutations[i]], code);
+            assert!(
+                rows[i][permutations[i]] == code,
+                "Mismatch at index {}. \nchar: {}\nrows: {:?} \npermutations: {:?}",
+                i,
+                code,
+                rows,
+                permutations
+            );
+
+            rows[i][permutations[i]] = '.';
+        }
+
+        if !permutations.next_permutation() {
             break;
         }
     }
 
-    let mut grid = Vec::new();
-    let mut fnd = false;
-    let depth = dfs(0, (1 << (4 * n)) - 1, &rows, &r, &c, &mut grid, &mut fnd, 0);
-    eprintln!("{:?}", depth);
+    remains.push_back(code);
 
-    if fnd {
-        println!("Yes");
-        for row in &grid {
-            for ch in row {
-                print!("{}", ch);
-            }
-            println!();
-        }
+    false
+}
+
+fn yes_no(is_yes: bool) -> String {
+    if is_yes {
+        "Yes".to_string()
     } else {
-        println!("No");
+        "No".to_string()
     }
 }
 
-fn dfs(i: usize, fl: usize, rows: &Vec<VecDeque<Vec<char>>>, r: &Vec<char>, c: &Vec<char>, grid: &mut Vec<Vec<char>>, fnd: &mut bool, depth: usize) -> usize{
-    if *fnd {
-        return depth;
-    }
-
-    if i == r.len() {
-        if fl == 0 {
-            *fnd = true;
-        }
-        return depth;
-    }
-
-    let mut max = depth;
-
-    for nx in &rows[r[i] as usize - 'A' as usize] {
-        grid.push(nx.clone());
-
-        let mut ufl = fl;
-        let mut und = true;
-
-        for j in 0..r.len() {
-            if nx[j] == '.' {
-                continue;
-            }
-            let kind = nx[j] as usize - 'A' as usize;
-
-            if (fl & (1 << (4 * j + kind))) == 0 {
-                und = false;
-                break;
-            }
-
-            ufl ^= 1 << (4 * j + kind);
-            if (fl & (1 << (4 * j + 3))) != 0 {
-                if nx[j] != c[j] {
-                    und = false;
-                    break;
-                }
-                ufl ^= 1 << (4 * j + 3);
-            }
-        }
-
-        if und {
-            let d = dfs(i + 1, ufl, rows, r, c, grid, fnd, depth + 1);
-            max = cmp::max(max, d);
-        }
-
-        grid.pop();
-    }
-
-    max
+fn read_one<A: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> A
+where
+    A::Err: Debug + 'static,
+{
+    lines.next().unwrap().unwrap().parse().unwrap()
 }
 
 trait Permutation {

@@ -45,5 +45,13 @@
 			"Vec<$1>$0",
 		],
 		"description": "vector type"
+	},
+	"Vector new": {
+		"scope": "rust",
+		"prefix": "vn",
+		"body": [
+			"Vec::new()$0",
+		],
+		"description": "vector new"
 	}
 }

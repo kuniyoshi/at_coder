@@ -4,6 +4,13 @@ use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
 
+enum Directoin {
+    Right,
+    Up,
+    Left,
+    Down,
+}
+
 fn main() {
     let mut lines = io::stdin().lock().lines();
     let (_, x, y): (usize, i32, i32) = read_three(&mut lines);
@@ -11,25 +18,73 @@ fn main() {
 
     let (odds, evens) = split_odd_even(&a);
 
-    let can_odd = test(&odds, x);
-    let can_even = test(&evens, y);
+    let can_odd_option = test(&odds, x);
+    let can_even_option = test(&evens, y);
 
-    match (can_odd, can_even) {
-        (Some(odd_dirs), Some(even_dirs)) => {
-            println!("{}", yes_no(true));
-            let mut dirs: Vec<&str> = Vec::new();
-            for i in 0..cmp::max(odd_dirs.len(), even_dirs.len()) {
-                if i < even_dirs.len() {
-                    dirs.push(if even_dirs[i] { "L" } else { "R" });
+    match (can_odd_option, can_even_option) {
+        (Some(can_odd), Some(can_even)) => {
+            let mut is_positives: Vec<bool> = Vec::new();
+
+            for i in 0..cmp::max(can_odd.len(), can_even.len()) {
+                if i < can_even.len() {
+                    is_positives.push(can_even[i]);
                 }
-                if i < odd_dirs.len() {
-                    dirs.push(if odd_dirs[i] { "R" } else { "L" });
+                if i < can_odd.len() {
+                    is_positives.push(can_odd[i]);
                 }
             }
-            println!("{}", dirs.join(""));
+
+            println!("{}", yes_no(true));
+            println!("{}", dump_directions(&is_positives));
         }
         (_, _) => println!("{}", yes_no(false)),
     };
+}
+
+fn dump_directions(is_positives: &Vec<bool>) -> String {
+    let mut direction = Directoin::Right;
+    let mut result: Vec<char> = Vec::new();
+    // eprintln!("{}", "-".repeat(80));
+    // eprintln!("{:?}", is_positives);
+
+    for i in 0..is_positives.len() {
+        match (direction, is_positives[i]) {
+            (Directoin::Right, true) => {
+                result.push('L');
+                direction = Directoin::Up;
+            }
+            (Directoin::Right, false) => {
+                result.push('R');
+                direction = Directoin::Down;
+            }
+            (Directoin::Up, true) => {
+                result.push('R');
+                direction = Directoin::Right;
+            }
+            (Directoin::Up, false) => {
+                result.push('L');
+                direction = Directoin::Left;
+            }
+            (Directoin::Left, true) => {
+                result.push('R');
+                direction = Directoin::Up;
+            }
+            (Directoin::Left, false) => {
+                result.push('L');
+                direction = Directoin::Down;
+            }
+            (Directoin::Down, true) => {
+                result.push('L');
+                direction = Directoin::Right;
+            }
+            (Directoin::Down, false) => {
+                result.push('R');
+                direction = Directoin::Left;
+            }
+        }
+    }
+
+    result.iter().collect()
 }
 
 fn test(values: &Vec<i32>, to: i32) -> Option<Vec<bool>> {
@@ -65,8 +120,8 @@ fn test(values: &Vec<i32>, to: i32) -> Option<Vec<bool>> {
         return None;
     }
 
-    eprintln!("{}", "-".repeat(80));
-    eprintln!("{:?}", dp);
+    // eprintln!("{}", "-".repeat(80));
+    // eprintln!("{:?}", dp);
     if !dp[values.len()][(abs_max as i32 + to) as usize] {
         return None;
     }
@@ -85,11 +140,17 @@ fn test(values: &Vec<i32>, to: i32) -> Option<Vec<bool>> {
         }
 
         let cand2 = cursor as i32 + values[i - 1];
-        assert!(cand2 >= 0 && (cand2 as usize) < len && dp[i - 1][cand2 as usize], "should moved negative direction");
+        assert!(
+            cand2 >= 0 && (cand2 as usize) < len && dp[i - 1][cand2 as usize],
+            "should moved negative direction"
+        );
         is_positives.push(false);
         cursor = cand2 as usize;
     }
-    eprintln!("{:?}", is_positives.iter().rev().cloned().collect::<Vec<_>>());
+    // eprintln!(
+    //     "{:?}",
+    //     is_positives.iter().rev().cloned().collect::<Vec<_>>()
+    // );
 
     assert!(cursor == abs_max, "should back to the origin");
 

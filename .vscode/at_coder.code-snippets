@@ -46,6 +46,14 @@
 		],
 		"description": "vector type"
 	},
+	"Vector anonymouse": {
+		"scope": "rust",
+		"prefix": "va",
+		"body": [
+			"Vec<_>",
+		],
+		"description": "vector anonymouse"
+	},
 	"Vector new": {
 		"scope": "rust",
 		"prefix": "vn",

@@ -6,30 +6,17 @@ use std::str;
 fn main() {
     let mut lines = io::stdin().lock().lines();
     let b: usize = read_one(&mut lines);
-    match test(b) {
-        Some(a) => println!("{}", a),
-        None => println!("{}", -1),
-    }
+    println!("{}", test(b));
 }
 
-fn power(a: usize, b: usize) -> usize {
-    let mut result = 1usize;
-
-    for _ in 0..b {
-        result *= a;
-    }
-
-    result
-}
-
-fn test(b: usize) -> Option<usize> {
+fn test(b: usize) -> isize {
     for i in 1..=15 {
-        if power(i, i) == b {
-            return Some(i);
+        if (i as isize).pow(i) == b as isize {
+            return i as isize;
         }
     }
 
-    None
+    -1
 }
 
 fn read_one<A: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> A

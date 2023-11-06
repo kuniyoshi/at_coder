@@ -11,26 +11,16 @@ fn main() {
 }
 
 fn test(chars: &Vec<char>) -> bool {
-    let mut previous: char = '.';
-
-    for i in 0..chars.len() {
-        if previous == 'a' && chars[i] == 'b' {
-            return true;
-        } else if previous == 'b' && chars[i] == 'a' {
-            return true;
-        }
-
-        previous = chars[i];
-    }
-
-    return false;
+    chars
+        .windows(2)
+        .any(|window| window == ['a', 'b'] || window == ['b', 'a'])
 }
 
-fn yes_no(is_yes: bool) -> String {
+fn yes_no(is_yes: bool) -> &'static str {
     if is_yes {
-        "Yes".to_string()
+        "Yes"
     } else {
-        "No".to_string()
+        "No"
     }
 }
 

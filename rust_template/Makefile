@@ -1,4 +1,4 @@
-.PHONY: a b c d e f pa pb pc pd pe pf
+.PHONY: a b c d e f
 
 BIN_DIR = bin
 OPT_LEVEL = 0

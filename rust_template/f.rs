@@ -8,11 +8,11 @@ fn main() {
     let mut lines = io::stdin().lock().lines();
 }
 
-fn yes_no(is_yes: bool) -> String {
+fn yes_no(is_yes: bool) -> &'static str {
     if is_yes {
-        "Yes".to_string()
+        "Yes"
     } else {
-        "No".to_string()
+        "No"
     }
 }
 

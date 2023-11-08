@@ -21,7 +21,7 @@ fn test(a: &Vec<Vec<usize>>) -> bool {
         return false;
     }
 
-    let mut sets: Vec<Vec<usize>> = vec!(Vec::new(); 9);
+    let mut sets: Vec<Vec<usize>> = vec![Vec::new(); 9];
 
     for i in 0..9 {
         for j in 0..9 {

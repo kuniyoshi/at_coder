@@ -3,6 +3,7 @@ use std::cmp;
 use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
+use std::collections::{HashMap};
 
 enum Directoin {
     Right,
@@ -90,6 +91,40 @@ fn dump_directions(is_positives: &Vec<bool>) -> String {
 fn test(values: &Vec<i32>, to: i32) -> Option<Vec<bool>> {
     if values.len() == 0 {
         return if to == 0 { Some(Vec::new()) } else { None };
+    }
+
+    let mut head: HashMap<i32, i32> = HashMap::new();
+    let mut tail: HashMap<i32, i32> = HashMap::new();
+
+    for i in 0..2_i32.pow((values.len() / 2) as u32) {
+        let mut value = 0_i32;
+        for j in 0..(values.len() / 2) {
+            if (i & 2 << j) > 0 {
+                value += values[j];
+            } else {
+                value -= values[j];
+            }
+        }
+        head.insert(value, i);
+    }
+
+    for i in 2_i32.pow((values.len() / 2) as u32)..(values.len() as i32) {
+        let mut value = 0_i32;
+        for j in (values.len() / 2)..(values.len()) {
+            if (i & 2 << j) > 0 {
+                value += values[(values.len()/2)+j];
+            } else {
+                value -= values[(values.len()/2)+j];
+            }
+        }
+        head.insert(value, i);
+    }
+
+    for (key, value) in head.iter() {
+        if let Some(v2) = tail.get(&(to - key)) {}
+        if tail.contains_key(&(to - key)) {
+
+        }
     }
 
     let abs_max = values.iter().map(|v| v.abs()).sum::<i32>() as usize;

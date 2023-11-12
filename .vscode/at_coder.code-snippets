@@ -30,6 +30,14 @@
 		],
 		"description": "vector vector type"
 	},
+	"Vector usize type": {
+		"scope": "rust",
+		"prefix": "vu",
+		"body": [
+			"Vec<usize>$0",
+		],
+		"description": "vector usize type"
+	},
 	"Vector char type": {
 		"scope": "rust",
 		"prefix": "vc",
@@ -61,5 +69,21 @@
 			"Vec::new()$0",
 		],
 		"description": "vector new"
+	},
+	"Tupple declaratoin": {
+		"scope": "rust",
+		"prefix": "td",
+		"body": [
+			"($1, $2)$0",
+		],
+		"description": "tuple declaratoin"
+	},
+	"usize tupple declaratoin": {
+		"scope": "rust",
+		"prefix": "tu",
+		"body": [
+			"(usize, usize)$0",
+		],
+		"description": " usize tuple declaratoin"
 	}
 }

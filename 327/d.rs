@@ -1,5 +1,5 @@
 use fmt::Debug;
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
 use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
@@ -7,46 +7,53 @@ use std::str;
 fn main() {
     let mut lines = io::stdin().lock().lines();
     let (n, m): (usize, usize) = read_two(&mut lines);
-    let a: Vec<usize> = read_list(&mut lines).iter().map(|v| v - 1usize).collect();
-    let b: Vec<usize> = read_list(&mut lines).iter().map(|v| v - 1usize).collect();
+    let a: Vec<usize> = read_list(&mut lines).iter().map(|v| v - 1_usize).collect();
+    let b: Vec<usize> = read_list(&mut lines).iter().map(|v| v - 1_usize).collect();
 
-    println!("{}", yes_no(test(&a, &b, n, m)));
-}
-
-fn yes_no(is_yes: bool) -> String {
-    if is_yes {
-        "Yes".to_string()
-    } else {
-        "No".to_string()
-    }
-}
-
-fn test(a: &Vec<usize>, b: &Vec<usize>, n: usize, m: usize) -> bool {
-    let mut link: Vec<Vec<usize>> = (0..2 * m).map(|_| Vec::new()).collect();
+    let mut links: Vec<Vec<usize>> = vec!(Vec::new(); n);
+    let mut color: HashMap<usize, bool> = HashMap::new();
 
     for i in 0..m {
-        link[i].push(b[i]);
-        link[m + i].push(m + a[i]);
+        links[a[i]].push(b[i]);
+        links[b[i]].push(a[i]);
     }
 
-    let mut visited: HashSet<usize> = HashSet::new();
-    let mut queue: VecDeque<usize> = VecDeque::new();
+    // eprintln!("{:?}", links);
 
-    for i in 0..(2 * m) {
-        if visited.contains(&i) {
+    let mut queue: VecDeque<(usize, bool)> = VecDeque::new();
+
+    for i in 0..n {
+        if color.contains_key(&i) {
             continue;
         }
 
-        queue.push_back(i);
+        queue.push_back((i, true));
 
         while queue.len() > 0 {
-            let item = queue.pop_front().unwrap();
-        }
+            let t = queue.pop_front().unwrap();
 
-        visited.insert(i);
+            color.insert(t.0, t.1);
+
+            for j in 0..links[t.0].len() {
+                if let Some(c) = color.get(&links[t.0][j]) {
+                    if *c == t.1 {
+                        println!("{}", yes_no(false));
+                        return;
+                    }
+                }
+
+                if !color.contains_key(&links[t.0][j]) {
+                    queue.push_back((links[t.0][j], !t.1));
+                }
+            }
+        }
     }
 
-    true
+    println!("{}", yes_no(true));
+}
+
+fn yes_no(is_yes: bool) -> &'static str {
+    if is_yes { "Yes" } else { "No" }
 }
 
 fn read_list<A: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> Vec<A>

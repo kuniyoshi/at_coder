@@ -1,5 +1,3 @@
-.PHONY: a41 a42 a43 a44 a45 a46 b41 b42 b43 b44 b45 b51 b52 b54
-
 BIN_DIR = bin
 
 $(BIN_DIR)/%: %.rs
@@ -26,6 +24,13 @@ a45: $(BIN_DIR)/a45
 
 a46: $(BIN_DIR)/a46
 	cat data/a46.1 | $(BIN_DIR)/a46
+
+a56: $(BIN_DIR)/a56
+	cat data/a56.1 | $(BIN_DIR)/a56
+
+a57: $(BIN_DIR)/a57
+	cat data/a57.1 | $(BIN_DIR)/a57
+	cat data/a57.2 | $(BIN_DIR)/a57
 
 b41: $(BIN_DIR)/b41
 	cat data/b41.1 | $(BIN_DIR)/b41

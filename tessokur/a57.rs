@@ -4,8 +4,49 @@ use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
 
-// これ (1 -> 2 -> 3 -> 4 -> 5 -> 3) みたいに平路に髭があると誤答する
 fn main() {
+    let mut lines = io::stdin().lock().lines();
+    let (n, q): (usize, usize) = read_two(&mut lines);
+    // i: 1 2 3 4 5 6 7
+    // n: 2 4 1 7 6 5 3
+    // 1: 2 4 1 7 6 5 3
+    // 2: 4 7 2 3 5 6 1
+    // 3: 7 3 4 1 6 5 2
+    // 4: 3 1 7 2 5 6 4
+    let a: Vec<usize> = read_list(&mut lines).iter().map(|v| v - 1_usize).collect();
+
+    let mut dp: Vec<Vec<usize>> = vec!(vec!(0; n); 30);
+
+    for i in 0..n {
+        dp[0][i] = a[i];
+    }
+
+    for i in 1..30 {
+        for j in 0..n {
+            dp[i][j] = dp[i - 1][dp[i - 1][j]];
+        }
+    }
+
+    for _ in 0..q {
+        let (mut x, y): (usize, usize) = read_two(&mut lines);
+        x -= 1;
+
+        for i in 0..30 {
+            if y & (1 << i) > 0 {
+                x = dp[i][x];
+            }
+
+            if (1 << i) > y {
+                break;
+            }
+        }
+
+        println!("{}", x + 1);
+    }
+}
+
+// これ (1 -> 2 -> 3 -> 4 -> 5 -> 3) みたいに閉路に髭があると誤答する
+fn main2() {
     let mut lines = io::stdin().lock().lines();
     let (n, q): (usize, usize) = read_two(&mut lines);
     // 1 2 3 4 5 6 7

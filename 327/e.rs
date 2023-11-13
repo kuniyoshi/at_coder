@@ -14,7 +14,7 @@ fn main() {
     for i in 1..=n {
         for j in 0..=n {
             dp[i][j] = max(dp[i - 1][j], dp[i][j]);
-            if j + 1 < n {
+            if j + 1 <= n {
                 dp[i][j + 1] = max2(dp[i - 1][j], p[i - 1] as f64, dp[i][j + 1]);
             }
         }
@@ -26,10 +26,10 @@ fn main() {
         if let Some(dp_val) = dp[n][k] {
             max = fmax(
                 max,
-                dp_val / denominator(k) - 1200_f64.sqrt() / k as f64
+                dp_val / denominator(k) - 1200_f64 / (k as f64).sqrt()
             );
         } else {
-            max = fmax(max, 1200_f64.sqrt() / k as f64);
+            max = fmax(max, -1200_f64 / (k as f64).sqrt());
         }
     }
 

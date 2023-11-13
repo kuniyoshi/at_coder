@@ -8,14 +8,13 @@ fn main() {
     let n: usize = read_one(&mut lines);
     let p: Vec<usize> = read_list(&mut lines);
 
-    let mut dp: Vec<Vec<Option<f64>>> = vec!(vec!(None; n + 1); n + 1);
-    dp[0][0] = Some(0_f64);
+    let mut dp: Vec<Option<f64>> = vec!(None; n + 1);
+    dp[0] = Some(0_f64);
 
     for i in 1..=n {
-        for j in 0..=n {
-            dp[i][j] = max(dp[i - 1][j], dp[i][j]);
-            if j + 1 <= n {
-                dp[i][j + 1] = max2(dp[i - 1][j], p[i - 1] as f64, dp[i][j + 1]);
+        for j in (1..=n).rev() {
+            if let Some(value) = dp[j - 1] {
+                dp[j] = max(Some(value * 0.9 + p[i - 1] as f64), dp[j]);
             }
         }
     }
@@ -23,7 +22,7 @@ fn main() {
     let mut max: f64 = std::f64::MIN;
 
     for k in 1..=n {
-        if let Some(dp_val) = dp[n][k] {
+        if let Some(dp_val) = dp[k] {
             max = fmax(
                 max,
                 dp_val / denominator(k) - 1200_f64 / (k as f64).sqrt()
@@ -38,14 +37,6 @@ fn main() {
 
 fn denominator(k: usize) -> f64 {
     (1..=k).map(|i| 0.9_f64.powf((k - i) as f64)).sum()
-}
-
-fn max2(a: Option<f64>, b: f64, c: Option<f64>) -> Option<f64> {
-    match (a, c) {
-        (Some(a_val), Some(_)) => max(Some(a_val * 0.9 + b), c),
-        (Some(a_val), None) => Some(a_val * 0.9 + b),
-        (_, _) => c,
-    }
 }
 
 fn max(a: Option<f64>, b: Option<f64>) -> Option<f64> {

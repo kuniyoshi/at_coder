@@ -1,22 +1,23 @@
 use fmt::Debug;
+use std::cmp;
 use std::collections::HashMap;
 use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
-use std::cmp;
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
     let (n, m, k): (usize, usize, usize) = read_three(&mut lines);
-    let edges: Vec<(usize, usize, usize)> = (0..m).map(|_| {
-        let (a, b, c): (usize, usize, usize) = read_three(&mut lines);
-        (a - 1, b - 1, c)
-    }).collect();
+    let edges: Vec<(usize, usize, usize)> = (0..m)
+        .map(|_| {
+            let (a, b, c): (usize, usize, usize) = read_three(&mut lines);
+            (a - 1, b - 1, c)
+        })
+        .collect();
 
     let mut min: usize = k - 1;
 
-    'LOOP:
-    for flags in 0..(1 << m) {
+    'LOOP: for flags in 0..(1 << m) {
         let mut bit_count = 0;
         let mut cost = 0;
         let mut bits = flags;
@@ -42,7 +43,8 @@ fn main() {
                 bit_count += 1;
             }
             bits >>= 1;
-            if bit_count > n { // なぜ
+            if bit_count > n {
+                // なぜ
                 continue 'LOOP;
             }
         }

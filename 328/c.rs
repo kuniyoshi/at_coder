@@ -11,22 +11,15 @@ fn main() {
     let (n, q): (usize, usize) = read_two(&mut lines);
     let s: Vec<char> = lines.next().unwrap().unwrap().chars().collect();
 
-    let mut acc: Vec<usize> = Vec::new();
-    acc.push(0);
-    acc.push(0);
+    let mut acc = vec![0, 0];
 
     for i in 1..n {
-        if s[i - 1] == s[i] {
-            acc.push(acc[acc.len() - 1] + 1);
-        } else {
-            acc.push(acc[acc.len() - 1]);
-        }
+        acc.push(acc.last().unwrap() + if s[i - 1] == s[i] { 1 } else { 0 });
     }
 
     for _ in 0..q {
         let (l, r): (usize, usize) = read_two(&mut lines);
-        let count: usize = acc[r] - acc[l];
-        println!("{}", count);
+        println!("{}", acc[r] - acc[l]);
     }
 }
 

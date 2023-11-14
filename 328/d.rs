@@ -8,14 +8,10 @@ fn main() {
     for i in 0..chars.len() {
         stack.push(chars[i]);
 
-        if stack.len() >= 3
-            && stack[stack.len() - 3] == 'A'
-            && stack[stack.len() - 2] == 'B'
-            && stack[stack.len() - 1] == 'C'
-        {
-            stack.pop();
-            stack.pop();
-            stack.pop();
+        if stack.ends_with(&['A', 'B', 'C']) {
+            for _ in 0..3 {
+                stack.pop();
+            }
         }
     }
 

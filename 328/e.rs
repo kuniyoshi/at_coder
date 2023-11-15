@@ -14,56 +14,37 @@ fn main() {
         })
         .collect();
 
-    let mut min: usize = k - 1;
+    let mut min = k - 1;
 
     'LOOP: for flags in 0..(1 << m) {
-        let mut bit_count = 0;
         let mut cost = 0;
-        let mut bits = flags;
-        let mut vertexes = 0_usize;
+        let mut vertexes: usize = 0;
+        let mut marked: usize = 0;
 
-        // println!("flags: {:b}", flags);
+        for i in 0..m {
+            if (1 << i) & flags > 0 {
+                cost += edges[i].2;
+                vertexes |= 1 << edges[i].0;
+                vertexes |= 1 << edges[i].1;
+                marked += 1;
+            }
 
-        while bits > 0 {
-            if (bits & 1) == 1 {
-                // println!("take {}", bit_count);
-                // println!("bit_count: {}", bit_count);
-                println!("cost: {}", edges[bit_count].2);
-                cost += edges[bit_count].2;
-                // if (vertexes & 1 << ((edges[bit_count].0 - 1))) > 0 {
-                //     continue 'LOOP;
-                // }
-                vertexes |= 1 << edges[bit_count].0;
-                // if (vertexes & (1 << (edges[bit_count].1 - 1))) > 0 {
-                //     continue 'LOOP;
-                // }
-                vertexes |= 1 << edges[bit_count].1;
-                // println!("{}:{}", edges[bit_count].0, edges[bit_count].1);
-                bit_count += 1;
-            }
-            bits >>= 1;
-            if bit_count > n {
-                // なぜ
-                continue 'LOOP;
-            }
+            // if marked > n - 1 {
+            //     continue 'LOOP;
+            // }
         }
 
-        // println!("vertexes: {:b}", vertexes);
-        // println!("{}", bit_count);
-
-        if bit_count != n {
-            continue;
-        }
-
-        println!("vertexes: {:b}", vertexes);
+        // if marked != n {
+        //     continue;
+        // }
 
         if vertexes != (1 << n) - 1 {
             continue;
         }
 
-        // cost %= k;
+        cost %= k;
 
-        println!("flags: {:b}, {}", flags, cost);
+        // println!("flags: {:b}, {}", flags, cost);
 
         min = cmp::min(min, cost);
     }

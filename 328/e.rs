@@ -29,14 +29,14 @@ fn main() {
                 marked += 1;
             }
 
-            // if marked > n - 1 {
-            //     continue 'LOOP;
-            // }
+            if marked > n - 1 {
+                continue 'LOOP;
+            }
         }
 
-        // if marked != n {
-        //     continue;
-        // }
+        if marked != n - 1 {
+            continue;
+        }
 
         if vertexes != (1 << n) - 1 {
             continue;

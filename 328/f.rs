@@ -4,8 +4,26 @@ use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
 
+enum Attribute {
+    A,
+    B,
+    C,
+}
+
+struct Character {
+    attack: usize,
+    attribute: Attribute,
+}
+
 fn main() {
-    let mut lines = io::stdin().lock().lines();
+    let characters: Vec<Character> = Vec::new();
+    let dp;
+
+    for i in 0..characters.len() {
+        for j in 0..5 {
+            
+        }
+    }
 }
 
 fn yes_no(is_yes: bool) -> &'static str {

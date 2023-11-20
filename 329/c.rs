@@ -1,5 +1,4 @@
 use fmt::Debug;
-use std::cmp;
 use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
@@ -16,22 +15,12 @@ fn main() {
     for i in 0..n {
         let index = ((s[i] as u8) - b'a') as usize;
 
-        match previous {
-            Some(c) if c == s[i] => {
-                buffers[index] += 1;
-                maxes[index] = cmp::max(buffers[index], maxes[index]);
-            }
-            Some(c) if c != s[i] => {
-                buffers[((c as u8) - b'a') as usize] = 0;
-                buffers[index] = 1;
-                maxes[index] = cmp::max(buffers[index], maxes[index]);
-            }
-            None => {
-                buffers[index] = 1;
-                maxes[index] = cmp::max(buffers[index], maxes[index]);
-            }
-            _ => panic!("unknown pattern"),
+        if previous.map_or(false, |c| c != s[i]) {
+            buffers[((previous.unwrap() as u8) - b'a') as usize] = 0;
         }
+
+        buffers[index] += 1;
+        maxes[index] = buffers[index].max(maxes[index]);
         previous = Some(s[i]);
     }
 

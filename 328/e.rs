@@ -3,6 +3,7 @@ use std::cmp;
 use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
+use std::collections::HashSet;
 
 struct P {
     n: usize,
@@ -11,35 +12,32 @@ struct P {
     edges: Vec<(usize, usize, usize)>,
 }
 
-fn bits(mut bits: usize) -> usize {
-    let mut count: usize = 0;
-
-    while bits > 0 {
-        if bits & 1 > 0 {
-            count += 1;
-        }
-
-        bits >>= 1;
-    }
-
-    count
-}
-
-fn cost(used: usize, p: &P) -> usize {
+fn cost(used: &HashSet<usize>, p: &P) -> usize {
     let mut cost: usize = 0;
 
-    for i in 0..p.m {
-        if (used & 1 << i) > 0 {
-            cost += p.edges[i].2 % p.k;
-        }
+    for i in used {
+        cost += p.edges[*i].2 % p.k;
     }
 
     cost % p.k
 }
 
-fn dfs(visited: usize, used: usize, p: &P) -> Option<usize> {
-    if visited == (1 << p.n) - 1 {
-        return if bits(used) == p.n - 1 {
+fn is_tree(used: &HashSet<usize>, p: &P) -> bool {
+    let mut union_find: UnionFind = UnionFind::new(p.n);
+
+    for i in used {
+        if union_find.root(p.edges[*i].0) == union_find.root(p.edges[*i].1) {
+            return false;
+        }
+        union_find.unite(p.edges[*i].0, p.edges[*i].1);
+    }
+
+    true
+}
+
+fn dfs(used: &mut HashSet<usize>, p: &P) -> Option<usize> {
+    if used.len() == p.n - 1 {
+        return if is_tree(&used, p) {
             Some(cost(used, p))
         } else {
             None
@@ -49,13 +47,15 @@ fn dfs(visited: usize, used: usize, p: &P) -> Option<usize> {
     let mut min: Option<usize> = None;
 
     for i in 0..p.m {
-        if (used & 1 << i) > 0 {
+        if used.contains(&i) {
             continue;
         }
 
-        let new_visited = visited | 1 << p.edges[i].0 | 1 << p.edges[i].1;
+        used.insert(i);
 
-        min = min_or(min, dfs(new_visited, used | 1 << i, p));
+        min = min_or(min, dfs(used, p));
+
+        used.remove(&i);
     }
 
     min
@@ -79,44 +79,9 @@ fn main() {
         })
         .collect();
 
-    println!("{}", dfs(0, 0, &P { n, m, k, edges }).unwrap());
+    let mut used: HashSet<usize> = HashSet::new();
 
-    // let mut min = k - 1;
-
-    // 'LOOP: for flags in 0..(1 << m) {
-    //     let mut cost = 0;
-    //     let mut vertexes: usize = 0;
-    //     let mut marked: usize = 0;
-
-    //     for i in 0..m {
-    //         if (1 << i) & flags > 0 {
-    //             cost += edges[i].2;
-    //             vertexes |= 1 << edges[i].0;
-    //             vertexes |= 1 << edges[i].1;
-    //             marked += 1;
-    //         }
-
-    //         if marked > n - 1 {
-    //             continue 'LOOP;
-    //         }
-    //     }
-
-    //     if marked != n - 1 {
-    //         continue;
-    //     }
-
-    //     if vertexes != (1 << n) - 1 {
-    //         continue;
-    //     }
-
-    //     cost %= k;
-
-    //     // println!("flags: {:b}, {}", flags, cost);
-
-    //     min = cmp::min(min, cost);
-    // }
-
-    // println!("{}", min);
+    println!("{}", dfs(&mut used, &P { n, m, k, edges }).unwrap());
 }
 
 fn read_three<A: str::FromStr, B: str::FromStr, C: str::FromStr>(
@@ -133,4 +98,34 @@ where
     let b: B = parts.next().unwrap().parse().unwrap();
     let c: C = parts.next().unwrap().parse().unwrap();
     (a, b, c)
+}
+
+pub struct UnionFind {
+    parents: Vec<usize>,
+}
+
+impl UnionFind {
+    pub fn new(n: usize) -> Self {
+        let parents = (0..n).collect::<Vec<usize>>();
+        UnionFind { parents }
+    }
+
+    pub fn root(&mut self, v: usize) -> usize {
+        if self.parents[v] == v {
+            v
+        } else {
+            self.parents[v] = self.root(self.parents[v]);
+            self.parents[v]
+        }
+    }
+
+    pub fn unite(&mut self, u: usize, v: usize) {
+        let root_u = self.root(u);
+        let root_v = self.root(v);
+        if root_u == root_v {
+            return;
+        }
+        
+        self.parents[root_u] = root_v;
+    }
 }

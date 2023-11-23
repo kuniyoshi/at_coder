@@ -14,31 +14,48 @@ fn main() {
 
     let p = P { x, l, r };
 
-    let mut steps: Vec<Option<usize>> = vec![None; n];
-    steps[0] = Some(0);
+    let mut segment_tree = SegmentTree::new(n);
 
-    for i in 0..(n - 1) {
-        // eprintln!("{:?}", steps);
+    for i in 1..=n {
+        segment_tree.set(i, if i == 1 { 0 } else { n });
+    }
+    eprintln!("{:?}", segment_tree.dump());
 
-        if let Some(step_i) = steps[i] {
-            let from = bin_l(i, &p);
-            let to = bin_r(i, &p);
-            // println!("{}, {}", from, to);
+    for i in 1..n {
+        let from = bin_l(i - 1, &p) + 1;
+        let to = bin_r(i - 1, &p) + 1;
+        // println!("{}, {}", from, to);
 
-            for j in from..=to {
-                steps[j] = option_min(steps[j], Some(step_i + 1));
-            }
-        }
+        segment_tree.set(
+            from,
+            option_min(
+                segment_tree.query(from, from),
+                option_add(segment_tree.query(i, i), 1),
+            ),
+        );
+        segment_tree.set(
+            to,
+            option_min(
+                segment_tree.query(to, to),
+                option_add(segment_tree.query(i, i), 1),
+            ),
+        );
     }
 
-    println!("{}", steps.last().unwrap().unwrap());
+    eprintln!("{:?}", segment_tree.dump());
+
+    println!("{}", segment_tree.query(n, n).unwrap());
 }
 
-fn option_min(a: Option<usize>, b: Option<usize>) -> Option<usize> {
-    match (a, b) {
-        (Some(a_value), Some(b_value)) => Some(cmp::min(a_value, b_value)),
-        (Some(_), None) => a,
-        (_, _) => b,
+fn option_add(a: Option<usize>, b: usize) -> usize {
+    let value = a.map_or(0, |v| v);
+    value + b
+}
+
+fn option_min(a: Option<usize>, b: usize) -> usize {
+    match a {
+        Some(a_value) => cmp::min(a_value, b),
+        _ => b,
     }
 }
 
@@ -125,6 +142,10 @@ impl SegmentTree {
         }
     }
 
+    pub fn at(&mut self, at: usize) -> usize {
+        self.tree[at + self.size - 1]
+    }
+
     pub fn dump(&self) -> &Vec<usize> {
         &self.tree
     }
@@ -162,7 +183,7 @@ impl SegmentTree {
 
     fn max_or(a: Option<usize>, b: Option<usize>) -> Option<usize> {
         match (a, b) {
-            (Some(a_value), Some(b_value)) => Some(cmp::max(a_value, b_value)),
+            (Some(a_value), Some(b_value)) => Some(cmp::min(a_value, b_value)),
             (Some(_), None) => a,
             (None, _) => b,
         }

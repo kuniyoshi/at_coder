@@ -40,6 +40,9 @@ a58: $(BIN_DIR)/a58
 a59: $(BIN_DIR)/a59
 	cat data/a59.1 | $(BIN_DIR)/a59
 
+a60: $(BIN_DIR)/a60
+	cat data/a60.1 | $(BIN_DIR)/a60
+
 b41: $(BIN_DIR)/b41
 	cat data/b41.1 | $(BIN_DIR)/b41
 	cat data/b41.2 | $(BIN_DIR)/b41

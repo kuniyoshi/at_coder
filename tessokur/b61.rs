@@ -3,15 +3,15 @@ use std::io::{self, BufRead};
 fn main() {
     let mut lines = io::stdin().lock().lines();
     let line = lines.next().unwrap().unwrap();
-    let mut parts = line.split_whitespace();
-    let n: usize = parts.next().unwrap().parse().unwrap();
-    let m: usize = parts.next().unwrap().parse().unwrap();
+    let parts: Vec<usize> = line
+        .split_whitespace()
+        .map(|s| s.parse().unwrap())
+        .collect();
+    let (n, m): (usize, usize) = (parts[0], parts[1]);
     let edges: Vec<(usize, usize)> = (0..m)
         .map(|_| {
-            let items: Vec<usize> = lines
-                .next()
-                .unwrap()
-                .unwrap()
+            let line = lines.next().unwrap().unwrap();
+            let items: Vec<usize> = line
                 .split_whitespace()
                 .map(|s| s.parse().unwrap())
                 .collect();
@@ -27,15 +27,7 @@ fn main() {
         neighbors[b - 1].push(a);
     }
 
-    for i in 0..n {
-        println!(
-            "{}: {{{}}}",
-            i + 1,
-            neighbors[i]
-                .iter()
-                .map(|&x| x.to_string())
-                .collect::<Vec<String>>()
-                .join(", ")
-        );
-    }
+    let max: usize = neighbors.iter().enumerate().max_by_key(|(_, v)| v.len()).map(|(i, _)| i).unwrap();
+
+    println!("{}", max + 1);
 }

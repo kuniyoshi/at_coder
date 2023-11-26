@@ -99,3 +99,8 @@ b61: $(BIN_DIR)/b61
 b62: $(BIN_DIR)/b62
 	cat data/b62.1 | $(BIN_DIR)/b62
 	cat data/b62.2 | $(BIN_DIR)/b62
+
+b63: $(BIN_DIR)/b63
+	cat data/b63.1 | $(BIN_DIR)/b63
+	cat data/b63.2 | $(BIN_DIR)/b63
+	cat data/b63.3 | $(BIN_DIR)/b63

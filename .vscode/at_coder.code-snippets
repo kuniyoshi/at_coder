@@ -70,6 +70,14 @@
 		],
 		"description": "vector new"
 	},
+	"Option type": {
+		"scope": "rust",
+		"prefix": "ot",
+		"body": [
+			"Option<$1>$0",
+		],
+		"description": "option type"
+	},
 	"Tupple declaratoin": {
 		"scope": "rust",
 		"prefix": "td",

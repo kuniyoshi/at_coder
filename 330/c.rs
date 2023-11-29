@@ -13,7 +13,7 @@ fn main() {
     for i in 0..max {
         let center = (((d - i * i).abs() as f64).sqrt()) as i64;
 
-        for j in -2..=2 {
+        for j in -1..=1 {
             min = min.min((i * i + (center + j) * (center + j) - d).abs());
         }
     }

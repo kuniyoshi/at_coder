@@ -7,7 +7,7 @@ fn main() {
     let mut lines = io::stdin().lock().lines();
     let (_, l): (usize, usize) = read_two(&mut lines);
     let a: Vec<usize> = read_list(&mut lines);
-    let count = a.iter().filter(|x| x >= &&l).count();
+    let count = a.iter().filter(|x| x >= &l).count();
     println!("{}", count);
 }
 

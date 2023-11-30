@@ -67,9 +67,9 @@ fn main() {
             }
         }
 
-        for i in 0..neighbors[u].len() {
-            match costs[neighbors[u][i].0] {
-                Some(current) if current <= c + neighbors[u][i].1 => {
+        for &(v, weight) in &neighbors[u] {
+            match costs[v] {
+                Some(current) if current <= c + weight => {
                     continue;
                 }
                 None | Some(_) => {
@@ -77,18 +77,14 @@ fn main() {
                 }
             }
 
-            heap.push((Reverse(c + neighbors[u][i].1), neighbors[u][i].0));
+            heap.push((Reverse(c + weight), v));
         }
     }
 
     for i in 0..n {
         match costs[i] {
-            Some(cost) => {
-                println!("{}", cost);
-            }
-            None => {
-                println!("-1");
-            }
+            Some(cost) => println!("{}", cost),
+            None => println!("-1"),
         }
     }
 }

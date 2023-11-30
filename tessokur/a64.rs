@@ -55,26 +55,15 @@ fn main() {
     heap.push((Reverse(0), 0));
 
     while let Some((Reverse(c), u)) = heap.pop() {
-        match costs[u] {
-            Some(current) if c >= current => {
-                continue;
-            }
-            Some(_) => {
-                costs[u] = Some(c);
-            }
-            None => {
-                costs[u] = Some(c);
-            }
+        if costs[u].map_or(false, |current| c >= current) {
+            continue;
         }
 
+        costs[u] = Some(c);
+
         for &(v, weight) in &neighbors[u] {
-            match costs[v] {
-                Some(current) if current <= c + weight => {
-                    continue;
-                }
-                None | Some(_) => {
-                    // do nothing
-                }
+            if costs[v].map_or(false, |current| current <= c + weight) {
+                continue;
             }
 
             heap.push((Reverse(c + weight), v));

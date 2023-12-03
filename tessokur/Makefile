@@ -116,3 +116,7 @@ b63: $(BIN_DIR)/b63
 b64: $(BIN_DIR)/b64
 	cat data/b64.1 | $(BIN_DIR)/b64
 	cat data/b64.2 | $(BIN_DIR)/b64
+
+b65: $(BIN_DIR)/b65
+	cat data/b65.1 | $(BIN_DIR)/b65
+	cat data/b65.2 | $(BIN_DIR)/b65

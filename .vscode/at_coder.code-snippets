@@ -92,6 +92,22 @@
 		"body": [
 			"(usize, usize)$0",
 		],
-		"description": " usize tuple declaratoin"
+		"description": "usize tuple declaratoin"
+	},
+	"unwrap": {
+		"scope": "rust",
+		"prefix": "uw",
+		"body": [
+			"unwrap()"
+		],
+		"description": "unwrap"
+	},
+	"anonymous parts": {
+		"scope": "rust",
+		"prefix": "bar",
+		"body": [
+			"|$1|$0"
+		],
+		"description": "anonymous parts"
 	}
 }

@@ -59,6 +59,10 @@ a64: $(BIN_DIR)/a64
 	cat data/a64.1 | $(BIN_DIR)/a64
 	cat data/a64.2 | $(BIN_DIR)/a64
 
+a65: $(BIN_DIR)/a65
+	cat data/a65.1 | $(BIN_DIR)/a65
+	cat data/a65.2 | $(BIN_DIR)/a65
+
 b41: $(BIN_DIR)/b41
 	cat data/b41.1 | $(BIN_DIR)/b41
 	cat data/b41.2 | $(BIN_DIR)/b41

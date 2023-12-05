@@ -1,18 +1,22 @@
 use fmt::Debug;
-use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fmt;
 use std::io::{self, BufRead};
 use std::str;
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
-}
+    let (n, m, l): (usize, usize, usize) = read_three(&mut lines);
+    let mut a: Vec<usize> = read_list(&mut lines);
+    let mut b: Vec<usize> = read_list(&mut lines);
+    a.sort_by(|a, b| b.cmp(a));
+    b.sort_by(|a, b| b.cmp(a));
+    let cds: Vec<(usize, usize)> = (0..l).map(|_| read_two(&mut lines)).collect();
 
-fn yes_no(is_yes: bool) -> &'static str {
-    if is_yes {
-        "Yes"
-    } else {
-        "No"
+    let mut disabled: HashSet<(usize, usize)> = HashSet::new();
+
+    for &(c, d) in &cds {
+        disabled.insert((c, d));
     }
 }
 
@@ -24,24 +28,6 @@ where
     line.split_whitespace()
         .map(|s| s.parse().unwrap())
         .collect()
-}
-
-fn read_four<A: str::FromStr, B: str::FromStr, C: str::FromStr, D: str::FromStr>(
-    lines: &mut io::Lines<io::StdinLock>,
-) -> (A, B, C, D)
-where
-    A::Err: Debug + 'static,
-    B::Err: Debug + 'static,
-    C::Err: Debug + 'static,
-    D::Err: Debug + 'static,
-{
-    let line = lines.next().unwrap().unwrap();
-    let mut parts = line.split_whitespace();
-    let a: A = parts.next().unwrap().parse().unwrap();
-    let b: B = parts.next().unwrap().parse().unwrap();
-    let c: C = parts.next().unwrap().parse().unwrap();
-    let d: D = parts.next().unwrap().parse().unwrap();
-    (a, b, c, d)
 }
 
 fn read_three<A: str::FromStr, B: str::FromStr, C: str::FromStr>(
@@ -70,11 +56,4 @@ where
     let a: A = parts.next().unwrap().parse().unwrap();
     let b: B = parts.next().unwrap().parse().unwrap();
     (a, b)
-}
-
-fn read_one<A: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> A
-where
-    A::Err: Debug + 'static,
-{
-    lines.next().unwrap().unwrap().parse().unwrap()
 }

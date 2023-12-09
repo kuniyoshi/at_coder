@@ -109,5 +109,53 @@
 			"|$1|$0"
 		],
 		"description": "anonymous parts"
+	},
+	"use std::io::{self, BufRead}": {
+		"scope": "rust",
+		"prefix": "usio",
+		"body": [
+			"use std::io::{self, BufRead};"
+		],
+		"description": "use std::io::{self, BufRead}"
+	},
+	"fn main() {}": {
+		"scope": "rust",
+		"prefix": "fnm",
+		"body": [
+			"fn main() {",
+			"    $0",
+			"}"
+		],
+		"description": "fn main() {}"
+	},
+	"lines": {
+		"scope": "rust",
+		"prefix": "lis",
+		"body": [
+			"let mut lines = io::stdin().lock().lines();"
+		],
+		"description": "lines"
+	},
+	"read nm": {
+		"scope": "rust",
+		"prefix": "readnm",
+		"body": [
+			"let (n, m): (usize, usize) = {",
+			"    let list: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();",
+			"    (list[0], list[1])"
+			"};"
+		],
+		"description": "read nm",
+	},
+	"read costed edges": {
+		"scope": "rust",
+		"prefix": "readcedges",
+		"body": [
+			"let edges: Vec<(usize, usize, usize)> = (0..m).map(|_| {",
+			"    let list: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();",
+			"    (list[0] - 1, list[1] - 1, list[2])",
+			"}).collect();"
+		],
+		"description": "read costed edges"
 	}
 }

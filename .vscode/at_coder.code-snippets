@@ -136,6 +136,14 @@
 		],
 		"description": "lines"
 	},
+	"read sn": {
+		"scope": "rust",
+		"prefix": "readsn",
+		"body": [
+			"let n: usize = lines.next().unwrap().unwrap().parse().unwrap();"
+		],
+		"description": "read single n",
+	},
 	"read nm": {
 		"scope": "rust",
 		"prefix": "readnm",
@@ -146,6 +154,14 @@
 			"};"
 		],
 		"description": "read nm",
+	},
+	"read list": {
+		"scope": "rust",
+		"prefix": "readlist",
+		"body": [
+			"let a: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();"
+		],
+		"description": "read list",
 	},
 	"read costed edges": {
 		"scope": "rust",

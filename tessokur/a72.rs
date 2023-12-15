@@ -1,5 +1,20 @@
 use std::io::{self, BufRead};
 
+fn bits(i: usize) -> usize {
+    let mut count: usize = 0;
+    let mut z = i as usize;
+
+    while z > 0 {
+        if z & 1 > 0 {
+            count += 1;
+        }
+
+        z >>= 1;
+    }
+
+    count
+}
+
 fn main() {
     let mut lines = io::stdin().lock().lines();
     let (h, w, k): (usize, usize, usize) = {
@@ -12,45 +27,49 @@ fn main() {
             .collect();
         (list[0], list[1], list[2])
     };
-    let mut cells: Vec<Vec<char>> = (0..h)
+    let cells: Vec<Vec<char>> = (0..h)
         .map(|_| lines.next().unwrap().unwrap().chars().collect())
         .collect();
 
-    for _ in 0..k {
-        let mut row_max: (usize, usize) = (0, 0);
+    let max = 2_i32.pow(k.min(h) as u32) as usize;
+    let mut result: usize = 0;
 
-        for i in 0..h {
-            let count: usize = cells[i].iter().map(|c| if *c == '.' { 1 } else { 0 }).sum();
+    for i in 0..max {
+        if bits(i) > k {
+            continue;
+        }
 
-            if count > row_max.0 {
-                row_max = (count, i);
+        let mut buffer = cells.clone();
+        let mut cursor: usize = 1;
+        let mut index: usize = 0;
+
+        while cursor <= i {
+            if cursor & i > 0 {
+                buffer[index] = std::iter::repeat('#').take(w).collect();
+            }
+
+            index += 1;
+            cursor <<= 1;
+        }
+
+        let remain = k - bits(i);
+
+        let mut indexes: Vec<usize> = (0..w).collect();
+        indexes.sort_by(|a, b| {
+            (0..h)
+                .filter(|hi| buffer[*hi][*b] == '#')
+                .count()
+                .cmp(&(0..h).filter(|hi| buffer[*hi][*a] == '#').count())
+        });
+
+        for j in indexes.iter().take(remain) {
+            for k in 0..h {
+                buffer[k][*j] = '#';
             }
         }
 
-        let mut col_max: (usize, usize) = (0, 0);
-
-        for j in 0..w {
-            let count: usize = (0..h).map(|i| if cells[i][j] == '.' { 1 } else { 0 }).sum();
-
-            if count > col_max.0 {
-                col_max = (count, j);
-            }
-        }
-
-        if row_max.0 >= col_max.0 {
-            for j in 0..w {
-                cells[row_max.1][j] = '#';
-            }
-        } else {
-            for i in 0..h {
-                cells[i][col_max.1] = '#';
-            }
-        }
+        result = result.max((0..h).map(|hi| buffer[hi].iter().filter(|c| *c == &'#').count()).sum());
     }
 
-    let count: usize = cells
-        .iter()
-        .map(|cols| cols.iter().map(|c| if *c == '#' { 1 } else { 0 }).sum::<usize>())
-        .sum();
-    println!("{}", count);
+    println!("{}", result);
 }

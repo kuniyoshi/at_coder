@@ -85,6 +85,9 @@ a72: $(BIN_DIR)/a72
 	cat data/a72.2 | $(BIN_DIR)/a72
 	cat data/a72.3 | $(BIN_DIR)/a72
 
+a73: $(BIN_DIR)/a73
+	cat data/a73.1 | $(BIN_DIR)/a73
+
 b41: $(BIN_DIR)/b41
 	cat data/b41.1 | $(BIN_DIR)/b41
 	cat data/b41.2 | $(BIN_DIR)/b41

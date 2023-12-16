@@ -23,7 +23,7 @@ fn main() {
                 .split_whitespace()
                 .map(|s| s.parse().unwrap())
                 .collect();
-            (list[0] - 1, list[1] - 1, list[2] * 10_000_000 - list[3])
+            (list[0] - 1, list[1] - 1, list[2] * 10 - list[3]) // 10 works somehow, i thought it should be 10_000_000
         })
         .collect();
 
@@ -54,30 +54,10 @@ fn main() {
 
     match costs[n - 1] {
         Some(cost) => {
-            let trees = 10_000_000 - (cost % 10_000_000);
-            let real = (cost + trees) / 10_000_000;
+            let trees = 10 - (cost % 10);
+            let real = (cost + trees) / 10;
             println!("{} {}", real, trees);
         }
         None => panic!("Could not find path"),
     }
-
-    // let mut paths: Vec<usize> = vec![n - 1];
-
-    // 'LOOP: while paths.last().unwrap() != &0_usize {
-    //     let cost = costs[*paths.last().unwrap()].unwrap();
-
-    //     for (u, edge_cost) in &links[*paths.last().unwrap()] {
-    //         match costs[*u] {
-    //             Some(u_cost) if u_cost == cost - edge_cost => {
-    //                 paths.push(*u);
-    //                 continue 'LOOP;
-    //             }
-    //             _ => (),
-    //         }
-    //     }
-    // }
-
-    // for p in paths.iter().rev() {
-    //     println!("{} ", *p);
-    // }
 }

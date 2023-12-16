@@ -118,6 +118,14 @@
 		],
 		"description": "use std::io::{self, BufRead}"
 	},
+	"use std::collections::HashMap": {
+		"scope": "rust",
+		"prefix": "ushm",
+		"body": [
+			"use std::collections::HashMap;"
+		],
+		"description": "use std::collections::HashMap"
+	},
 	"fn main() {}": {
 		"scope": "rust",
 		"prefix": "fnm",
@@ -155,6 +163,17 @@
 		],
 		"description": "read nm",
 	},
+	"read three usize": {
+		"scope": "rust",
+		"prefix": "read3z",
+		"body": [
+			"let (h, w, k): (usize, usize, usize) = {",
+			"    let list: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();",
+			"    (list[0], list[1], list[2])"
+			"};"
+		],
+		"description": "read three usize",
+	},
 	"read list": {
 		"scope": "rust",
 		"prefix": "readlist",
@@ -173,5 +192,13 @@
 			"}).collect();"
 		],
 		"description": "read costed edges"
+	},
+	"read cells": {
+		"scope": "rust",
+		"prefix": "readcells",
+		"body": [
+			"let cells: Vec<Vec<char>> = (0..h).map(|_| lines.next().unwrap().unwrap().chars().collect()).collect();"
+		],
+		"description": "read cells",
 	}
 }

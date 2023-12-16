@@ -31,7 +31,7 @@ fn main() {
         .map(|_| lines.next().unwrap().unwrap().chars().collect())
         .collect();
 
-    let max = 2_i32.pow(k.min(h) as u32) as usize;
+    let max = 2_i32.pow(h as u32) as usize;
     let mut result: usize = 0;
 
     for i in 0..max {
@@ -40,16 +40,14 @@ fn main() {
         }
 
         let mut buffer = cells.clone();
-        let mut cursor: usize = 1;
         let mut index: usize = 0;
 
-        while cursor <= i {
-            if cursor & i > 0 {
+        while (1 << index) <= i {
+            if (1 << index) & i > 0 {
                 buffer[index] = std::iter::repeat('#').take(w).collect();
             }
 
             index += 1;
-            cursor <<= 1;
         }
 
         let remain = k - bits(i);
@@ -68,7 +66,11 @@ fn main() {
             }
         }
 
-        result = result.max((0..h).map(|hi| buffer[hi].iter().filter(|c| *c == &'#').count()).sum());
+        result = result.max(
+            (0..h)
+                .map(|hi| buffer[hi].iter().filter(|c| *c == &'#').count())
+                .sum(),
+        );
     }
 
     println!("{}", result);

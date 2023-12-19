@@ -23,17 +23,23 @@ fn main() {
         links[*v].push(*u);
     }
 
-    let mut min: usize = n;
+    let mut children: Vec<usize> = Vec::new();
 
     for &child in &links[0] {
-        min = min.min(min_children(child, 0, &links));
+        children.push(min_children(child, 0, &links));
     }
 
-    println!("{}", min + 1);
+    if children.len() == 1 {
+        println!("{}", 1);
+        return;
+    }
+
+    let max = *children.iter().max().unwrap();
+    let sum: usize = children.iter().sum();
+    println!("{}", sum - max + 1);
 }
 
 fn min_children(a: usize, parent: usize, links: &Vec<Vec<usize>>) -> usize {
-    println!("{} from {}", a + 1, parent);
     if links[a].iter().filter(|v| *v != &parent).count() == 0 {
         return 1;
     }
@@ -47,6 +53,5 @@ fn min_children(a: usize, parent: usize, links: &Vec<Vec<usize>>) -> usize {
         min += min_children(child, a, links);
     }
 
-    println!("{} has {}", a + 1, min + 1);
     min + 1
 }

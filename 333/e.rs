@@ -1,80 +1,71 @@
-use fmt::Debug;
-use std::collections::HashMap;
-use std::fmt;
 use std::io::{self, BufRead};
-use std::str;
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
-}
+    let n: usize = lines.next().unwrap().unwrap().parse().unwrap();
+    let inputs: Vec<(usize, usize)> = (0..n)
+        .map(|_| {
+            let list: Vec<usize> = lines
+                .next()
+                .unwrap()
+                .unwrap()
+                .split_whitespace()
+                .map(|s| s.parse().unwrap())
+                .collect();
+            (list[0], list[1] - 1)
+        })
+        .collect();
 
-fn yes_no(is_yes: bool) -> &'static str {
-    if is_yes {
-        "Yes"
-    } else {
-        "No"
+    let mut items: Vec<usize> = vec![0; n];
+    let mut requires: Vec<usize> = vec![0; n];
+    let mut receives: Vec<usize> = Vec::new();
+
+    for i in (0..n).rev() {
+        if inputs[i].0 == 2 {
+            requires[inputs[i].1] += 1;
+        }
+        if inputs[i].0 == 1 {
+            if items[inputs[i].1] < requires[inputs[i].1] {
+                items[inputs[i].1] += 1;
+                receives.push(1);
+            } else {
+                receives.push(0);
+            }
+        }
     }
-}
 
-fn read_list<A: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> Vec<A>
-where
-    A::Err: Debug + 'static,
-{
-    let line = lines.next().unwrap().unwrap();
-    line.split_whitespace()
-        .map(|s| s.parse().unwrap())
-        .collect()
-}
+    receives.reverse();
+    let mut next: usize = 0;
+    items = vec![0; n];
+    let mut max: usize = 0;
+    let mut current: usize = 0;
 
-fn read_four<A: str::FromStr, B: str::FromStr, C: str::FromStr, D: str::FromStr>(
-    lines: &mut io::Lines<io::StdinLock>,
-) -> (A, B, C, D)
-where
-    A::Err: Debug + 'static,
-    B::Err: Debug + 'static,
-    C::Err: Debug + 'static,
-    D::Err: Debug + 'static,
-{
-    let line = lines.next().unwrap().unwrap();
-    let mut parts = line.split_whitespace();
-    let a: A = parts.next().unwrap().parse().unwrap();
-    let b: B = parts.next().unwrap().parse().unwrap();
-    let c: C = parts.next().unwrap().parse().unwrap();
-    let d: D = parts.next().unwrap().parse().unwrap();
-    (a, b, c, d)
-}
+    for i in 0..n {
+        if inputs[i].0 == 2 {
+            if items[inputs[i].1] > 0 {
+                items[inputs[i].1] -= 1;
+                current -= 1;
+            } else {
+                println!("{}", -1);
+                return;
+            }
+        }
+        if inputs[i].0 == 1 {
+            if receives[next] > 0 {
+                items[inputs[i].1] += 1;
+                current += 1;
+                max = max.max(current);
+            }
 
-fn read_three<A: str::FromStr, B: str::FromStr, C: str::FromStr>(
-    lines: &mut io::Lines<io::StdinLock>,
-) -> (A, B, C)
-where
-    A::Err: Debug + 'static,
-    B::Err: Debug + 'static,
-    C::Err: Debug + 'static,
-{
-    let line = lines.next().unwrap().unwrap();
-    let mut parts = line.split_whitespace();
-    let a: A = parts.next().unwrap().parse().unwrap();
-    let b: B = parts.next().unwrap().parse().unwrap();
-    let c: C = parts.next().unwrap().parse().unwrap();
-    (a, b, c)
-}
+            next += 1;
+        }
+    }
 
-fn read_two<A: str::FromStr, B: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> (A, B)
-where
-    A::Err: Debug + 'static,
-    B::Err: Debug + 'static,
-{
-    let line = lines.next().unwrap().unwrap();
-    let mut parts = line.split_whitespace();
-    let a: A = parts.next().unwrap().parse().unwrap();
-    let b: B = parts.next().unwrap().parse().unwrap();
-    (a, b)
-}
+    println!("{}", max);
 
-fn read_one<A: str::FromStr>(lines: &mut io::Lines<io::StdinLock>) -> A
-where
-    A::Err: Debug + 'static,
-{
-    lines.next().unwrap().unwrap().parse().unwrap()
+    for v in receives.iter() {
+        print!("{} ", v);
+    }
+
+    println!("");
 }

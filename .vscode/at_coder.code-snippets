@@ -118,6 +118,14 @@
 		],
 		"description": "use std::io::{self, BufRead}"
 	},
+	"use std::collections::HashSet": {
+		"scope": "rust",
+		"prefix": "ushs",
+		"body": [
+			"use std::collections::HashSet;"
+		],
+		"description": "use std::collections::HashSet"
+	},
 	"use std::collections::HashMap": {
 		"scope": "rust",
 		"prefix": "ushm",

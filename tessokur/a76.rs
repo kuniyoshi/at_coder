@@ -31,12 +31,15 @@ fn main() {
         .map(|s| s.parse().unwrap())
         .collect();
 
+    x.push(w);
     x.insert(0, 0);
 
     let p: P = P { n, w, l, r, x };
     let mut cache: HashMap<usize, usize> = HashMap::new();
 
-    println!("{}", recursive(0, &mut cache, &p));
+    println!("{}", recursive(p.x.len() - 1, &mut cache, &p));
+    eprintln!("{:?}", p.x);
+    eprintln!("{:?}", cache);
 }
 
 fn lower_bound(from: usize, p: &P) -> Option<usize> {
@@ -94,10 +97,10 @@ fn recursive(index: usize, cache: &mut HashMap<usize, usize>, p: &P) -> usize {
     let upper = upper_bound(index, p);
 
     match (lower, upper) {
-        (Some(lower_value), Some(upper_value)) => {
+        (Some(lower_value), Some(upper_value)) if lower_value <= upper_value => {
             let mut total: usize = 0;
 
-            for i in lower_value..=upper_value {
+            for i in (lower_value..=upper_value).rev() {
                 total += recursive(i, cache, p);
             }
 

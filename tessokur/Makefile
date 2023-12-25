@@ -176,3 +176,6 @@ c4: $(BIN_DIR)/c4
 
 c5: $(BIN_DIR)/c5
 	cat data/c5.1 | $(BIN_DIR)/c5
+
+c6: $(BIN_DIR)/c6
+	cat data/c6.1 | $(BIN_DIR)/c6

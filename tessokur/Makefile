@@ -6,6 +6,15 @@ $(BIN_DIR)/%: %.rs
 p%:
 	@pbcopy <$*.rs
 
+a1: $(BIN_DIR)/a1
+	cat data/a1.1 | $(BIN_DIR)/a1
+
+a2: $(BIN_DIR)/a2
+	cat data/a2.1 | $(BIN_DIR)/a2
+
+a3: $(BIN_DIR)/a3
+	cat data/a3.1 | $(BIN_DIR)/a3
+
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41

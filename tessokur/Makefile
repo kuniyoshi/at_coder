@@ -183,3 +183,8 @@ c6: $(BIN_DIR)/c6
 c7: $(BIN_DIR)/c7
 	cat data/c7.1 | $(BIN_DIR)/c7
 	cat data/c7.2 | $(BIN_DIR)/c7
+
+c8: $(BIN_DIR)/c8
+	cat data/c8.1 | $(BIN_DIR)/c8
+	cat data/c8.2 | $(BIN_DIR)/c8
+	cat data/c8.3 | $(BIN_DIR)/c8

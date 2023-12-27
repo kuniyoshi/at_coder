@@ -197,3 +197,9 @@ c11: $(BIN_DIR)/c11
 	cat data/c11.2 | $(BIN_DIR)/c11
 	cat data/c11.3 | $(BIN_DIR)/c11
 	cat data/c11.4 | $(BIN_DIR)/c11
+
+c13: $(BIN_DIR)/c13
+	cat data/c13.1 | $(BIN_DIR)/c13
+	cat data/c13.2 | $(BIN_DIR)/c13
+	cat data/c13.3 | $(BIN_DIR)/c13
+	cat data/c13.4 | $(BIN_DIR)/c13

@@ -26,10 +26,42 @@ fn main() {
     let mut neighbors: Vec<Vec<usize>> = vec![Vec::new(); 10_000];
 
     for &(u, class) in &classes {
+        if class != 2 {
+            continue;
+        }
+
         for i in 0..4 {
             for j in 0..=9 {
 
             }
         }
     }
+    
+    // 1649
+    // 2649 2
+    // 3649
+    // 4649
+    // 5649
+    // 6649
+    // 7649
+    // 8649
+    // 9649
+    // 4749 2
+    // 
+    // 1234
+    // 2234
+    // 1334
+    // 1244
+    // 1233
+
+    for i in 0..=9999 {
+        match class_of.entry(i) {
+            Some(class) if class == 1 => {
+                println!("{}", i);
+                return;
+            }
+            Some(class) => 
+        }
+    }
+
 }

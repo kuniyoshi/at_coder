@@ -224,3 +224,7 @@ c13: $(BIN_DIR)/c13
 	cat data/c13.2 | $(BIN_DIR)/c13
 	cat data/c13.3 | $(BIN_DIR)/c13
 	cat data/c13.4 | $(BIN_DIR)/c13
+
+c14: $(BIN_DIR)/c14
+	cat data/c14.1 | $(BIN_DIR)/c14
+	cat data/c14.2 | $(BIN_DIR)/c14

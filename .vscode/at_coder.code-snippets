@@ -160,6 +160,17 @@
 		],
 		"description": "read single n",
 	},
+	"read hw": {
+		"scope": "rust",
+		"prefix": "readhw",
+		"body": [
+			"let (h, w): (usize, usize) = {",
+			"    let list: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();",
+			"    (list[0], list[1])"
+			"};"
+		],
+		"description": "read hw",
+	},
 	"read nm": {
 		"scope": "rust",
 		"prefix": "readnm",

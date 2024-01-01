@@ -44,6 +44,8 @@ a12: $(BIN_DIR)/a12
 
 a13: $(BIN_DIR)/a13
 	cat data/a13.1 | $(BIN_DIR)/a13
+	# cat data/a13.2 | $(BIN_DIR)/a13
+	# cat data/a13.3 | $(BIN_DIR)/a13
 
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41

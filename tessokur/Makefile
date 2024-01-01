@@ -50,6 +50,9 @@ a13: $(BIN_DIR)/a13
 a14: $(BIN_DIR)/a14
 	cat data/a14.1 | $(BIN_DIR)/a14
 
+a15: $(BIN_DIR)/a15
+	cat data/a15.1 | $(BIN_DIR)/a15
+
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41

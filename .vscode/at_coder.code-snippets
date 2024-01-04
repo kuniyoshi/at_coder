@@ -201,6 +201,25 @@
 		],
 		"description": "read list",
 	},
+	"read chars": {
+		"scope": "rust",
+		"prefix": "readchars",
+		"body": [
+			"let $1: Vec<char> = lines.next().unwrap().unwrap().chars().collect();"
+		],
+		"description": "read chars",
+	},
+	"read tuples": {
+		"scope": "rust",
+		"prefix": "readtuples",
+		"body": [
+			"let $1: Vec<(usize, usize)> = (0..$2).map(|_| {",
+			"    let list: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();",
+			"    (list[0], list[1])",
+			"}).collect();"
+		],
+		"description": "read costed edges"
+	},
 	"read costed edges": {
 		"scope": "rust",
 		"prefix": "readcedges",

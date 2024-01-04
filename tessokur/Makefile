@@ -66,6 +66,10 @@ a18: $(BIN_DIR)/a18
 a19: $(BIN_DIR)/a19
 	cat data/a19.1 | $(BIN_DIR)/a19
 
+a20: $(BIN_DIR)/a20
+	cat data/a20.1 | $(BIN_DIR)/a20
+	cat data/a20.2 | $(BIN_DIR)/a20
+
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41

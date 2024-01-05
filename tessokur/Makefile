@@ -70,6 +70,10 @@ a20: $(BIN_DIR)/a20
 	cat data/a20.1 | $(BIN_DIR)/a20
 	cat data/a20.2 | $(BIN_DIR)/a20
 
+a21: $(BIN_DIR)/a21
+	cat data/a21.1 | $(BIN_DIR)/a21
+	cat data/a21.2 | $(BIN_DIR)/a21
+
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41

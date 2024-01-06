@@ -17,8 +17,8 @@ fn main() {
                 continue;
             }
 
-            let a = score_l(&conditions, i - 1, j);
-            let b = score_r(&conditions, i, j + 1);
+            let a = if i > 1 { score_(conditions[i - 2], i - 1, j) } else { 0 };
+            let b = if j < n { score_(conditions[j - 0], i, j + 1) } else { 0 };
 
             dp[i][j] = (dp[i - 1][j] + a).max(dp[i][j + 1] + b);
         }
@@ -33,22 +33,6 @@ fn main() {
     }
 
     println!("{}", max);
-}
-
-fn score_l(conditions: &Vec<(usize, usize)>, left: usize, right: usize) -> usize {
-    if left < 1 {
-        return 0;
-    }
-
-    score_(conditions[left - 1], left, right)
-}
-
-fn score_r(conditions: &Vec<(usize, usize)>, left: usize, right: usize) -> usize {
-    if right > conditions.len() {
-        return 0;
-    }
-
-    score_(conditions[right - 1], left, right)
 }
 
 fn score_((condition, score): (usize, usize), left: usize, right: usize) -> usize {

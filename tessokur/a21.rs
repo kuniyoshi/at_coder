@@ -8,33 +8,21 @@ fn main() {
         (list[0], list[1])
     }).collect();
 
-    eprintln!("{:?}", conditions);
-
     // 左から x 個、右から y 個のとき、最大のスコア
-    let mut dp: Vec<Vec<usize>> = vec![vec![0; n + 1]; n + 1];
+    let mut dp: Vec<Vec<usize>> = vec![vec![0; n + 2]; n + 1];
 
-    // [1: (3, 20), 2: (2, 30), 3: (1, 40), 4: (0, 10)]
-    // [     0   1   2   3  4
-    //   0: [0,  0,  0,  0, 0],
-    //   1: [0,  0, 30, 70, 0],
-    //   2: [0, 30, 60,  0, 0],
-    //   3: [0, 70,  0,  0, 0],
-    //   4: [0,  0,  0,  0, 0]
-    // ]
-
-    for i in 0..n {
-        for j in 0..n {
-            if i + j - 2 >= n {
+    for i in 1..=n {
+        for j in (1..=n).rev() {
+            if j < i {
                 continue;
             }
 
-            let a = dp[i - 1][j] + if conditions[i - 1].0 < i + j { conditions[i - 1].1 } else { 0 };
-            let b = dp[i][j - 1] + if conditions[j - 1].0 < i + j { conditions[j - 1].1 } else { 0 };
-            dp[i][j] = dp[i][j].max(a.max(b));
+            let a = score_l(&conditions, i - 1, j);
+            let b = score_r(&conditions, i, j + 1);
+
+            dp[i][j] = (dp[i - 1][j] + a).max(dp[i][j + 1] + b);
         }
     }
-
-    eprintln!("{:?}", dp);
 
     let mut max: usize = 0;
 
@@ -45,4 +33,29 @@ fn main() {
     }
 
     println!("{}", max);
+}
+
+fn score_l(conditions: &Vec<(usize, usize)>, left: usize, right: usize) -> usize {
+    if left < 1 {
+        return 0;
+    }
+
+    score_(conditions[left - 1], left, right)
+}
+
+fn score_r(conditions: &Vec<(usize, usize)>, left: usize, right: usize) -> usize {
+    if right > conditions.len() {
+        return 0;
+    }
+
+    score_(conditions[right - 1], left, right)
+}
+
+fn score_((condition, score): (usize, usize), left: usize, right: usize) -> usize {
+    if left <= condition && right >= condition {
+        score
+    }
+    else {
+        0
+    }
 }

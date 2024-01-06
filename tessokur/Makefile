@@ -1,7 +1,8 @@
 BIN_DIR = bin
+OPT = 
 
 $(BIN_DIR)/%: %.rs
-	rustc --out-dir $(BIN_DIR) $<
+	rustc $(OPT) --out-dir $(BIN_DIR) $<
 
 p%:
 	@pbcopy <$*.rs
@@ -70,9 +71,9 @@ a20: $(BIN_DIR)/a20
 	cat data/a20.1 | $(BIN_DIR)/a20
 	cat data/a20.2 | $(BIN_DIR)/a20
 
-a21: $(BIN_DIR)/a21
-	cat data/a21.1 | $(BIN_DIR)/a21
-	cat data/a21.2 | $(BIN_DIR)/a21
+a21: $(BIN_DIR)/a21_alt
+	cat data/a21.1 | $(BIN_DIR)/a21_alt
+	cat data/a21.2 | $(BIN_DIR)/a21_alt
 
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41

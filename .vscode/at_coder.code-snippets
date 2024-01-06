@@ -10,6 +10,7 @@
 		"scope": "rust",
 		"prefix": "warn",
 		"body": [
+			"#[cfg(debug_assertions)]",
 			"eprintln!(\"{:?}\", $1);$0",
 		],
 		"description": "write to stderr"

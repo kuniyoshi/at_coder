@@ -75,6 +75,10 @@ a21: $(BIN_DIR)/a21_alt
 	cat data/a21.1 | $(BIN_DIR)/a21_alt
 	cat data/a21.2 | $(BIN_DIR)/a21_alt
 
+a22: $(BIN_DIR)/a22
+	cat data/a22.1 | $(BIN_DIR)/a22
+	cat data/a22.2 | $(BIN_DIR)/a22
+
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41

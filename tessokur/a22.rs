@@ -1,35 +1,21 @@
 use std::io::{self, BufRead};
 
-struct P {
-    n: usize,
-    a: Vec<usize>,
-    b: Vec<usize>,
-}
-
 fn main() {
     let mut lines = io::stdin().lock().lines();
     let n: usize = lines.next().unwrap().unwrap().parse().unwrap();
     let a: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
     let b: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
 
-    let mut cache: Vec<Option<usize>> = vec![None; n];
+    let mut dp: Vec<i64> = vec![-1_000_000_000; n + 1];
+    dp[1] = 0;
 
-    println!("{}", dfs(&mut cache, 0, 0, &(P { n, a, b })));
-}
-
-fn dfs(cache: &mut Vec<Option<usize>>, current: usize, score: usize, p: &P) -> usize {
-    if current >= p.n - 1 {
-        return score;
+    for i in 1..n {
+        dp[a[i - 1]] = dp[a[i - 1]].max(dp[i] + 100);
+        dp[b[i - 1]] = dp[b[i - 1]].max(dp[i] + 150);
     }
 
-    if let Some(value) = cache[current] {
-        return value;
-    }
+    #[cfg(debug_assertions)]
+    eprintln!("{:?}", dp);
 
-    let a: usize = dfs(cache, p.a[current] - 1, score + 100, p);
-    let b: usize = dfs(cache, p.b[current] - 1, score + 150, p);
-
-    cache[current] = Some(a.max(b));
-
-    a.max(b)
+    println!("{}", dp[n]);
 }

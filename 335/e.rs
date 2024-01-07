@@ -20,6 +20,8 @@ fn main() {
         links[v].push(u);
     }
 
+    let mut dp: 
+
     let mut distances: Vec<usize> = vec![1_000_000_000; n];
     let mut queue: Vec<(usize, usize)> = vec![(0, 0)];
 
@@ -41,4 +43,17 @@ fn main() {
 
     #[cfg(debug_assertions)]
     eprintln!("{:?}", distances);
+
+    let mut passed: HashSet<usize> = HashSet::new();
+
+    let mut cursor = n - 1;
+    passed.insert(cursor);
+
+    while true {
+        for u in &links[cursor] {
+            if distances[u] + 1 == distances[cursor] {
+
+            }
+        }
+    }
 }

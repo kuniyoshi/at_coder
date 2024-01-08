@@ -83,6 +83,10 @@ a23: $(BIN_DIR)/a23
 	cat data/a23.1 | $(BIN_DIR)/a23
 	cat data/a23.2 | $(BIN_DIR)/a23
 
+a24: $(BIN_DIR)/a24
+	cat data/a24.1 | $(BIN_DIR)/a24
+	cat data/a24.2 | $(BIN_DIR)/a24
+
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41

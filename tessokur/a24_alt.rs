@@ -20,27 +20,10 @@ fn main() {
                 Some(mins_value) if mins_value < *value => ac = wj,
                 _ => wa = wj,
             };
-            // if mins[wj].is_some() && mins[wj].unwrap() < *value {
-            //     ac = wj;
-            // } else {
-            //     wa = wj;
-            // }
         }
 
-        match dp[*value] {
-            Some(dp_value) => {
-                dp[*value] = Some((ac + 1).max(dp_value));
-            },
-            _ => (),
-        }
-
-        match dp[*value] {
-            Some(dp_value) => mins[dp_value] = Some(*value),
-            _ => (),
-        }
-
-        // dp[*value] = Some((ac + 1).max(dp[*value].unwrap()));
-        // mins[dp[*value].unwrap()] = Some(*value);
+        dp[*value] = Some((ac + 1).max(dp[*value].unwrap()));
+        mins[dp[*value].unwrap()] = Some(*value);
     }
 
     let mut max: usize = 0;

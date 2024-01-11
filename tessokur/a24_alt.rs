@@ -8,6 +8,8 @@ fn main() {
     let mut dp: Vec<Option<usize>> = vec![None;   a.iter().max().map_or(0, |v| *v) + 1];
     let mut mins: Vec<Option<usize>> = vec![None; a.iter().max().map_or(0, |v| *v) + 1];
 
+    // 2 3 1 6 4 5
+
     for value in &a {
         dp[*value] = dp[*value].map_or(Some(1), |v| Some(v));
 
@@ -24,6 +26,9 @@ fn main() {
 
         dp[*value] = Some((ac + 1).max(dp[*value].unwrap()));
         mins[dp[*value].unwrap()] = Some(*value);
+
+        #[cfg(debug_assertions)]
+        eprintln!("{:?}", mins);
     }
 
     let mut max: usize = 0;

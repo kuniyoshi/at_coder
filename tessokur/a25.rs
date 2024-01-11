@@ -10,9 +10,22 @@ fn main() {
 
     let mut dp: Vec<Vec<usize>> = vec![vec![0; w]; h];
 
+    dp[0][0] = 1;
+
     for i in 0..h {
         for j in 0..w {
-            dp[i][j] = 
+            if cells[i][j] == '#' {
+                continue;
+            }
+
+            if i == 0 && j == 0 {
+                dp[i][j] = 1;
+                continue;
+            }
+
+            dp[i][j] = if i > 0 { dp[i - 1][j] } else { 0 } + if j > 0 { dp[i][j - 1] } else { 0 };
         }
     }
+
+    println!("{}", dp[h - 1][w - 1]);
 }

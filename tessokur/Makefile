@@ -93,6 +93,9 @@ a25: $(BIN_DIR)/a25
 	cat data/a25.2 | $(BIN_DIR)/a25
 	cat data/a25.3 | $(BIN_DIR)/a25
 
+a26: $(BIN_DIR)/a26
+	cat data/a26.1 | $(BIN_DIR)/a26
+
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41

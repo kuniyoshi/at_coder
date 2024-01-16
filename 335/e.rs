@@ -1,5 +1,4 @@
 use std::io::{self, BufRead};
-use std::collections::HashSet;
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
@@ -13,47 +12,73 @@ fn main() {
         (list[0] - 1, list[1] - 1)
     }).collect();
 
+    let mut union_find = UnionFind::new(n);
+
     let mut links: Vec<Vec<usize>> = vec![Vec::new(); n];
 
     for &(u, v) in &edges {
-        links[u].push(v);
-        links[v].push(u);
-    }
+        let x = u.min(v);
+        let y = u.max(v);
 
-    let mut dp: 
-
-    let mut distances: Vec<usize> = vec![1_000_000_000; n];
-    let mut queue: Vec<(usize, usize)> = vec![(0, 0)];
-
-    while let Some((u, d)) = queue.pop() {
-        if distances[u] <= d {
-            continue;
-        }
-
-        distances[u] = d;
-
-        for v in &links[u] {
-            if distances[*v] <= d + 1 {
-                continue;
-            }
-
-            queue.push((*v, d + 1));
+        if a[x] == a[y] {
+            union_find.unite(x, y);
         }
     }
+
+    for &(u, v) in &edges {
+        let x = u.min(v);
+        let y = u.max(v);
+
+        links[union_find.root(x)].push(union_find.root(y));
+    }
+
+    let mut pairs: Vec<(usize, usize)> = Vec::new();
+
+    for i in 0..n {
+        pairs.push((a[i], i));
+    }
+
+    pairs.sort();
+
+    let mut dp: Vec<usize> = vec![0; n];
 
     #[cfg(debug_assertions)]
-    eprintln!("{:?}", distances);
+    eprintln!("{:?}", pairs);
 
-    let mut passed: HashSet<usize> = HashSet::new();
+    let mut distances: Vec<Option<usize>> = vec![None; n];
 
-    let mut cursor = n - 1;
-    passed.insert(cursor);
+    for i in 0..n {
+    }
 
-    while true {
-        for u in &links[cursor] {
-            if distances[u] + 1 == distances[cursor] {
+    println!("{}", dp[n - 1]);
+}
 
-            }
+pub struct UnionFind {
+    parents: Vec<usize>,
+}
+
+impl UnionFind {
+    pub fn new(n: usize) -> Self {
+        let parents = (0..n).collect::<Vec<usize>>();
+        UnionFind { parents }
+    }
+
+    pub fn root(&mut self, v: usize) -> usize {
+        if self.parents[v] == v {
+            v
+        } else {
+            self.parents[v] = self.root(self.parents[v]);
+            self.parents[v]
         }
+    }
+
+    pub fn unite(&mut self, u: usize, v: usize) {
+        let root_u = self.root(u);
+        let root_v = self.root(v);
+        if root_u == root_v {
+            return;
+        }
+        
+        self.parents[root_u] = root_v;
     }
 }

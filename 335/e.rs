@@ -17,37 +17,32 @@ fn main() {
     let mut links: Vec<Vec<usize>> = vec![Vec::new(); n];
 
     for &(u, v) in &edges {
-        let x = u.min(v);
-        let y = u.max(v);
-
-        if a[x] == a[y] {
-            union_find.unite(x, y);
+        if a[u] == a[v] {
+            union_find.unite(u, v);
         }
     }
 
     for &(u, v) in &edges {
-        let x = u.min(v);
-        let y = u.max(v);
+        let (x, y) = match (a[u], a[v]) {
+            (a, b) if a > b => (v, u),
+            _ => (u, v),
+        };
 
         links[union_find.root(x)].push(union_find.root(y));
     }
 
-    let mut pairs: Vec<(usize, usize)> = Vec::new();
+    #[cfg(debug_assertions)]
+    eprintln!("{:?}", links);
 
-    for i in 0..n {
-        pairs.push((a[i], i));
-    }
-
-    pairs.sort();
+    let mut vertexes: Vec<usize> = (0..n).collect();
+    vertexes.sort_by(|u, v| a[*u].cmp(&a[*v]));
 
     let mut dp: Vec<usize> = vec![0; n];
 
-    #[cfg(debug_assertions)]
-    eprintln!("{:?}", pairs);
-
-    let mut distances: Vec<Option<usize>> = vec![None; n];
-
-    for i in 0..n {
+    for u in vertexes.iter() {
+        for v in links[*u].iter() {
+            dp[*v] = dp[*v].max(dp[*u] + 1);
+        }
     }
 
     println!("{}", dp[n - 1]);

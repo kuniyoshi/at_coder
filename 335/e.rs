@@ -23,6 +23,10 @@ fn main() {
     }
 
     for &(u, v) in &edges {
+        if union_find.root(u) == union_find.root(v) {
+            continue;
+        }
+
         let (x, y) = match (a[u], a[v]) {
             (a, b) if a > b => (v, u),
             _ => (u, v),
@@ -39,11 +43,17 @@ fn main() {
 
     let mut dp: Vec<usize> = vec![0; n];
 
+    dp[0] = 1;
+
     for u in vertexes.iter() {
         for v in links[*u].iter() {
             dp[*v] = dp[*v].max(dp[*u] + 1);
+            // println!("{} -> {} {}", u, v, dp[*v]);
         }
     }
+
+    #[cfg(debug_assertions)]
+    eprintln!("{:?}", dp);
 
     println!("{}", dp[n - 1]);
 }

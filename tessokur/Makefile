@@ -128,6 +128,9 @@ a34: $(BIN_DIR)/a34
 	cat data/a34.1 | $(BIN_DIR)/a34
 	cat data/a34.2 | $(BIN_DIR)/a34
 
+a36: $(BIN_DIR)/a36
+	cat data/a36.1 | $(BIN_DIR)/a36
+
 a41: $(BIN_DIR)/a41
 	cat data/a41.1 | $(BIN_DIR)/a41
 	cat data/a41.2 | $(BIN_DIR)/a41

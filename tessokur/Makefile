@@ -162,6 +162,10 @@ a45: $(BIN_DIR)/a45
 a46: $(BIN_DIR)/a46
 	cat data/a46.1 | $(BIN_DIR)/a46
 
+a49: $(BIN_DIR)/a49
+	cat data/a49.1 | $(BIN_DIR)/a49
+	cat data/a49.2 | $(BIN_DIR)/a49
+
 a56: $(BIN_DIR)/a56
 	cat data/a56.1 | $(BIN_DIR)/a56
 

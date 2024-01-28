@@ -1,5 +1,45 @@
 use std::io::{self, BufRead};
-use std::collections::VecDeque;
+use std::collections::HashMap;
+
+fn infinity(h: usize, w: usize) -> usize {
+    h + w
+}
+
+fn calc_min(cells: &Vec<Vec<char>>, h: usize, w: usize, k: usize) -> usize {
+    if w < k {
+        return infinity(h, w);
+    }
+
+    let mut min = infinity(h, w);
+
+    for i in 0..h {
+        let chars = &cells[i];
+        let mut count_of: HashMap<char, usize> = HashMap::new();
+        count_of.insert('o', 0);
+        count_of.insert('x', 0);
+        count_of.insert('.', 0);
+
+        for j in 0..k {
+            *count_of.entry(chars[j]).or_insert(0) += 1;
+        }
+
+        if count_of[&'x'] == 0 {
+            min = min.min(count_of[&'.']);
+        }
+
+        for j in k..w {
+            *count_of.entry(chars[j - k]).or_insert(0) -= 1;
+            *count_of.entry(chars[j]).or_insert(0) += 1;
+
+            if count_of[&'x'] == 0 {
+                min = min.min(count_of[&'.']);
+            }
+        }
+    }
+
+    min
+}
+
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
@@ -7,99 +47,25 @@ fn main() {
         let list: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
         (list[0], list[1], list[2])
     };
-    let mut cells: Vec<Vec<char>> = (0..h).map(|_| lines.next().unwrap().unwrap().chars().collect()).collect();
+    let cells: Vec<Vec<char>> = (0..h).map(|_| lines.next().unwrap().unwrap().chars().collect()).collect();
     // #[cfg(debug_assertions)]
     // eprintln!("{:?}", cells);
 
-    let mut min: usize = 2 * h * w;
+    let mut min = infinity(h, w);
+    min = min.min(calc_min(&cells, h, w, k));
 
-    for i in 0..h {
-        let mut counts: Vec<usize> = vec![0; k];
-        let mut chars: VecDeque<char> = cells[i][0..(k.min(w))].iter().map(|c| *c).collect();
+    let mut t_cells: Vec<Vec<char>> = vec![vec![' '; h]; w];
 
-        for &c in &chars {
-            match c {
-                'o' => counts[0] += 1,
-                'x' => counts[1] += 1,
-                '.' => counts[2] += 1,
-                _ => panic!("unknown"),
-            }
-        }
-
-        if counts[1] == 0 {
-            min = min.min(counts[2]);
-        }
-
-        for j in k..(if w >= k { w - k } else { 0 }) {
-            match chars[0] {
-                'o' => counts[0] -= 1,
-                'x' => counts[1] -= 1,
-                '.' => counts[2] -= 1,
-                _ => panic!("unknown"),
-            };
-            chars.pop_front();
-            chars.push_back(cells[i][j]);
-            match chars[chars.len() - 1] {
-                'o' => counts[0] -= 1,
-                'x' => counts[1] -= 1,
-                '.' => counts[2] -= 1,
-                _ => panic!("unknown"),
-            };
-
-            if counts[1] == 0 {
-                min = min.min(counts[2]);
-            }
-        }
-    }
-
-    let mut w_cells: Vec<Vec<char>> = vec![vec![' '; h]; w];
     for i in 0..h {
         for j in 0..w {
-            w_cells[j][i] = cells[i][j];
+            t_cells[j][i] = cells[i][j];
         }
     }
 
-    for i in 0..w {
-        let mut counts: Vec<usize> = vec![0; k];
-        let mut chars: VecDeque<char> = w_cells[i][0..(k.min(h))].iter().map(|c| *c).collect();
+    min = min.min(calc_min(&t_cells, w, h, k));
 
-        for &c in &chars {
-            match c {
-                'o' => counts[0] += 1,
-                'x' => counts[1] += 1,
-                '.' => counts[2] += 1,
-                _ => panic!("unknown"),
-            }
-        }
-
-        if counts[1] == 0 {
-            min = min.min(counts[2]);
-        }
-
-        for j in k..(if h >= k { h - k } else { 0 }) {
-            match chars[0] {
-                'o' => counts[0] -= 1,
-                'x' => counts[1] -= 1,
-                '.' => counts[2] -= 1,
-                _ => panic!("unknown"),
-            };
-            chars.pop_front();
-            chars.push_back(w_cells[i][j]);
-            match chars[chars.len() - 1] {
-                'o' => counts[0] -= 1,
-                'x' => counts[1] -= 1,
-                '.' => counts[2] -= 1,
-                _ => panic!("unknown"),
-            };
-
-            if counts[1] == 0 {
-                min = min.min(counts[2]);
-            }
-        }
-    }
-
-    if min == 2 * h * w {
-        println!("{}", -1);
+    if min == infinity(h, w) {
+        println!("-1");
     }
     else {
         println!("{}", min);

@@ -14,11 +14,11 @@ a: $(BIN_DIR)/a
 	cat data/a.2 | $(BIN_DIR)/a
 	cat data/a.3 | $(BIN_DIR)/a
 
-b: $(BIN_DIR)/b
-	cat data/b.1 | $(BIN_DIR)/b
-	cat data/b.2 | $(BIN_DIR)/b
-	cat data/b.3 | $(BIN_DIR)/b
-	cat data/b.4 | $(BIN_DIR)/b
+b: $(BIN_DIR)/b2
+	cat data/b.1 | $(BIN_DIR)/b2
+	cat data/b.2 | $(BIN_DIR)/b2
+	cat data/b.3 | $(BIN_DIR)/b2
+	cat data/b.4 | $(BIN_DIR)/b2
 
 c: $(BIN_DIR)/c2
 	cat data/c.1 | $(BIN_DIR)/c2

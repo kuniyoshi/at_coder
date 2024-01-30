@@ -20,10 +20,10 @@ b: $(BIN_DIR)/b3
 	cat data/b.3 | $(BIN_DIR)/b3
 	cat data/b.4 | $(BIN_DIR)/b3
 
-c: $(BIN_DIR)/c2
-	cat data/c.1 | $(BIN_DIR)/c2
-	cat data/c.2 | $(BIN_DIR)/c2
-	cat data/c.3 | $(BIN_DIR)/c2
+c: $(BIN_DIR)/c3
+	cat data/c.1 | $(BIN_DIR)/c3
+	cat data/c.2 | $(BIN_DIR)/c3
+	cat data/c.3 | $(BIN_DIR)/c3
 
 d: $(BIN_DIR)/d
 	cat data/d.1 | $(BIN_DIR)/d

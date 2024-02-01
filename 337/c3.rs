@@ -9,7 +9,7 @@ fn main() {
     // 4 1 -1 5 3 2
     // 前: 3 0 -1 4 2 1
     // 人: 0 1  2 3 4 5
-    // 後: 1 5  4 0 3
+    // 後: 1 5  4 0 3 6
     // 2 4 3 0 1 5
     // 3 5 4 1 2 6
 
@@ -27,14 +27,20 @@ fn main() {
     #[cfg(debug_assertions)]
     eprintln!("{:?}", nexts);
 
-    // let first = a.iter().position(|&v| v == -1).unwrap();
+    let first = a.iter().position(|&v| v == -1).unwrap();
 
-    // let mut orders: Vec<usize> = vec![first];
+    let mut orders: Vec<usize> = vec![first];
 
-    // while orders.len() != n {
-    //     orders.push(neighbors[*orders.last().unwrap()][0]);
-    // }
+    while orders.len() != n {
+        orders.push(nexts[*orders.last().unwrap()]);
+    }
 
-    // #[cfg(debug_assertions)]
-    // eprintln!("{:?}", orders);
+    #[cfg(debug_assertions)]
+    eprintln!("{:?}", orders);
+
+    for i in 0..n {
+        print!("{} ", orders[i] + 1);
+    }
+
+    println!("");
 }

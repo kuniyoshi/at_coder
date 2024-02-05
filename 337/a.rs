@@ -1,4 +1,5 @@
 use std::io::{self, BufRead};
+use std::cmp::Ordering;
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
@@ -10,5 +11,9 @@ fn main() {
 
     let t: usize = xy.iter().map(|t| t.0).sum();
     let a: usize = xy.iter().map(|t| t.1).sum();
-    println!("{}", if t == a { "Draw" } else if t > a { "Takahashi" } else { "Aoki" });
+    println!("{}", match t.cmp(&a) {
+        Ordering::Equal => "Draw",
+        Ordering::Greater => "Takahashi",
+        Ordering::Less => "Aoki",
+    });
 }

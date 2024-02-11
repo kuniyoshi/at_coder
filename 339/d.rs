@@ -12,12 +12,10 @@ fn main() {
     let n: usize = lines.next().unwrap().unwrap().parse().unwrap();
     let mut cells: Vec<Vec<char>> = (0..n).map(|_| lines.next().unwrap().unwrap().chars().collect()).collect();
 
-    let players = players(&mut cells);
-
     let mut queue: VecDeque<((P, P), usize)> = VecDeque::new();
     let mut count: HashMap<(P, P), usize> = HashMap::new();
 
-    queue.push_back((players.clone(), 0));
+    queue.push_back((players(&mut cells), 0));
 
     let directions: Vec<P> = vec![P { h: 0, w: 1 }, P { h: 1, w: 0 }, P { h: 0, w: -1 }, P { h: -1, w: 0 }];
 
@@ -29,18 +27,13 @@ fn main() {
         count.entry(item.0).or_insert(item.1);
 
         for d in &directions {
-            let next_players: (P, P) = (next_player(players.0.clone(), d.clone(), &cells), next_player(players.1.clone(), d.clone(), &cells));
+            let next_players: (P, P) = (next_player(item.0.0.clone(), d.clone(), &cells), next_player(item.0.1.clone(), d.clone(), &cells));
             if count.contains_key(&next_players) {
-                #[cfg(debug_assertions)]
-                eprintln!("{:?}", "foooooo");
                 continue;
             }
             queue.push_back((next_players.clone(), item.1 + 1));
         }
     }
-
-    #[cfg(debug_assertions)]
-    eprintln!("{:?}", count);
 
     let mut min: Option<usize> = None;
 
@@ -48,8 +41,7 @@ fn main() {
         if key.0 == key.1 {
             min = match min {
                 None => Some(*value),
-                Some(v) if v > *value => Some(*value),
-                _ => min,
+                Some(v) => Some(v.min(*value)),
             };
         }
     }
@@ -63,12 +55,9 @@ fn main() {
 fn next_player(player: P, direction: P, cells: &Vec<Vec<char>>) -> P {
     let next = P { h: clamp(player.h + direction.h, cells.len()), w: clamp(player.w + direction.w, cells.len()) };
 
-    if cells[next.w as usize][next.w as usize] != '#' {
+    if cells[next.h as usize][next.w as usize] != '#' {
         return next;
     }
-
-    #[cfg(debug_assertions)]
-    eprintln!("{:?}", next);
 
     player
 }

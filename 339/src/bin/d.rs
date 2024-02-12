@@ -24,7 +24,7 @@ fn main() {
             continue;
         }
 
-        count.entry(item.0).or_insert(item.1);
+        count.insert(item.0, item.1);
 
         for d in &directions {
             let next_players: (P, P) = (next_player(item.0.0.clone(), d.clone(), &cells), next_player(item.0.1.clone(), d.clone(), &cells));

@@ -1,39 +1,34 @@
 .PHONY: a b c d e f
 
-BIN_DIR = bin
-OPT_LEVEL = 0
-
-$(BIN_DIR)/%: %.rs
-	rustc -C opt-level=$(OPT_LEVEL) --out-dir $(BIN_DIR) $<
-
 p%:
-	@pbcopy <$*.rs
+	@pbcopy <src/bin/$*.rs
 
-a: $(BIN_DIR)/a
-	cat data/a.1 | $(BIN_DIR)/a
-	cat data/a.2 | $(BIN_DIR)/a
-	cat data/a.3 | $(BIN_DIR)/a
-	cat data/a.4 | $(BIN_DIR)/a
+a:
+	cat data/a.1 | cargo run --bin a
+	cat data/a.2 | cargo run --bin a
+	cat data/a.3 | cargo run --bin a
+	cat data/a.4 | cargo run --bin a
 
-b: $(BIN_DIR)/b
-	cat data/b.1 | $(BIN_DIR)/b
-	cat data/b.2 | $(BIN_DIR)/b
-	cat data/b.3 | $(BIN_DIR)/b
+b:
+	cat data/b.1 | cargo run --bin b
+	cat data/b.2 | cargo run --bin b
+	cat data/b.3 | cargo run --bin b
 
-c: $(BIN_DIR)/c
-	cat data/c.1 | $(BIN_DIR)/c
-	cat data/c.2 | $(BIN_DIR)/c
-	cat data/c.3 | $(BIN_DIR)/c
+c:
+	cat data/c.1 | cargo run --bin c
+	cat data/c.2 | cargo run --bin c
+	cat data/c.3 | cargo run --bin c
 
-d: $(BIN_DIR)/d
-	cat data/d.1 | $(BIN_DIR)/d
-	cat data/d.2 | $(BIN_DIR)/d
-	cat data/d.3 | $(BIN_DIR)/d
+d:
+	cat data/d.1 | cargo run --bin d
+	cat data/d.2 | cargo run --bin d
+	cat data/d.3 | cargo run --bin d
+	cat data/d.4 | cargo run --bin d
 
-e: $(BIN_DIR)/e
-	cat data/e.1 | $(BIN_DIR)/e
-	cat data/e.2 | $(BIN_DIR)/e
+e:
+	cat data/e.1 | cargo run --bin e
+	cat data/e.2 | cargo run --bin e
 
-f: $(BIN_DIR)/f
-	cat data/f.1 | $(BIN_DIR)/f
-	cat data/f.2 | $(BIN_DIR)/f
+f:
+	cat data/f.1 | cargo run --bin f
+	cat data/f.2 | cargo run --bin f

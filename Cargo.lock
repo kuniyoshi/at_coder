@@ -3,18 +3,15 @@
 version = 3
 
 [[package]]
-name = "abc001"
+name = "abc339"
 version = "0.1.0"
 dependencies = [
  "regex",
 ]
 
 [[package]]
-name = "abc339"
+name = "abc340"
 version = "0.1.0"
-dependencies = [
- "regex",
-]
 
 [[package]]
 name = "aho-corasick"

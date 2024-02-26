@@ -15,10 +15,10 @@ fn main() {
         match operation {
             1 => {
                 a.push(xk);
-            },
+            }
             2 => {
                 println!("{}", a[a.len() - xk]);
-            },
+            }
             _ => panic!("Unknown operation: {}", operation),
         };
     }

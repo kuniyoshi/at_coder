@@ -22,18 +22,17 @@ fn main() {
     for _ in 0..n {
         match cells[p.h][p.w] {
             false => {
-                cells[p.h][p.w] = true;
                 current_direction = (current_direction + 1) % directions.len();
-                let d = directions[current_direction];
-                p = P { h: clamp(p.h, d.0, h), w: clamp(p.w, d.1, w) };
             },
             _ => {
-                cells[p.h][p.w] = false;
                 current_direction = match current_direction { 0 => directions.len() - 1, _ => current_direction - 1 };
-                let d = directions[current_direction];
-                p = P { h: clamp(p.h, d.0, h), w: clamp(p.w, d.1, w) };
             },
         }
+
+        cells[p.h][p.w] = !cells[p.h][p.w];
+
+        let d = directions[current_direction];
+        p = P { h: clamp(p.h, d.0, h), w: clamp(p.w, d.1, w) };
     }
 
     for i in 0..h {

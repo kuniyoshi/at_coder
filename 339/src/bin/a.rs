@@ -1,13 +1,10 @@
 use std::io::{self, BufRead};
 
 fn main() {
-    let mut lines = io::stdin().lock().lines();
-    let s: Vec<char> = lines.next().unwrap().unwrap().chars().collect();
+    let stdin = io::stdin();
+    let input = stdin.lock().lines().next().unwrap().unwrap();
 
-    let dot: Option<usize> = s.iter().rposition(|&c| c == '.');
+    let output = input.rsplit_once('.').map_or_else(|| input.as_str(), |(_, after_dot)| after_dot);
 
-    match dot {
-        None => println!("{}", s.iter().collect::<String>()),
-        Some(p) => println!("{}", s[(p+1)..s.len()].iter().collect::<String>()),
-    };
+    println!("{}", output);
 }

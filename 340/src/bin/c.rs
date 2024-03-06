@@ -1,5 +1,5 @@
-use std::io::{self, BufRead};
 use std::collections::HashMap;
+use std::io::{self, BufRead};
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
@@ -16,7 +16,9 @@ struct Recurse {
 
 impl Recurse {
     pub fn new() -> Self {
-        Recurse { memo: HashMap::new() }
+        Recurse {
+            memo: HashMap::new(),
+        }
     }
 
     pub fn r(self: &mut Self, n: usize) -> usize {

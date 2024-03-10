@@ -3,11 +3,29 @@ use std::io::{self, BufRead};
 fn main() {
     let mut lines = io::stdin().lock().lines();
     let (n, m): (usize, usize) = {
-        let list: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
+        let list: Vec<usize> = lines
+            .next()
+            .unwrap()
+            .unwrap()
+            .split_whitespace()
+            .map(|s| s.parse().unwrap())
+            .collect();
         (list[0], list[1])
     };
-    let a: Vec<i64> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
-    let b: Vec<usize> = lines.next().unwrap().unwrap().split_whitespace().map(|s| s.parse().unwrap()).collect();
+    let a: Vec<i64> = lines
+        .next()
+        .unwrap()
+        .unwrap()
+        .split_whitespace()
+        .map(|s| s.parse().unwrap())
+        .collect();
+    let b: Vec<usize> = lines
+        .next()
+        .unwrap()
+        .unwrap()
+        .split_whitespace()
+        .map(|s| s.parse().unwrap())
+        .collect();
 
     let mut tree = FenwickTree::new(n);
 
@@ -30,7 +48,16 @@ fn main() {
         if remain == 0 {
             continue;
         }
-        tree.update(b[i] + 2, tree.sum(b[i] + 2) + 1);
+        if b[i] + 1 < n {
+            tree.update(b[i + 1 + 1], tree.sum(b[i + i + 1]) + 1);
+        }
+        if b[i] + remain + 1 < n {
+            tree.update(b[i] + remain + 1 + 1, tree.sum(b[i] + remain + 1 + 1) - 1);
+        }
+        if b[i] + remain >= n {
+            tree.update(1, tree.sum(1) + 1);
+        }
+        tree.update(b[i] + (i + remain - n) + 1, tree.sum(b[i] + (i + remain - n)) - 1);
     }
 
     for i in 1..=n {
@@ -46,7 +73,9 @@ struct FenwickTree {
 
 impl FenwickTree {
     fn new(size: usize) -> Self {
-        FenwickTree { tree: vec![0; size + 1] }
+        FenwickTree {
+            tree: vec![0; size + 1],
+        }
     }
 
     fn update(&mut self, mut index: usize, value: i64) {

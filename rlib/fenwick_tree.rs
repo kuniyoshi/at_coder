@@ -22,24 +22,27 @@ impl FenwickTree {
         }
         result
     }
+
+    fn clear_acc(&mut self, index: usize) {
+        let before = self.sum(index);
+        self.update(index, -before);
+        if index + 1 <= self.tree.len() {
+            self.update(index + 1, self.sum(index) + before);
+        }
+    }
 }
 
 fn main() {
-    let values = [1, 2, 3, 4, 5];
+    let values = [1, 2, 4, 8, 16];
     let mut tree = FenwickTree::new(values.len());
 
-
     for i in 0..values.len() {
-        match i {
-            0 => tree.update(i + 1, values[i]),
-            _ => {
-                let before = tree.sum(i);
-                tree.update(i + 1, values[i] - before);
-            }
-        }
+        tree.update(i + 1, values[i] - tree.sum(i));
     }
 
-    for i in 0..values.len() {
-        println!("{} {}", i, tree.sum(i + 1));
+    tree.clear_acc(4);
+
+    for i in 1..=values.len() {
+        println!("{} {}", i, tree.sum(i));
     }
 }

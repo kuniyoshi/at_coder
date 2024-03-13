@@ -27,7 +27,7 @@ impl FenwickTree {
         let before = self.sum(index);
         self.update(index, -before);
         if index + 1 <= self.tree.len() {
-            self.update(index + 1, self.sum(index) + before);
+            self.update(index + 1, before);
         }
     }
 }
@@ -40,9 +40,23 @@ fn main() {
         tree.update(i + 1, values[i] - tree.sum(i));
     }
 
-    tree.clear_acc(4);
+    println!("### before");
 
     for i in 1..=values.len() {
         println!("{} {}", i, tree.sum(i));
+    }
+
+    tree.clear_acc(3);
+
+    println!("--- clear");
+
+    for i in 1..=values.len() {
+        println!("{} {}", i, tree.sum(i));
+    }
+
+    println!("");
+
+    for i in 1..=values.len() {
+        println!("{} {}", i, tree.sum(i) - tree.sum(i - 1));
     }
 }

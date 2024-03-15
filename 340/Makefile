@@ -23,9 +23,9 @@ d:
 	cat data/d.3 | cargo run $(RELEASE) --bin d2
 
 e:
-	cat data/e.1 | cargo run $(RELEASE) --bin e
-	cat data/e.2 | cargo run $(RELEASE) --bin e
-	cat data/e.3 | cargo run $(RELEASE) --bin e
+	cat data/e.1 | time cargo run $(RELEASE) --bin e
+	cat data/e.2 | time cargo run $(RELEASE) --bin e
+	cat data/e.3 | time cargo run $(RELEASE) --bin e
 
 f:
 	cat data/f.1 | cargo run $(RELEASE) --bin f

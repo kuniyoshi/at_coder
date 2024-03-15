@@ -30,34 +30,29 @@ fn main() {
     let mut tree = FenwickTree::new(n);
 
     for i in 0..n {
-        match i {
-            0 => tree.update(i + 1, a[i]),
-            _ => {
-                let before = tree.sum(i);
-                tree.update(i + 1, a[i] - before);
-            }
-        }
+        tree.update(i + 1, a[i] - tree.sum(i));
     }
 
     for i in 0..m {
-        let current = tree.sum(b[i] + 1);
-        tree.update(b[i] + 1, -current);
-        let whole = current / n as i64;
-        tree.update(1, tree.sum(1) + whole);
+        println!("{}", i);
+        let whole = tree.sum(b[i] + 1) / n as i64;
+        tree.clear_acc(b[i] + 1);
+        tree.update(1, whole);
         let remain = whole as usize % n;
         if remain == 0 {
             continue;
         }
         if b[i] + 1 < n {
-            tree.update(b[i + 1 + 1], tree.sum(b[i + i + 1]) + 1);
+            tree.update(b[i + 1 + 1], 1);
         }
-        if b[i] + remain + 1 < n {
-            tree.update(b[i] + remain + 1 + 1, tree.sum(b[i] + remain + 1 + 1) - 1);
+        if b[i] + remain < n {
+            tree.update(b[i] + remain + 1 + 1, -1);
         }
         if b[i] + remain >= n {
-            tree.update(1, tree.sum(1) + 1);
+            tree.update(1, 1);
+            println!("{} {} {}", b[i], remain, n);
+            tree.update(b[i] + 1 + remain - n, -1);
         }
-        tree.update(b[i] + (i + remain - n) + 1, tree.sum(b[i] + (i + remain - n)) - 1);
     }
 
     for i in 1..=n {
@@ -92,5 +87,13 @@ impl FenwickTree {
             index -= index & index.wrapping_neg();
         }
         result
+    }
+
+    fn clear_acc(&mut self, index: usize) {
+        let before = self.sum(index);
+        self.update(index, -before);
+        if index + 1 <= self.tree.len() {
+            self.update(index + 1, before);
+        }
     }
 }

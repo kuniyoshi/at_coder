@@ -18,22 +18,16 @@ fn d(n: usize, m: usize, x: usize) -> usize {
     d
 }
 
-fn bin2(n: usize, m: usize, k: usize, a: usize) -> usize {
-    let mut left = a;
-    let mut right = a;
-
-    while d(n, m, left - 1) == k {
-        left -= 1;
+fn bin2(n: usize, m: usize, k: usize, mut a: usize) -> usize {
+    while d(n, m, a - 1) == k {
+        a -= 1;
     }
 
-    while d(n, m, right + 1) == k {
-        right += 1;
+    while a % n != 0 && a % m != 0 {
+        a += 1;
     }
 
-    while right - left > 1 {
-        let middle = (left + right) / 2;
-        if (d(n, m, middle) == )
-    }
+    a
 }
 
 fn bin(n: usize, m: usize, k: usize) -> usize {

@@ -81,12 +81,15 @@ fn main() {
             tree.update(box_number + 1, 1);
         }
         if box_number + remain < n {
-            tree.update(box_number + remain, -1);
+            tree.update(box_number + 1 + remain, -1);
         }
         if box_number + remain > n {
             tree.update(1, 1);
             tree.update(box_number + 1 + remain - n, -1);
         }
+
+        #[cfg(debug_assertions)]
+        tree.dump_acc();
     }
 
     for i in 1..=n {
@@ -129,5 +132,13 @@ impl FenwickTree {
         if index + 1 <= self.tree.len() {
             self.update(index + 1, before);
         }
+    }
+
+    #[cfg(debug_assertions)]
+    fn dump_acc(&self) {
+        for i in 1..self.tree.len() {
+            eprint!("{} ", self.sum(i));
+        }
+        eprintln!("");
     }
 }

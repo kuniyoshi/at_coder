@@ -1,4 +1,5 @@
 use std::io::{self, BufRead};
+use std::cmp::Ordering;
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
@@ -16,13 +17,11 @@ fn main() {
         positions[p[i] - 1] = i;
     }
 
-    // TODO: ordering 使ってやるにはどうやる？
-
     for &(a, b) in &queries {
-        if positions[a] < positions[b] {
-            println!("{}", a + 1);
-        } else {
-            println!("{}", b + 1);
+        match positions[a].cmp(&positions[b]) {
+            Ordering::Less    => println!("{}", a + 1),
+            Ordering::Greater => println!("{}", b + 1),
+            _ => unreachable!()
         }
     }
 }

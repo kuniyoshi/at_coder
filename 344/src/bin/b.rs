@@ -14,7 +14,7 @@ fn main() {
 
     numbers.reverse();
 
-    for number in numbers {
+    for number in &numbers {
         println!("{}", number);
     }
 }

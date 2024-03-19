@@ -13,9 +13,22 @@ fn main() {
 fn d(n: usize, m: usize, x: usize) -> usize {
     let a = x / n;
     let b = x / m;
-    let c = x / (n * m);
+    let c = x / lcm(n, m);
     let d = a + b - 2 * c;
     d
+}
+
+fn lcm(a: usize, b: usize) -> usize {
+    a * b / gcd(a.max(b), b.min(a))
+}
+
+fn gcd(a: usize, b: usize) -> usize {
+    if b == 0 {
+        a
+    }
+    else {
+        gcd(b, a % b)
+    }
 }
 
 fn bin2(n: usize, m: usize, k: usize, mut a: usize) -> usize {

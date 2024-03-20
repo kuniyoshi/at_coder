@@ -31,30 +31,15 @@ fn gcd(a: usize, b: usize) -> usize {
     }
 }
 
-fn bin2(n: usize, m: usize, k: usize, mut a: usize) -> usize {
-    while d(n, m, a - 1) == k {
-        a -= 1;
-    }
-
-    while a % n != 0 && a % m != 0 {
-        a += 1;
-    }
-
-    a
-}
-
 fn bin(n: usize, m: usize, k: usize) -> usize {
+    // 
     let mut right: usize = 3e18 as usize;
-    let mut left: usize = 1;
+    let mut left: usize = 0;
 
     while right - left > 1 {
         let middle = (left + right) / 2;
 
-        if d(n, m, middle) == k {
-            return bin2(n, m, k, middle);
-        }
-
-        if d(n, m, middle) <= k {
+        if d(n, m, middle) < k {
             left = middle;
         }
         else {
@@ -62,5 +47,5 @@ fn bin(n: usize, m: usize, k: usize) -> usize {
         }
     }
 
-    left
+    right
 }

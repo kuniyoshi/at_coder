@@ -18,13 +18,7 @@ fn main() {
         })
         .collect();
 
-    let mut lasts = Vec::new();
-
-    // TODO: 一発で行ける
-
-    for c in 'a'..='z' {
-        lasts.push(c);
-    }
+    let mut lasts: Vec<_> = ('a'..='z').collect();
 
     for &(from, to) in &queries {
         for c in 'a'..='z' {

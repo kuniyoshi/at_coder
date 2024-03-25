@@ -12,7 +12,7 @@ fn main() {
         (list[0], list[1], list[2])
     }).collect();
 
-    let mut tree = FenwickTree::new(n);
+    let mut tree = FenwickTree::new(n + 1);
 
     for i in 0..(s.len() - 1) {
         if s[i] == s[i + 1] {
@@ -31,7 +31,7 @@ fn main() {
                 }
             }
             2 => {
-                match tree.sum(r) - tree.sum(l) {
+                match tree.sum(r - 1) - tree.sum(l - 1) {
                     value if value == 0 => println!("Yes"),
                     _ => println!("No"),
                 }

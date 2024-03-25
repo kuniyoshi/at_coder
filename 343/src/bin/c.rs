@@ -20,32 +20,5 @@ fn main() {
 }
 
 fn is_kaibun(a: usize) -> bool {
-    let s = a.to_string().chars().collect::<Vec<char>>();
-    let mut r = s.clone();
-    r.reverse();
-
-    // #[cfg(debug_assertions)]
-    // eprintln!("{:?}", s);
-
-    // #[cfg(debug_assertions)]
-    // eprintln!("{:?}", r);
-
-    // TODO: 文字列テストバージョンも試す
-
-    for i in 0..s.len() {
-        if r[i] != s[i] {
-            return false;
-        }
-    }
-
-    true
-
-    // TODO: char テストバージョンも試す
-    // for i in 0..(s.len() / 2) {
-    //     if s[i] != s[s.len() - i - 1] {
-    //         return false;
-    //     }
-    // }
-
-    // true
+    a.to_string().chars().eq(a.to_string().chars().rev())
 }

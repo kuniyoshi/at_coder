@@ -7,10 +7,9 @@ fn main() {
         (list[0], list[1])
     };
 
-    for i in 0..=9 {
-        if i != a + b {
-            println!("{}", i);
-            return ();
-        }
+    if a + b == 0 {
+        println!("1");
+    } else {
+        println!("0");
     }
 }

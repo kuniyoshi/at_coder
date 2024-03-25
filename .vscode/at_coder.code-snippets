@@ -239,5 +239,15 @@
 			"let cells: Vec<Vec<char>> = (0..h).map(|_| lines.next().unwrap().unwrap().chars().collect()).collect();"
 		],
 		"description": "read cells",
+	},
+	"print debug": {
+		"scope": "rust",
+		"prefix": "pp",
+		"body": [
+			"#[cfg(debug_assertions)]",
+			"eprintln!(\"$1: {:?}\", $1);$0",
+		],
+		"description": "print debug"
 	}
 }
+

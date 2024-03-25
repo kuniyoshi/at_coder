@@ -18,15 +18,15 @@ fn main() {
     map.insert(0, n);
 
     for &(who, addition) in &events {
-        // TODO: Entry を使った書き方
-        *map.entry(scores[who]).or_insert(0) -= 1; // TODO: unwrap にするほうがいいの？
+        let entry = map.entry(scores[who]).or_insert(0);
+        *entry -= 1;
 
-        if map.entry(scores[who]).or_insert(0) == &0 {
+        if *entry == 0 {
             map.remove(&scores[who]);
         }
 
         scores[who] += addition;
-        *map.entry(scores[who]).or_insert(0) += 1; // TODO: unwrap にするほうがいいの？
+        *map.entry(scores[who]).or_insert(0) += 1;
 
         println!("{}", map.len());
     }

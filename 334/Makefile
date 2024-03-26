@@ -13,6 +13,7 @@ b:
 	cat data/b.1 | cargo run $(RELEASE) --bin b
 	cat data/b.2 | cargo run $(RELEASE) --bin b
 	cat data/b.3 | cargo run $(RELEASE) --bin b
+	cat data/b.4 | cargo run $(RELEASE) --bin b
 
 c:
 	cat data/c.1 | cargo run $(RELEASE) --bin c

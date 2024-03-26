@@ -2,14 +2,26 @@ use std::io::{self, BufRead};
 
 #[derive(Debug)]
 struct C {
-    x: usize,
-    y: usize,
-    z: usize,
+    x: i32,
+    y: i32,
+    z: i32,
 }
 
 impl C {
+    fn new(x: i32, y: i32, z: i32) -> Self {
+        C { x, y, z }
+    }
+
     fn to_string(&self) -> String {
         format!("{} {} {}", self.x, self.y, self.z)
+    }
+
+    fn iter(from: i32, count: i32) -> impl Iterator<Item = C> {
+        (from..(from + count)).flat_map(move |a| {
+            (from..(from + count)).flat_map(move |b| {
+                (from..(from + count)).map(move |c| C::new(a, b, c))
+            })
+        })
     }
 }
 
@@ -30,24 +42,12 @@ fn main() {
 
     let c1 = C { x: 0, y: 0, z: 0 };
 
-    for i in 0..=14 {
-        for j in 0..=14 {
-            for k in 0..=14 {
-                let c2 = C { x: i, y: j, z: k };
-
-                for a in 0..=14 {
-                    for b in 0..=14 {
-                        for c in 0..=14 {
-                            let c3 = C { x: a, y: b, z: c };
-
-                            if test(&c1, &c2, &c3, &v) {
-                                println!("Yes");
-                                println!("{} {} {}", c1.to_string(), c2.to_string(), c3.to_string());
-                                return ();
-                            }
-                        }
-                    }
-                }
+    for c2 in C::iter(-7, 15) {
+        for c3 in C::iter(-7, 15) {
+            if test(&c1, &c2, &c3, &v) {
+                println!("Yes");
+                println!("{} {} {}", c1.to_string(), c2.to_string(), c3.to_string());
+                return ();
             }
         }
     }
@@ -132,17 +132,17 @@ fn test(a: &C, b: &C, c: &C, v: &V) -> bool {
 
 }
 
-fn len2(a: usize, b: usize) -> usize {
+fn len2(a: i32, b: i32) -> usize {
     let min = a.min(b);
     let max = a.max(b);
     // min, min + 7, max, max + 7
     if min + 7 > max {
-        return min + 7 - max;
+        return (min + 7 - max) as usize;
     }
     0
 }
 
-fn len3(a: usize, b: usize, c: usize) -> usize {
+fn len3(a: i32, b: i32, c: i32) -> usize {
     let mut abc = vec![a, b, c];
     abc.sort();
 

@@ -1,5 +1,5 @@
 use std::cmp::Reverse;
-use std::collections::{BinaryHeap, HashMap, HashSet};
+use std::collections::{BinaryHeap, HashSet};
 use std::io::{self, BufRead};
 
 fn main() {
@@ -32,7 +32,7 @@ fn main() {
 
     let mut total: usize = 0;
 
-    while true {
+    loop {
         let mut queue: BinaryHeap<(Reverse<usize>, usize, usize)> = BinaryHeap::new();
 
         let mut values: Vec<usize> = Vec::new();

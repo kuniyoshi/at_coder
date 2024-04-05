@@ -30,33 +30,42 @@ impl FenwickTree {
             self.update(index + 1, before);
         }
     }
+
+    fn value(&self, index: usize) -> i64 {
+        self.sum(index) - self.sum(index - 1)
+    }
+
+    fn flip(&mut self, index: usize) {
+        match self.value(index) {
+            0 => self.update(index, 1),
+            v => self.update(index, -v),
+        };
+    }
 }
 
 fn main() {
-    let values = [1, 2, 4, 8, 16];
-    let mut tree = FenwickTree::new(values.len());
+    let count = 5;
+    let mut tree = FenwickTree::new(count);
 
-    for i in 0..values.len() {
-        tree.update(i + 1, values[i] - tree.sum(i));
+    tree.update(1, 1);
+
+    for i in 1..=count {
+        println!("{} {}", i, tree.value(i));
     }
 
-    println!("### before");
+    println!("---");
 
-    for i in 1..=values.len() {
-        println!("{} {}", i, tree.sum(i));
+    tree.flip(5);
+
+    for i in 1..=count {
+        println!("{} {}", i, tree.value(i));
     }
 
-    tree.clear_acc(3);
+    println!("---");
 
-    println!("--- clear");
+    tree.flip(5);
 
-    for i in 1..=values.len() {
-        println!("{} {}", i, tree.sum(i));
-    }
-
-    println!("");
-
-    for i in 1..=values.len() {
-        println!("{} {}", i, tree.sum(i) - tree.sum(i - 1));
+    for i in 1..=count {
+        println!("{} {}", i, tree.value(i));
     }
 }

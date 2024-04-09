@@ -1,5 +1,5 @@
-use std::io::{self, BufRead}; // TODO: テンプレートに入れよう
 use std::collections::HashMap;
+use std::io::{self, BufRead}; // TODO: テンプレートに入れよう
 
 fn main() {
     let mut lines = io::stdin().lock().lines();
@@ -11,16 +11,16 @@ fn main() {
         *count.entry(c).or_insert(0) += 1;
     }
 
-    let mut total = if count.len() < s.len() { 1 } else { 0 };
+    let total = comb(s.len());
+    let mut same = 0;
 
-    for c in &s {
-        total += count.len() - 1;
-        *count.entry(c).or_insert(0) -= 1;
-
-        if count.entry(c).or_insert(0) == &0 {
-            count.remove(c);
-        }
+    for (_, c) in &count {
+        same += comb(*c);
     }
 
-    println!("{}", total);
+    println!("{}", total - same + count.values().filter(|v| v > &&1).count().min(1));
+}
+
+fn comb(a: usize) -> usize {
+    a * (a - 1) / 2
 }

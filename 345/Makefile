@@ -6,9 +6,9 @@ p%:
 RELEASE=
 
 a:
-	cat data/a.1 | cargo run $(RELEASE) --bin a
-	cat data/a.2 | cargo run $(RELEASE) --bin a
-	cat data/a.3 | cargo run $(RELEASE) --bin a
+	cat data/a.1 | cargo run $(RELEASE) --bin a2
+	cat data/a.2 | cargo run $(RELEASE) --bin a2
+	cat data/a.3 | cargo run $(RELEASE) --bin a2
 
 b:
 	cat data/b.1 | cargo run $(RELEASE) --bin b

@@ -26,7 +26,7 @@ fn main() {
 
     for (key, value) in count.iter() {
         if key == &0 {
-            total += n - 1;
+            total += (n - 1) * value;
             continue;
         }
 

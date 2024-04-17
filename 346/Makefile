@@ -28,6 +28,7 @@ d:
 e:
 	cat data/e.1 | cargo run $(RELEASE) --bin e
 	cat data/e.2 | cargo run $(RELEASE) --bin e
+	cat data/e.3 | cargo run $(RELEASE) --bin e
 
 f:
 	cat data/f.1 | cargo run $(RELEASE) --bin f

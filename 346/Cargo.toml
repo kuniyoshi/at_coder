@@ -3,4 +3,5 @@ name = "abc346"
 version = "0.1.0"
 
 [dependencies]
+proconio = "0.4.5"
 regex = "1.4.2"

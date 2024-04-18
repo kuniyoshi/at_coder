@@ -23,8 +23,10 @@ fn main() {
 
         used[t].insert(a);
 
-        count[*x] += len[t] - used[t ^ 1].len();
+        count[*x] += len[t ^ 1] - used[t ^ 1].len();
     }
+
+    count[0] += h * w - count.iter().sum::<usize>();
 
     println!("{}", count.iter().filter(|v| v > &&0).count());
 

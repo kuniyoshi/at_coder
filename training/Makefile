@@ -3,6 +3,12 @@ p%:
 
 RELEASE=
 
+228c:
+	cat data/228c.1 | cargo run $(RELEASE) --bin 228c
+	cat data/228c.2 | cargo run $(RELEASE) --bin 228c
+	cat data/228c.3 | cargo run $(RELEASE) --bin 228c
+	cat data/228c.4 | cargo run $(RELEASE) --bin 228c
+
 245c:
 	cat data/245c.1 | cargo run $(RELEASE) --bin 245c
 	cat data/245c.2 | cargo run $(RELEASE) --bin 245c

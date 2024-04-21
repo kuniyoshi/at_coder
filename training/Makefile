@@ -19,6 +19,11 @@ RELEASE=
 	cat data/285d.2 | cargo run $(RELEASE) --bin 285d
 	cat data/285d.3 | cargo run $(RELEASE) --bin 285d
 
+287d:
+	cat data/287d.1 | cargo run $(RELEASE) --bin 287d
+	cat data/287d.2 | cargo run $(RELEASE) --bin 287d
+	cat data/287d.3 | cargo run $(RELEASE) --bin 287d
+
 311d:
 	cat data/311d.1 | cargo run $(RELEASE) --bin 311d
 	cat data/311d.2 | cargo run $(RELEASE) --bin 311d

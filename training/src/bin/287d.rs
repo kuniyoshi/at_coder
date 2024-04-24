@@ -30,12 +30,16 @@ fn main() {
     }
 
     for i in 0..t.len() {
-        matches_r[i + 1] = is_match(s[s.len() - 1 - i], t[t.len() - 1 - i]);
+        matches_r[i + 1] = is_match(s[s.len() - t.len() + i], t[i]);
     }
 
-    for i in (1..(t.len() + 1)).rev() {
-        matches_l[i] = matches_l[i - 1] && matches_l[i];
+    matches_r.reverse();
+
+    for i in 1..t.len() {
+        matches_r[i] = matches_r[i - 1] && matches_r[i];
     }
+
+    matches_r.reverse();
 
     #[cfg(debug_assertions)]
     eprintln!("{:?}", matches_l);

@@ -29,17 +29,15 @@ fn main() {
         matches_l[i] = matches_l[i - 1] && matches_l[i];
     }
 
-    for i in 0..t.len() {
-        matches_r[i + 1] = is_match(s[s.len() - t.len() + i], t[i]);
+    for ti in 0..t.len() {
+        // 3 - 2 + ti -> 1, 2
+        let si = s.len() - t.len() + ti;
+        matches_r[ti + 1] = is_match(s[si], t[ti]);
     }
 
-    matches_r.reverse();
-
-    for i in 1..t.len() {
-        matches_r[i] = matches_r[i - 1] && matches_r[i];
+    for ri in (1..t.len()).rev() {
+        matches_r[ri] = matches_r[ri + 1] && matches_r[ri];
     }
-
-    matches_r.reverse();
 
     #[cfg(debug_assertions)]
     eprintln!("{:?}", matches_l);
@@ -47,29 +45,29 @@ fn main() {
     #[cfg(debug_assertions)]
     eprintln!("{:?}", matches_r);
 
-    for i in 0..(t.len() + 1) {
-        let l = if i > 0 { Some(i - 1) } else { None::<usize> };
-        let r = if i < t.len() { Some(t.len() - i) } else { None::<usize> };
+    if matches_r[matches_r.len() - t.len()] {
+        println!("Yes");
+    } else {
+        println!("No");
+    }
 
-        match (l, r) {
-            (Some(l_index), Some(r_index)) => if matches_l[l_index] && matches_r[r_index] {
-                println!("Yes");
-            } else {
-                println!("No");
-            },
-            (Some(l_index), None) => if matches_l[l_index] {
-                println!("Yes");
-            } else {
-                println!("No");
-            },
-            (None, Some(r_index)) => if matches_r[r_index] {
-                println!("Yes");
-            } else {
-                println!("No");
-            },
-            (_, _) => unreachable!()
+    for i in 0..(t.len() - 1) {
+        let l = i;
+        let r = matches_r.len() - t.len() + 1 + i;
+
+        if matches_l[l] && matches_r[r] {
+            println!("Yes");
+        } else {
+            println!("No");
         }
     }
+
+    if matches_l[t.len() - 1] {
+        println!("Yes");
+    } else {
+        println!("No");
+    }
+
 }
 
 fn is_match(a: char, b: char) -> bool {

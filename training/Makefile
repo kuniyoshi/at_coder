@@ -33,3 +33,9 @@ RELEASE=
 	cat data/333c.1 | cargo run $(RELEASE) --bin 333c
 	cat data/333c.2 | cargo run $(RELEASE) --bin 333c
 	cat data/333c.3 | cargo run $(RELEASE) --bin 333c
+
+342c:
+	cat data/342c.1 | cargo run $(RELEASE) --bin 342c
+	cat data/342c.2 | cargo run $(RELEASE) --bin 342c
+	cat data/342c.3 | cargo run $(RELEASE) --bin 342c
+	cat data/342c.4 | cargo run $(RELEASE) --bin 342c

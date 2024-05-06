@@ -249,6 +249,22 @@
 		],
 		"description": "print debug"
 	},
+	"print yes": {
+		"scope": "rust",
+		"prefix": "py",
+		"body": [
+			"println!(\"Yes\");$0",
+		],
+		"description": "print Yes"
+	},
+	"print no": {
+		"scope": "rust",
+		"prefix": "pn",
+		"body": [
+			"println!(\"No\");$0",
+		],
+		"description": "print No"
+	},
 	"proconio marker chars": {
 		"scope": "rust",
 		"prefix": "pmc",

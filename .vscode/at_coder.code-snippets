@@ -248,6 +248,14 @@
 			"eprintln!(\"$1: {:?}\", $1);$0",
 		],
 		"description": "print debug"
+	},
+	"proconio marker chars": {
+		"scope": "rust",
+		"prefix": "pmc",
+		"body": [
+			"proconio::marker::Chars",
+		],
+		"description": "proconio marker chars"
 	}
 }
 

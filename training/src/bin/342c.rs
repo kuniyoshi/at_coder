@@ -1,6 +1,6 @@
 fn main() {
     proconio::input! {
-        n: usize,
+        _: usize,
         s: proconio::marker::Chars,
         q: usize,
         queries: [(char, char); q],

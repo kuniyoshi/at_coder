@@ -11,7 +11,7 @@ use List::Util qw( shuffle min );
 chomp( my @files = `fd README.md` );
 @files = grep { m{\A \d+/ }msx } @files;
 
-my @needs;
+my @candidates;
 
 for my $file ( @files ) {
     my $contest = contest( $file );
@@ -20,17 +20,29 @@ for my $file ( @files ) {
         if ( $line =~ m{\A [|] \s ([ABCDE]) \s+ .*? (\d+) \s+ min }msx ) {
             my( $problem, $minutes ) = ( $1, $2 );
             if ( $minutes > 30 ) {
-                push @needs, { contest => $contest, problem => $problem, minutes => $minutes };
+                push @candidates, { contest => $contest, problem => $problem, minutes => $minutes };
             }
         }
     }
 }
 
-if ( @needs ) {
-    my @candiates = shuffle @needs;
-    $#candiates = min( 5, $#candiates );
-    say Data::Dumper->new( \@candiates )->Terse( 1 )->Sortkeys( 1 )->Dump( );
+chomp( my @works = `fd . training/src/bin` );
+my %done;
+
+for my $work ( @works ) {
+    if ( $work =~ m{/ (\d+) (\w) \.rs \z}msx ) {
+        my $contest = $1;
+        my $problem = uc $2;
+        $done{ $contest }{ $problem }++;
+        next;
+    }
+
+    die "Could not parse file: $work";
 }
+
+my @candiates = shuffle grep { !$done{ $_->{contest} }{ $_->{problem} } } @candidates;
+$#candiates = min( 5, $#candiates );
+say Data::Dumper->new( \@candiates )->Terse( 1 )->Sortkeys( 1 )->Dump( );
 
 exit;
 

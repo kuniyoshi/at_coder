@@ -30,6 +30,12 @@ RELEASE=
 	cat data/287d.3 | cargo run $(RELEASE) --bin 287d
 	cat data/287d.4 | cargo run $(RELEASE) --bin 287d
 
+301c:
+	cat data/301c.1 | cargo run $(RELEASE) --bin 301c
+	cat data/301c.2 | cargo run $(RELEASE) --bin 301c
+	cat data/301c.3 | cargo run $(RELEASE) --bin 301c
+	cat data/301c.4 | cargo run $(RELEASE) --bin 301c
+
 311d:
 	cat data/311d.1 | cargo run $(RELEASE) --bin 311d
 	cat data/311d.2 | cargo run $(RELEASE) --bin 311d
@@ -44,3 +50,21 @@ RELEASE=
 	cat data/342c.2 | cargo run $(RELEASE) --bin 342c
 	cat data/342c.3 | cargo run $(RELEASE) --bin 342c
 	cat data/342c.4 | cargo run $(RELEASE) --bin 342c
+
+t1:
+	cat data/t1.1 | cargo run $(RELEASE) --bin t1
+
+t2:
+	cat data/t2.1 | cargo run $(RELEASE) --bin t2
+
+t3:
+	cat data/t3.1 | cargo run $(RELEASE) --bin t3
+
+t4:
+	cat data/t4.1 | cargo run $(RELEASE) --bin t4
+
+t5:
+	cat data/t5.1 | cargo run $(RELEASE) --bin t5
+
+t6:
+	cat data/t6.1 | cargo run $(RELEASE) --bin t6

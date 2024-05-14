@@ -1,176 +1,150 @@
-use std::{
-    cmp::Reverse, collections::{BinaryHeap, HashMap, HashSet}, io::{self, BufRead}
-};
+use std::collections::{HashMap, HashSet, VecDeque};
 
-struct P {
+#[derive(Debug)]
+#[derive(Eq, PartialEq)]
+#[derive(Hash)]
+#[derive(Clone, Copy)]
+struct Point {
     i: usize,
     j: usize,
-    genre: usize, // 0: Start, 1: Goal, 2: Medicine
-    be: usize,    // Start, Goal は 0
+}
+
+impl Point {
+    fn moves(self: &Self, h: usize, w: usize) -> Vec<Self> {
+        let mut points = Vec::new();
+
+        if self.i > 0 {
+            points.push(Point { i: self.i - 1, j: self.j });
+        }
+
+        if self.j > 0 {
+            points.push(Point { i: self.i, j: self.j - 1 });
+        }
+
+        if self.i < h - 1 {
+            points.push(Point { i: self.i + 1, j: self.j });
+        }
+
+        if self.j < w - 1 {
+            points.push(Point { i: self.i, j: self.j + 1 });
+        }
+
+        points
+    }
+
+    fn from(v: (usize, usize)) -> Self {
+        Self { i: v.0, j: v.1 }
+    }
 }
 
 fn main() {
-    let mut lines = io::stdin().lock().lines();
-    let (h, w): (usize, usize) = {
-        let list: Vec<usize> = lines
-            .next()
-            .unwrap()
-            .unwrap()
-            .split_whitespace()
-            .map(|s| s.parse().unwrap())
-            .collect();
-        (list[0], list[1])
+    proconio::input! {
+        h: usize,
+        w: usize,
+        a: [proconio::marker::Chars; h],
+        n: usize,
+        m_input: [(usize, usize, usize); n],
     };
-    let cells: Vec<Vec<char>> = (0..h)
-        .map(|_| lines.next().unwrap().unwrap().chars().collect())
-        .collect();
-    let n: usize = lines.next().unwrap().unwrap().parse().unwrap();
-    let mut points: Vec<P> = (0..n)
-        .map(|_| {
-            let list: Vec<usize> = lines
-                .next()
-                .unwrap()
-                .unwrap()
-                .split_whitespace()
-                .map(|s| s.parse().unwrap())
-                .collect();
-            P {
-                i: list[0] - 1,
-                j: list[1] - 1,
-                genre: 2,
-                be: list[2],
-            }
-        })
-        .collect();
 
-    for i in 0..h {
-        for j in 0..w {
-            if cells[i][j] == 'S' {
-                points.push(P {
-                    i,
-                    j,
-                    genre: 0,
-                    be: 0,
-                });
-            }
-        }
+    let mut medicines = Vec::new();
+
+    for i in 0..m_input.len() {
+        medicines.push((Point { i: m_input[i].0 - 1, j: m_input[i].1 - 1 }, m_input[i].2));
     }
 
-    for i in 0..h {
-        for j in 0..w {
-            if cells[i][j] == 'T' {
-                points.push(P {
-                    i,
-                    j,
-                    genre: 1,
-                    be: 0,
-                });
-            }
-        }
+    let t = find('T', &a);
+
+    medicines.push((Point::from(t), 0));
+
+    #[cfg(debug_assertions)]
+    eprintln!("{:?}", medicines);
+
+    let mut medicine_index = HashMap::new();
+
+    for i in 0..medicines.len() {
+        medicine_index.insert(medicines[i].0, i);
     }
 
-    let mut index = HashMap::new();
+    let mut reaches = vec![vec![false; medicines.len()]; medicines.len()];
 
-    for i in 0..(points.len() - 2) {
-        index.insert((points[i].i, points[i].j), i);
+    for i in 0..medicines.len() {
+        let mut queue = VecDeque::new();
+        let medicine = medicines[i];
+        let power = medicine.1;
+        let mut visited = HashSet::new();
+
+        queue.push_back((medicine.0, 0));
+
+        while let Some((point, k)) = queue.pop_front() {
+            if visited.contains(&point) {
+                continue;
+            }
+
+            if k > power {
+                continue;
+            }
+
+            if let Some(&index) = medicine_index.get(&point) {
+                reaches[i][index] = true;
+            }
+
+            for next in &point.moves(h, w) {
+                if visited.contains(next) {
+                    continue;
+                }
+                queue.push_back((*next, k + 1));
+            }
+
+            visited.insert(point);
+        }
     }
 
     #[cfg(debug_assertions)]
-    eprintln!("{:?}", index);
+    eprintln!("{:?}", reaches);
 
-    let mut distances = vec![vec![Option::<usize>::None; n + 2]; n + 2]; // n は Start, n + 1 は Goal
+    let s = find('S', &a);
 
-    for i in 0..points.len() {
-        let mut d = vec![vec![Option::<usize>::None; w]; h];
-        let mut queue = BinaryHeap::new();
-        queue.push(Reverse((0, points[i].i, points[i].j)));
+    if let Some(&start_index) = medicine_index.get(&Point::from(s)) {
+        let mut queue = VecDeque::new();
+        queue.push_back(start_index);
+        let mut visited = HashSet::new();
 
-        while let Some(Reverse((nd, ni, nj))) = queue.pop() {
-            match d[ni][nj] {
-                Some(v) if v <= nd => continue,
-                _ => {
-                    d[ni][nj] = Some(nd);
-                    match index.get(&(ni, nj)) {
-                        Some(idx) => distances[i][*idx] = Some(nd),
-                        _ => (),
-                    }
-                    if points[n + 0].i == ni && points[n + 0].j == nj {
-                        distances[i][n] = Some(nd);
-                    }
-                    if points[n + 1].i == ni && points[n + 1].j == nj {
-                        distances[i][n + 1] = Some(nd);
-                    }
+        while let Some(u) = queue.pop_front() {
+            if visited.contains(&u) {
+                continue;
+            }
 
-                    if ni != 0 && cells[ni - 1][nj] != '#' { // ここのフィルタもあるよい
-                        queue.push(Reverse((nd + 1, ni - 1, nj)));
-                    }
-                    if ni < h - 1 && cells[ni + 1][nj] != '#' {
-                        queue.push(Reverse((nd + 1, ni + 1, nj)));
-                    }
-                    if nj != 0 && cells[ni][nj - 1] != '#' {
-                        queue.push(Reverse((nd + 1, ni, nj - 1)));
-                    }
-                    if nj < w - 1 && cells[ni][nj + 1] != '#' {
-                        queue.push(Reverse((nd + 1, ni, nj + 1)));
-                    }
+            visited.insert(u);
+
+            for v in 0..reaches[u].len() {
+                if !reaches[u][v] {
+                    continue;
                 }
+                if visited.contains(&v) {
+                    continue;
+                }
+                queue.push_back(v);
             }
         }
-    }
 
-    let mut visited = HashSet::new();
-
-    if dfs(n, 0, &mut visited, &points, &distances) {
-        println!("Yes");
+        if visited.contains(&(medicines.len() - 1)) {
+            println!("Yes");
+        } else {
+            println!("No");
+        }
     } else {
         println!("No");
     }
 }
 
-fn dfs(
-    current: usize,
-    energy: usize,
-    visited: &mut HashSet<usize>,
-    points: &Vec<P>,
-    distances: &Vec<Vec<Option<usize>>>,
-) -> bool {
-    if current == points.len() - 1 {
-        return true;
+fn find(c: char, a: &Vec<Vec<char>>) -> (usize, usize) {
+    for i in 0..a.len() {
+        for j in 0..a[i].len() {
+            if a[i][j] == c {
+                return (i, j);
+            }
+        }
     }
 
-    let candidates: Vec<_> = distances[current]
-        .iter()
-        .enumerate()
-        .filter(|(_, v)| match v {
-            Some(d) if d <= &&energy => true,
-            _ => false,
-        })
-        .map(|(i, _)| i)
-        .collect();
-
-    for candidate in &candidates {
-        if visited.contains(candidate) {
-            continue;
-        }
-
-        let new_energy = energy - distances[current][*candidate].unwrap();
-        if points[*candidate].genre != 1 && new_energy >= points[*candidate].be {
-            continue;
-        }
-
-        visited.insert(*candidate);
-        let result = dfs(
-            *candidate,
-            points[*candidate].be,
-            visited,
-            points,
-            distances,
-        );
-        if result {
-            return true;
-        }
-        visited.remove(&candidate);
-    }
-
-    false
+    unreachable!()
 }

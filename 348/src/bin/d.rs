@@ -1,9 +1,6 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-#[derive(Debug)]
-#[derive(Eq, PartialEq)]
-#[derive(Hash)]
-#[derive(Clone, Copy)]
+#[derive(Debug, Eq, PartialEq, Hash, Clone, Copy)]
 struct Point {
     i: usize,
     j: usize,
@@ -14,19 +11,31 @@ impl Point {
         let mut points = Vec::new();
 
         if self.i > 0 {
-            points.push(Point { i: self.i - 1, j: self.j });
+            points.push(Point {
+                i: self.i - 1,
+                j: self.j,
+            });
         }
 
         if self.j > 0 {
-            points.push(Point { i: self.i, j: self.j - 1 });
+            points.push(Point {
+                i: self.i,
+                j: self.j - 1,
+            });
         }
 
         if self.i < h - 1 {
-            points.push(Point { i: self.i + 1, j: self.j });
+            points.push(Point {
+                i: self.i + 1,
+                j: self.j,
+            });
         }
 
         if self.j < w - 1 {
-            points.push(Point { i: self.i, j: self.j + 1 });
+            points.push(Point {
+                i: self.i,
+                j: self.j + 1,
+            });
         }
 
         points
@@ -49,7 +58,13 @@ fn main() {
     let mut medicines = Vec::new();
 
     for i in 0..m_input.len() {
-        medicines.push((Point { i: m_input[i].0 - 1, j: m_input[i].1 - 1 }, m_input[i].2));
+        medicines.push((
+            Point {
+                i: m_input[i].0 - 1,
+                j: m_input[i].1 - 1,
+            },
+            m_input[i].2,
+        ));
     }
 
     let t = find('T', &a);
@@ -90,6 +105,9 @@ fn main() {
 
             for next in &point.moves(h, w) {
                 if visited.contains(next) {
+                    continue;
+                }
+                if a[next.i][next.j] == '#' {
                     continue;
                 }
                 queue.push_back((*next, k + 1));

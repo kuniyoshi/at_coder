@@ -30,6 +30,10 @@ chomp( my @works = `fd . training/src/bin` );
 my %done;
 
 for my $work ( @works ) {
+    if ( $work =~ m{/ t \d+ \.rs \z}msx ) {
+        next;
+    }
+
     if ( $work =~ m{/ (\d+) (\w) \.rs \z}msx ) {
         my $contest = $1;
         my $problem = uc $2;

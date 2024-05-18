@@ -71,6 +71,7 @@ dependencies = [
 name = "abc348"
 version = "0.1.0"
 dependencies = [
+ "proconio",
  "regex",
 ]
 
@@ -92,6 +93,14 @@ dependencies = [
 
 [[package]]
 name = "abc351"
+version = "0.1.0"
+dependencies = [
+ "proconio",
+ "regex",
+]
+
+[[package]]
+name = "abc352"
 version = "0.1.0"
 dependencies = [
  "proconio",

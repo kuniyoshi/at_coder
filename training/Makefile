@@ -24,6 +24,11 @@ RELEASE=
 	cat data/245c.2 | cargo run $(RELEASE) --bin 245c
 	cat data/245c.3 | cargo run $(RELEASE) --bin 245c
 
+257c:
+	cat data/257c.1 | cargo run $(RELEASE) --bin 257c
+	cat data/257c.2 | cargo run $(RELEASE) --bin 257c
+	cat data/257c.3 | cargo run $(RELEASE) --bin 257c
+
 285d:
 	cat data/285d.1 | cargo run $(RELEASE) --bin 285d
 	cat data/285d.2 | cargo run $(RELEASE) --bin 285d

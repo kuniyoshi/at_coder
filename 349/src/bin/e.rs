@@ -62,12 +62,6 @@ fn flip(board: &mut Vec<Vec<Option<bool>>>) {
 }
 
 fn dfs(board: &mut Vec<Vec<Option<bool>>>, a: &Vec<Vec<i64>>) -> bool {
-    match is_win(board, a) {
-        Some(true) => return true,
-        Some(false) => return false,
-        _ => (),
-    };
-
     for i in 0..3 {
         for j in 0..3 {
             if board[i][j].is_some() {
@@ -75,6 +69,12 @@ fn dfs(board: &mut Vec<Vec<Option<bool>>>, a: &Vec<Vec<i64>>) -> bool {
             }
 
             board[i][j] = Some(true);
+
+            let r = is_win(board, a);
+
+            if r.is_some() {
+                return r.unwrap();
+            }
 
             flip(board);
             let result = dfs(board, a);

@@ -4,26 +4,32 @@ fn main() {
         mut a: [usize; n],
     };
 
+    let base = 100_000_000;
+
     a.sort();
 
-    let base = 100_000_000;
+    for i in 0..n {
+        a[i] %= base;
+    }
+
     let mut total = 0;
     let mut overs = 0;
 
     for a_value in &a {
         total += a_value * (n - 1);
-        let bin_a = bin(&a, base - a_value);
-        let bin_b = bin(&a, a_value + 1);
+        let bin = bin(&a, base - a_value);
 
-        if bin_a > 0 && bin_a > bin_b {
-            overs += bin_a - bin_b;
+        if a_value > &50_000_000 {
+            overs += bin - 1;
+        } else {
+            overs += bin;
         }
-
-        #[cfg(debug_assertions)]
-        eprintln!("{:?}", (a_value, bin_a, bin_b));
     }
 
-    println!("{}", total - overs * base);
+    #[cfg(debug_assertions)]
+    eprintln!("{:?}", (total, overs));
+
+    println!("{}", total - (overs / 2) * base);
 }
 
 fn bin(a: &Vec<usize>, value: usize) -> usize {

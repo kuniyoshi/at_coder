@@ -24,7 +24,7 @@ fn count(a: u64, b: u64) -> u64 {
     if a == 0 {
         return 0;
     }
-    popcount(((1 << a) - 1) & b) * 2_u64.pow((a - 1) as u32)
+    popcount((1 << a) & b) + popcount(((1 << a) - 1) & b) * 2_u64.pow((a - 1) as u32)
 }
 
 fn popcount(a: u64) -> u64 {

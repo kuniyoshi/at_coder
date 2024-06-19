@@ -4,7 +4,8 @@ fn main() {
         mut a: [usize; n],
     };
 
-    let base = 100_000_000;
+    // let base = 100_000_000;
+    let base = 100;
 
     a.sort();
 
@@ -19,7 +20,7 @@ fn main() {
         total += a_value * (n - 1);
         let bin = bin(&a, base - a_value);
 
-        if a_value > &50_000_000 {
+        if a_value > &(base / 2) {
             overs += bin - 1;
         } else {
             overs += bin;

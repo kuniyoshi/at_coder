@@ -1,16 +1,28 @@
 fn main() {
-    for i in -1..3 {
-        for j in -1..3 {
-            #[cfg(debug_assertions)]
-            eprintln!("{:?} -> {:?}", (i, j), f(i, j));
-        }
-    }
-}
+    proconio::input! {
+        mut sx: i64,
+        mut sy: i64,
+        mut tx: i64,
+        mut ty: i64,
+    };
 
-fn f(x: i64, y: i64) -> (i64, i64) {
-    if x + y % 2 == 0 {
-        (x / 2, y)
+    if (sx + sy % 2) == 1 {
+        sx -= 1;
+    }
+
+    if (tx + ty % 2) == 1 {
+        tx -= 1;
+    }
+
+    tx -= sx;
+    ty -= sy;
+
+    tx = tx.abs();
+    ty = ty.abs();
+
+    if ty > tx {
+        println!("{}", ty);
     } else {
-        ((x + 1) / 2, y)
+        println!("{}", (tx + ty) / 2);
     }
 }

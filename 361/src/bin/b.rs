@@ -1,5 +1,4 @@
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 struct P {
     x: i64,
     y: i64,
@@ -34,8 +33,7 @@ impl P {
     }
 }
 
-#[derive(Debug)]
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 struct Cube {
     a: P,
     b: P,
@@ -76,11 +74,11 @@ fn main() {
         a: i64,
         b: i64,
         c: i64,
-        
+
         d: i64,
         e: i64,
         f: i64,
-       
+
         g: i64,
         h: i64,
         i: i64,
@@ -97,7 +95,7 @@ fn main() {
         b = b.slide(a.min());
 
         #[cfg(debug_assertions)]
-        eprintln!("if {:?}", (a, b.clone())); // TODO: なんで clone ?
+        eprintln!("if {:?}", (&a, &b));
 
         if b.volume() > 0f64 {
             println!("Yes");
@@ -108,7 +106,7 @@ fn main() {
         a = a.slide(b.min());
 
         #[cfg(debug_assertions)]
-        eprintln!("else {:?}", (a.clone(), b));
+        eprintln!("else {:?}", (&a, &b));
 
         if a.volume() > 0f64 {
             println!("Yes");

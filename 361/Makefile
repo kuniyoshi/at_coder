@@ -16,14 +16,14 @@ b:
 	cat data/b.3 | cargo run $(RELEASE) --bin b
 
 c:
-	cat data/c.1 | cargo run $(RELEASE) --bin c
-	cat data/c.2 | cargo run $(RELEASE) --bin c
-	cat data/c.3 | cargo run $(RELEASE) --bin c
+	cat data/c.1 | cargo run $(RELEASE) --bin c_alt
+	cat data/c.2 | cargo run $(RELEASE) --bin c_alt
+	cat data/c.3 | cargo run $(RELEASE) --bin c_alt
 
 d:
 	cat data/d.1 | cargo run $(RELEASE) --bin d
-	cat data/d.2 | cargo run $(RELEASE) --bin d
-	cat data/d.3 | cargo run $(RELEASE) --bin d
+#	cat data/d.2 | cargo run $(RELEASE) --bin d
+#	cat data/d.3 | cargo run $(RELEASE) --bin d
 
 e:
 	cat data/e.1 | cargo run $(RELEASE) --bin e

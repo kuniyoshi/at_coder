@@ -28,6 +28,11 @@ fn main() {
         }
     }
 
+    if remain > 0 {
+        println!("No");
+        return;
+    }
+
     println!("Yes");
 
     for i in 0..n {

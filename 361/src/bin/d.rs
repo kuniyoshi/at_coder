@@ -8,9 +8,9 @@ fn main() {
     };
 
     #[cfg(debug_assertions)]
-    eprintln!("{:?}", (n, s.clone(), t.clone())); // TODO: なんで move するの？
+    eprintln!("{:?}", (n, &s, &t));
 
-    let mut used = HashSet::new();
+    let mut using = HashSet::new();
     let mut cache = HashMap::new();
     let mut current = s.clone();
     current.push(' ');
@@ -20,10 +20,11 @@ fn main() {
     target.push(' ');
 
     let result = dfs(
+        0,
         &mut current,
         None,
         &mut cache,
-        &mut used,
+        &mut using,
         &target.iter().collect::<String>(),
     );
 
@@ -34,6 +35,7 @@ fn main() {
 }
 
 fn dfs(
+    count: u64,
     s: &mut Vec<char>,
     from: Option<String>,
     cache: &mut HashMap<String, Option<u64>>,
@@ -45,7 +47,16 @@ fn dfs(
     }
 
     #[cfg(debug_assertions)]
-    eprintln!("{:?}", s);
+    eprintln!("{:?}", &s);
+
+    let global_key = s.iter().collect::<String>();
+
+    if global_key.eq(t) {
+        cache.insert(global_key.clone(), Some(count));
+        #[cfg(debug_assertions)]
+        eprintln!("{:?}", (count, &global_key, &t));
+        return Some(count);
+    }
 
     let space = s
         .windows(2)
@@ -53,7 +64,6 @@ fn dfs(
         .unwrap();
 
     let mut min = None;
-    let global_key = s.iter().collect::<String>();
 
     using.insert(global_key.clone());
 
@@ -62,13 +72,17 @@ fn dfs(
             (s[space], s[space + 1], s[i], s[i + 1]) = (s[i], s[i + 1], s[space], s[space + 1]);
             let key = s.iter().collect::<String>();
 
-            using.insert(key.clone());
+            if !cache.contains_key(&key) {
+                if !using.contains(&key) {
+                    using.insert(key.clone());
 
-            if Some(key.clone()) != from {
-                min = optional_min(min, dfs(s, from.clone(), cache, using, t));
+                    if Some(key.clone()) != from {
+                        min = optional_min(min, dfs(count + 1, s, from.clone(), cache, using, t));
+                    }
+
+                    using.remove(&key);
+                }
             }
-
-            using.remove(&key);
 
             (s[space], s[space + 1], s[i], s[i + 1]) = (s[i], s[i + 1], s[space], s[space + 1]);
         }

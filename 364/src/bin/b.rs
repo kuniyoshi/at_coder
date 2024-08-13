@@ -1,3 +1,24 @@
+struct Direction {
+    value: char,
+}
+
+impl Direction {
+    fn new(value: char) -> Self {
+        assert!(vec!['L','R','U','D'].iter().any(|v| v == &value));
+        Self { value }
+    }
+
+    fn coordinate(self: &Self, i: usize, j: usize) -> Option<(usize, usize)> {
+        match self.value {
+            'L' => j.checked_sub(1).map(|nj| Some((i, nj))).unwrap_or(None),
+            'R' => Some((i, j + 1)),
+            'U' => i.checked_sub(1).map(|ni| Some((ni, j))).unwrap_or(None),
+            'D' => Some((i + 1, j)),
+            _ => unreachable!("{} is not valid value", self.value),
+        }
+    }
+}
+
 fn main() {
     proconio::input! {
         h: usize,
@@ -20,37 +41,12 @@ fn main() {
     si -= 1;
     sj -= 1;
 
-    for direction in walks {
-        match direction {
-            'L' => {
-                let ni = si;
-                let nj = sj.checked_sub(1).unwrap_or(sj);
-                if cells.get(ni).and_then(|v| v.get(nj)) == Some(&'.') {
-                    (si, sj) = (ni, nj);
-                }
-            },
-            'R' => {
-                let ni = si;
-                let nj = sj + 1;
-                if cells.get(ni).and_then(|v| v.get(nj)) == Some(&'.') {
-                    (si, sj) = (ni, nj);
-                }
-            },
-            'U' => {
-                let ni = si.checked_sub(1).unwrap_or(si);
-                let nj = sj;
-                if cells.get(ni).and_then(|v| v.get(nj)) == Some(&'.') {
-                    (si, sj) = (ni, nj);
-                }
-            },
-            'D' => {
-                let ni = si + 1;
-                let nj = sj;
-                if cells.get(ni).and_then(|v| v.get(nj)) == Some(&'.') {
-                    (si, sj) = (ni, nj);
-                }
-            },
-            _ => unreachable!(),
+    let directions: Vec<_> = walks.iter().map(|d| Direction::new(*d)).collect();
+
+    for direction in directions {
+        match direction.coordinate(si, sj) {
+            Some((ni, nj)) if cells.get(ni).and_then(|v| v.get(nj)) == Some(&'.') => (si, sj) = (ni, nj),
+            _ => continue,
         };
     }
 

@@ -20,9 +20,9 @@ fn main() {
     tx = tx.abs();
     ty = ty.abs();
 
-    if ty > tx {
+    if ty >= tx {
         println!("{}", ty);
     } else {
-        println!("{}", (tx + ty) / 2);
+        println!("{}", ty + (tx - ty) / 2);
     }
 }

@@ -19,6 +19,8 @@ c:
 	cat data/c.1 | cargo run $(RELEASE) --bin c
 	cat data/c.2 | cargo run $(RELEASE) --bin c
 	cat data/c.3 | cargo run $(RELEASE) --bin c
+	cat data/c.4 | cargo run $(RELEASE) --bin c
+	cat data/c.5 | cargo run $(RELEASE) --bin c
 
 d:
 	cat data/d.1 | cargo run $(RELEASE) --bin d

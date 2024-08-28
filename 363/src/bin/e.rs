@@ -14,24 +14,37 @@ fn main() {
     proconio::input! {
         h: usize,
         w: usize,
-        y: usize,
+        y: u64,
         a: [[u64; w]; h],
     };
 
     let mut remains = BinaryHeap::new();
-    let mut unders = vec![0; y + 1];
+    let mut unders = vec![0; y as usize + 1];
     let mut is_under = vec![vec![false; w]; h];
 
     for i in 0..h {
-        for j in 0..w {
-            remains.push((Reverse(&a[i][j]), (i, j)));
-        }
+        remains.push((Reverse(&a[i][0]), (i, 0)));
+        remains.push((Reverse(&a[i][w - 1]), (i, w - 1)));
     }
 
-    let directions = [Direction::Up, Direction::Down, Direction::Left, Direction::Right];
+    for j in 0..w {
+        remains.push((Reverse(&a[0][j]), (0, j)));
+        remains.push((Reverse(&a[h - 1][j]), (h - 1, j)));
+    }
+
+    let directions = [
+        Direction::Up,
+        Direction::Down,
+        Direction::Left,
+        Direction::Right,
+    ];
 
     while let Some((Reverse(&border), (base_i, base_j))) = remains.pop() {
         if is_under[base_i][base_j] {
+            continue;
+        }
+
+        if border > y {
             continue;
         }
 
@@ -48,10 +61,7 @@ fn main() {
             }
 
             is_under[i][j] = true;
-
-            if border < unders.len() as u64 {
-                unders[border as usize] += 1;
-            }
+            unders[border as usize] += 1;
 
             for direction in &directions {
                 match coord(i, j, direction) {
@@ -63,7 +73,7 @@ fn main() {
                         if is_under_new(&a, &border, next_i, next_j) {
                             queue.push_back((next_i, next_j))
                         }
-                    },
+                    }
                     _ => continue,
                 };
             }
@@ -75,6 +85,13 @@ fn main() {
 
     #[cfg(debug_assertions)]
     eprintln!("{:?}", is_under);
+
+    let mut acc = 0;
+
+    for i in 1..=(y as usize) {
+        acc += unders[i];
+        println!("{}", h * w - acc);
+    }
 }
 
 fn is_under_new(a: &Vec<Vec<u64>>, border: &u64, i: usize, j: usize) -> bool {

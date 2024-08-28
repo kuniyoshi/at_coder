@@ -1,20 +1,28 @@
 fn main() {
-    let mut count = 0;
-    let mut current = 0;
+    proconio::input! {
+        n: u64,
+    };
 
-    while count < 300 {
+    let mut keta = 1;
+    let mut remain = n;
 
-        if is_palindrome(current) {
-            println!("{}", current);
-            count += 1;
+    loop {
+        #[cfg(debug_assertions)]
+        eprintln!("{:?}", (remain, count_per_keta(keta)));
+
+        if remain <= count_per_keta(keta + 1) {
+            println!("{}", nth());
+            break;
         }
 
-        current += 1;
+        remain -= count_per_keta(keta);
+        keta += 1;
     }
 }
 
-fn is_palindrome(n: usize) -> bool {
-    let s = n.to_string();
-    let t = s.chars().rev().collect::<String>();
-    t == s
+fn count_per_keta(a: u64) -> u64 {
+    match a {
+        1 => 10,
+        v => 9 * 10_u64.pow(v as u32 / 2),
+    }
 }

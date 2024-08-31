@@ -2,47 +2,39 @@ fn main() {
     proconio::input! {
         n: usize,
         q: usize,
-        a: [i64; n],
-        queries: [(i64, usize); q],
+        mut a: [i64; n],
+        queries: [(i64, u64); q],
     }
+
+    a.sort();
 
     #[cfg(debug_assertions)]
     eprintln!("{:?}", (n, q, &a, &queries));
 
     for &(b, k) in &queries {
-        // let bi = bin(&a, b);
+        let mut ac = 0;
+        let mut wa = 300_000_000;
 
-        let mut lwa = n - 1;
-        let mut lac = 0;
-        let mut rwa = 0;
-        let mut rac = n - 1;
+        // b から距離が ac 以内で゛ある点の数が k 個以内であるかどうか
+        while wa - ac > 1 {
+            let wj = (ac + wa) / 2;
 
-        while (lwa - lac) != 1 || (rac - rwa) != 1 {
-            if lwa - lac == 1 {
-                // r をやる
-                continue;
-            }
-            if rac - rwa == 1 {
-                // l をやる
-                continue;
-            }
-
-            unreachable!();
-            if distance(&a, lac, b) > distance(&a, rac, b) {
-
-            let lwj = (lac + lwa) / 2;
-            let rwj = (rac + rwa) / 2;
-
-            if rac - lac + 1 > k {
-                    if 
-                }
+            if f(wj, b, &a, k) {
+                ac = wj;
+            } else {
+                wa = wj;
             }
         }
 
-        println!("{}", (a[rac] - b).max(b - a[lac]));
+        println!("{}", ac);
     }
 }
 
-fn distance(a: &Vec<i64>, index: usize, b: i64) -> i64 {
-    (a[index] - b).abs()
+fn f(distance: u64, base: i64, a: &Vec<i64>, k: u64) -> bool {
+    match (a.binary_search(&(base - distance as i64)), a.binary_search(&(base + distance as i64))) {
+        (Ok(u), Ok(v)) => v - u + 1 <= k as usize,
+        (Ok(u), Err(v)) => v - u + 1 <= k as usize,
+        (Err(u), Ok(v)) => v - u + 1 <= k as usize,
+        (Err(u), Err(v)) => v - u + 0 <= k as usize,
+    }
 }

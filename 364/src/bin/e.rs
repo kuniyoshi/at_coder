@@ -1,31 +1,3 @@
-use std::collections::HashMap;
-
-#[derive(Eq, PartialEq, Debug, Hash, Clone)]
-struct State {
-    sweetness: u64,
-    saltiness: u64,
-}
-
-impl State {
-    fn new(sweetness: u64, saltiness: u64) -> Self {
-        Self {
-            sweetness,
-            saltiness,
-        }
-    }
-
-    fn add(self: &Self, sweetness: u64, saltiness: u64) -> Self {
-        Self {
-            sweetness: self.sweetness + sweetness,
-            saltiness: self.saltiness + saltiness,
-        }
-    }
-
-    fn test(self: &Self, other: &Self) -> bool {
-        other.sweetness <= self.sweetness && other.saltiness <= self.saltiness
-    }
-}
-
 fn main() {
     proconio::input! {
         n: usize,
@@ -37,45 +9,43 @@ fn main() {
     #[cfg(debug_assertions)]
     eprintln!("{:?}", (n, x, y, &dishes));
 
-    let mut dp = HashMap::new();
-    dp.insert(State::new(0, 0), 0);
+    let border = 10_010;
 
-    let limit = State::new(x, y);
+    let mut dp = vec![None; border * border];
+    dp[0] = Some(0);
 
     for &(sweetness, saltiness) in &dishes {
-        let mut next = dp.clone();
-        let mut keys = Vec::new();
-
-        for key in dp.keys() {
-            keys.push(key);
-        }
-
-        for state in &keys {
-            if !limit.test(&state) {
-                continue;
-            }
-
-            let new_state = state.add(sweetness, saltiness);
-            let count = dp.get(state).unwrap() + 1;
-
-            match next.get(&new_state) {
-                Some(c) if c < &count => {
-                    next.insert(new_state, count);
+        for i in (0..dp.len()).rev() {
+            match i.checked_sub((sweetness * border as u64 + saltiness) as usize) {
+                None => continue,
+                Some(previous) => {
+                    match dp[previous] {
+                        None => continue,
+                        Some(count) => {
+                            match dp[i] {
+                                None => dp[i] = Some(1),
+                                Some(current_count) => dp[i] = Some(current_count.max(count + 1)),
+                            }
+                        }
+                    }
                 }
-                None => {
-                    next.insert(new_state, count);
-                }
-                _ => (),
-            }
+            };
         }
-
-        dp = next;
     }
 
-    // #[cfg(debug_assertions)]
-    // eprintln!("{:?}", dp);
+    let mut max = 0;
 
-    let max = dp.iter().max_by(|(_, a), (_, b)| a.cmp(b)).unwrap().1;
+    for (index, &count) in dp.iter().enumerate() {
+        if index > x as usize * border + y as usize {
+            continue;
+        }
 
-    println!("{}", max);
+        match count {
+            Some(c) => max = max.max(c),
+            _ => continue,
+        }
+    }
+
+    #[cfg(debug_assertions)]
+    eprintln!("{:?}", max);
 }

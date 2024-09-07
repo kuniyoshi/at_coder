@@ -11,27 +11,27 @@ fn main() {
 
     let limit = (x + dishes.iter().map(|(a, _)| a).max().unwrap_or(&0)) as usize;
 
-    let mut dp = vec![vec![vec![None; n + 1]; limit + 1]; n + 1];
-    dp[0][0][0] = Some(0);
+    let mut dp = vec![vec![None; n + 1]; limit + 1];
+    dp[0][0] = Some(0);
 
-    for (index, &(sweetness, saltiness)) in dishes.iter().enumerate() {
+    for &(sweetness, saltiness) in &dishes {
+        let mut next = dp.clone();
+
         for i in 0..=(x as usize) {
             for j in 0..n {
-                match dp[index][i][j] {
+                match dp[i][j] {
                     Some(min_saltiness) if min_saltiness <= y => {
-                        dp[index + 1][i + sweetness as usize][j + 1] = min(
-                            dp[index + 1][i + sweetness as usize][j + 1],
+                        next[i + sweetness as usize][j + 1] = min(
+                            next[i + sweetness as usize][j + 1],
                             min_saltiness + saltiness,
                         );
-                        dp[index + 1][i][j] = min(dp[index + 1][i][j], min_saltiness);
-                    }
-                    Some(min_saltiness) => {
-                        dp[index + 1][i][j] = min(dp[index + 1][i][j], min_saltiness);
                     }
                     _ => (),
                 }
             }
         }
+
+       dp = next;
     }
 
     // #[cfg(debug_assertions)]
@@ -48,9 +48,9 @@ fn main() {
 
     let mut max = 0;
 
-    for i in 0..dp[n].len() {
-        for j in 0..dp[n][i].len() {
-            if dp[n][i][j].is_some() {
+    for i in 0..dp.len() {
+        for j in 0..dp[i].len() {
+            if dp[i][j].is_some() {
                 max = max.max(j);
             }
         }

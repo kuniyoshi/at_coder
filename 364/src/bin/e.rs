@@ -9,51 +9,59 @@ fn main() {
     #[cfg(debug_assertions)]
     eprintln!("{:?}", (n, x, y, &dishes));
 
-    let limit = (dishes.iter().map(|(a, _)| *a).max().unwrap_or(0) + x.max(y) + 1) as usize;
+    let limit = (x + dishes.iter().map(|(a, _)| a).max().unwrap_or(&0)) as usize;
 
-    let mut dp = vec![vec![vec![None; limit]; limit]; n + 1];
+    let mut dp = vec![vec![vec![None; n + 1]; limit + 1]; n + 1];
     dp[0][0][0] = Some(0);
 
     for (index, &(sweetness, saltiness)) in dishes.iter().enumerate() {
-        for i in 0..limit {
-            if i > x as usize {
-                continue;
-            }
-
-            for j in 0..limit {
-                if j > y as usize {
-                    continue;
-                }
-
-                if let Some(count) = dp[index][i as usize][j as usize] {
-                    dp[index + 1][i + sweetness as usize][j + saltiness as usize] = max(
-                        dp[index][i + sweetness as usize][j + saltiness as usize],
-                        count + 1,
-                    );
+        for i in 0..=(x as usize) {
+            for j in 0..n {
+                match dp[index][i][j] {
+                    Some(min_saltiness) if min_saltiness <= y => {
+                        dp[index + 1][i + sweetness as usize][j + 1] = min(
+                            dp[index + 1][i + sweetness as usize][j + 1],
+                            min_saltiness + saltiness,
+                        );
+                        dp[index + 1][i][j] = min(dp[index + 1][i][j], min_saltiness);
+                    }
+                    Some(min_saltiness) => {
+                        dp[index + 1][i][j] = min(dp[index + 1][i][j], min_saltiness);
+                    }
+                    _ => (),
                 }
             }
         }
     }
 
-    #[cfg(debug_assertions)]
-    eprintln!("{:?}", dp);
+    // #[cfg(debug_assertions)]
+    // eprintln!("{:?}", dp[n]);
 
-    let mut result = 0;
+    // for i in 0..dp[n].len() {
+    //     for j in 0..dp[n][i].len() {
+    //         if let Some(saltiness) = dp[n][i][j] {
+    //             #[cfg(debug_assertions)]
+    //             eprintln!("{:?}", (i, saltiness, j));
+    //         }
+    //     }
+    // }
 
-    for i in 0..limit {
-        for j in 0..limit {
-            if let Some(count) = dp[dishes.len()][i][j] {
-                result = result.max(count);
+    let mut max = 0;
+
+    for i in 0..dp[n].len() {
+        for j in 0..dp[n][i].len() {
+            if dp[n][i][j].is_some() {
+                max = max.max(j);
             }
         }
     }
 
-    println!("{}", result);
+    println!("{}", max);
 }
 
-fn max(a: Option<u64>, b: u64) -> Option<u64> {
+fn min(a: Option<u64>, b: u64) -> Option<u64> {
     if let Some(a_value) = a {
-        return Some(a_value.max(b));
+        return Some(a_value.min(b));
     }
-    None
+    Some(b)
 }

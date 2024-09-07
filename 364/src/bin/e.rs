@@ -9,54 +9,33 @@ fn main() {
     #[cfg(debug_assertions)]
     eprintln!("{:?}", (n, x, y, &dishes));
 
-    let limit = (x + dishes.iter().map(|(a, _)| a).max().unwrap_or(&0)) as usize;
-
-    let mut dp = vec![vec![None; n + 1]; limit + 1];
+    let mut dp = vec![vec![None; n + 1]; (x + 1) as usize];
     dp[0][0] = Some(0);
 
     for &(sweetness, saltiness) in &dishes {
-        let mut next = dp.clone();
+        for i in (0..=(x as usize)).rev() {
+            if i as u64 + sweetness > x {
+                continue;
+            }
 
-        for i in 0..=(x as usize) {
             for j in 0..n {
-                match dp[i][j] {
-                    Some(min_saltiness) if min_saltiness <= y => {
-                        next[i + sweetness as usize][j + 1] = min(
-                            next[i + sweetness as usize][j + 1],
-                            min_saltiness + saltiness,
-                        );
+                if let Some(min_saltiness) = dp[i][j] {
+                    if min_saltiness + saltiness <= y {
+                        dp[i + sweetness as usize][j + 1] =
+                            min(dp[i + sweetness as usize][j + 1], min_saltiness + saltiness);
                     }
-                    _ => (),
                 }
             }
         }
-
-       dp = next;
     }
 
-    // #[cfg(debug_assertions)]
-    // eprintln!("{:?}", dp[n]);
+    let max = dp
+        .iter()
+        .flat_map(|row| row.iter().enumerate().filter_map(|(j, &v)| v.map(|_| j)))
+        .max()
+        .unwrap_or(0);
 
-    // for i in 0..dp[n].len() {
-    //     for j in 0..dp[n][i].len() {
-    //         if let Some(saltiness) = dp[n][i][j] {
-    //             #[cfg(debug_assertions)]
-    //             eprintln!("{:?}", (i, saltiness, j));
-    //         }
-    //     }
-    // }
-
-    let mut max = 0;
-
-    for i in 0..dp.len() {
-        for j in 0..dp[i].len() {
-            if dp[i][j].is_some() {
-                max = max.max(j);
-            }
-        }
-    }
-
-    println!("{}", max);
+    println!("{}", (max + 1).min(n));
 }
 
 fn min(a: Option<u64>, b: u64) -> Option<u64> {

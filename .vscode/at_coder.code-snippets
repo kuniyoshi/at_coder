@@ -39,6 +39,14 @@
 		],
 		"description": "vector usize type"
 	},
+	"Vector u64 type": {
+		"scope": "rust",
+		"prefix": "v6",
+		"body": [
+			"Vec<u64>$0",
+		],
+		"description": "vector u64 type"
+	},
 	"Vector char type": {
 		"scope": "rust",
 		"prefix": "vc",

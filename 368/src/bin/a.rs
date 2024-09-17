@@ -8,11 +8,7 @@ fn main() {
     let top: Vec<_> = a.iter().rev().take(k).rev().collect();
     let bottom: Vec<_> = a.iter().take(n - k).collect();
 
-    for v in &top {
-        print!("{} ", v);
-    }
-
-    for v in &bottom {
+    for &v in [top, bottom].concat() {
         print!("{} ", v);
     }
 

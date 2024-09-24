@@ -60,10 +60,12 @@ fn main() {
 }
 
 fn area(acc: &Vec<Vec<Vec<u64>>>, x: Span, y: Span, z: Span) -> u64 {
-    let a = acc[z.r][y.r][x.r];
-    let b = z.l.checked_sub(1).map(|zl| acc[zl][y.r][x.r]).unwrap_or(0);
+    acc[z.r][y.r][x.r] - 
+    acc[z.r][y.r][x.l];
+    acc[z.r][y.l][x.r];
+    acc[z.l][y.r][x.r];
 }
 
 fn to_be_index((a, b): (usize, usize)) -> (usize, usize) {
-    (a - 1, b - 1)
+    (a, b - 1)
 }

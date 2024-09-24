@@ -31,10 +31,10 @@ fn main() {
 }
 
 fn f(distance: u64, base: i64, a: &Vec<i64>, k: u64) -> bool {
-    match (a.binary_search(&(base - distance as i64)), a.binary_search(&(base + distance as i64))) {
-        (Ok(u), Ok(v)) => v - u + 1 <= k as usize,
-        (Ok(u), Err(v)) => v - u + 1 <= k as usize,
-        (Err(u), Ok(v)) => v - u + 1 <= k as usize,
-        (Err(u), Err(v)) => v - u + 0 <= k as usize,
+    match (a.binary_search(&(base - distance as i64)), a.binary_search(&(base + distance as i64 + 1))) {
+        (Ok(u), Ok(v)) => v - u + 1 - 1 <= k as usize,
+        (Ok(u), Err(v)) => v - u + 1 - 1 <= k as usize,
+        (Err(u), Ok(v)) => v - u + 1 - 1 <= k as usize,
+        (Err(u), Err(v)) => v - u + 0 - 1 <= k as usize,
     }
 }

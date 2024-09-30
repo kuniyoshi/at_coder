@@ -13,14 +13,14 @@ fn main() {
 
         let next_odd = match (odd, even) {
             (Some(odd_value), Some(even_value)) => Some(odd_value.max(even_value + a[i])),
-            (Some(_), None) => odd,
+            (Some(odd_value), None) => Some(odd_value.max(a[i])),
             (None, Some(_)) => unreachable!(),
             _ => Some(a[i]),
         };
         let next_even = match (odd, even) {
             (Some(odd_value), Some(even_value)) => Some(even_value.max(odd_value + a[i] * 2)),
             (Some(odd_value), None) => Some(odd_value + a[i] * 2),
-            (None, Some(_)) => even,
+            (None, Some(_)) => unreachable!(),
             _ => None,
         };
         odd = next_odd;
@@ -33,8 +33,8 @@ fn main() {
     let max = match (odd, even) {
         (Some(odd_value), Some(even_value)) => odd_value.max(even_value),
         (Some(odd_vlaue), None) => odd_vlaue,
-        (None, Some(even_vlaue)) => even_vlaue,
-        _ => 0,
+        (None, Some(_)) => unreachable!(),
+        _ => unreachable!(),
     };
 
     println!("{}", max);

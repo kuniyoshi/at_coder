@@ -11,9 +11,9 @@ a:
 	cat data/a.3 | cargo run $(RELEASE) --bin a
 
 b:
-	cat data/b.1 | cargo run $(RELEASE) --bin b
-	cat data/b.2 | cargo run $(RELEASE) --bin b
-	cat data/b.3 | cargo run $(RELEASE) --bin b
+	cat data/b.1 | cargo run $(RELEASE) --bin b_alt
+	cat data/b.2 | cargo run $(RELEASE) --bin b_alt
+	cat data/b.3 | cargo run $(RELEASE) --bin b_alt
 
 c:
 	cat data/c.1 | cargo run $(RELEASE) --bin c

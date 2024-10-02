@@ -3,46 +3,48 @@ use std::collections::HashMap;
 fn main() {
     proconio::input! {
         n: usize,
-        mut a: [u64; n],
+        mut a: [i64; n],
     };
 
-    a.sort();
-    
-    let mut count = HashMap::new();
+    let mut l = 0;
+    let mut total = n as u64;
+    let mut memo = HashMap::new();
 
-    for i in &a {
-        *count.entry(i).or_insert(0) += 1;
+    while l < n - 1 {
+        let diff = a[l + 1] - a[l];
+        let r = ((l + 1)..n)
+            .take_while(|&i| a[i] - a[i - 1] == diff)
+            .last()
+            .unwrap_or(l);
+
+        let addition = addition(&mut memo, r - l);
+
+        total += addition;
+
+        #[cfg(debug_assertions)]
+        eprintln!("{:?}", (l, r, diff, addition, total));
+
+        l = r;
     }
 
-    let mut values: Vec<_> = count.keys().collect();
-    values.sort();
+    println!("{}", total);
+}
 
-    let mut cursor = 0;
-    let mut grand_total = count.values().map(|v| v * (v - 1)).sum::<u64>();
-
-    while cursor < values.len() - 1{
-        let mut diff = None;
-        let mut total = 0;
-
-        for i in (cursor + 1)..values.len() {
-            let value = values[i - 1];
-            let next = values[i];
-            match diff {
-                None => {
-                    diff = Some(*next - *value);
-                    total = *count.get(next).unwrap();
-                },
-                Some(diff_value) if diff_value == *next - *value => {
-                    total += count.get(next).unwrap() * total;
-                },
-                _ => break,
-            };
-
-            cursor += 1;
-        }
-
-        grand_total += total;
+fn addition(memo: &mut HashMap<usize, u64>, size: usize) -> u64 {
+    if size == 0 {
+        return 0;
     }
 
-    println!("{}", grand_total);
+    if let Some(cache) = memo.get(&size) {
+        return *cache;
+    }
+
+    let result = size as u64 + addition(memo, size - 1);
+    memo.insert(size, result);
+
+    result
+    // 差が
+    //   1 -> 1
+    //   2 -> 3
+    //   3 -> 6
 }

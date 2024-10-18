@@ -47,20 +47,26 @@ fn main() {
                 let has_g_it = links_g[gi].contains(&i);
                 let has_h_it = links_h[hi].contains(&i);
 
-                match (has_g_it, has_h_it) {
-                    (true, true) => (),
-                    (false, false) => (),
-                    _ => {
-                        let from = hi.min(i);
-                        let to = hi.max(i);
-                        // #[cfg(debug_assertions)]
-                        // eprintln!("{:?}", (from, to));
+                if has_g_it != has_h_it {
+                    let from = hi.min(i);
+                    let to = hi.max(i);
+                    // #[cfg(debug_assertions)]
+                    // eprintln!("{:?}", (from, to));
 
-                        total += costs[from][to];
-                    }
+                    total += costs[from][to];
                 }
             }
         }
+
+        // 1 -> 4
+        // 2 -> 1
+        // 3 -> 2
+        // 4 -> 5
+        // 5 -> 3
+        // 3, 0, 1, 4, 2 -> 46
+
+        #[cfg(debug_assertions)]
+        eprintln!("{:?}", (&orders, total));
 
         min = min.min(total);
 
@@ -90,17 +96,4 @@ fn next_permutation(orders: &mut Vec<usize>) -> bool {
     orders.swap(i - 1, j);
     orders[i..].reverse();
     true
-}
-
-fn t() {
-    let mut orders: Vec<usize> = (0..3).collect();
-    loop {
-        for i in 0..orders.len() {
-            print!("{}", orders[i]);
-        }
-        println!("");
-        if !next_permutation(&mut orders) {
-            break;
-        }
-    }
 }

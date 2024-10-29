@@ -5,9 +5,13 @@ p%:
 
 RELEASE=
 
-a:
-	cat data/a.1 | cargo run $(RELEASE) --bin a
-	cat data/a.2 | cargo run $(RELEASE) --bin a
+akt.jar: src/a.kt
+	kotlinc $^ -include-runtime -d $@
+
+a: akt.jar
+	cat data/a.1 | java -jar $^
+#	cat data/a.1 | cargo run $(RELEASE) --bin a
+#	cat data/a.2 | cargo run $(RELEASE) --bin a
 
 b:
 	cat data/b.1 | cargo run $(RELEASE) --bin b
